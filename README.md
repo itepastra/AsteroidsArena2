@@ -25,14 +25,22 @@ The full state of our game is represented using a GameState data type:
 >                            } 
 >``` 
 
-#### The Player and bullets
+#### Physics objects
 
 >``` 
 > data PlayerType = PlayerType { lives      :: Int
 >                            , position     :: (Double, Double) 
 >                            , velocity     :: (Double, Double) 
->                            , bullets      :: [BulletType]
->                            , walls        :: [WallType]
+>                            } 
+>
+> data AsteroidType = AsteroidType { size   :: Int
+>                            , position     :: (Double, Double) 
+>                            , velocity     :: (Double, Double) 
+>                            } 
+>
+> data BulletType = BulletType { lifetime   :: Double
+>                            , position     :: (Double, Double) 
+>                            , velocity     :: (Double, Double) 
 >                            } 
 >``` 
 
