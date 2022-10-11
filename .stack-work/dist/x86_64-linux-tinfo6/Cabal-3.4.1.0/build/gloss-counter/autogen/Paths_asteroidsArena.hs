@@ -30,12 +30,12 @@ version :: Version
 version = Version [0,1,0,0] []
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 
-bindir     = "/home/noa/programming/asteroidsArena/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/bin"
-libdir     = "/home/noa/programming/asteroidsArena/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/lib/x86_64-linux-ghc-9.0.2/asteroidsArena-0.1.0.0-GIQ8YskYdcy5jQmSXIRaxA-gloss-counter"
-dynlibdir  = "/home/noa/programming/asteroidsArena/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/lib/x86_64-linux-ghc-9.0.2"
-datadir    = "/home/noa/programming/asteroidsArena/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/share/x86_64-linux-ghc-9.0.2/asteroidsArena-0.1.0.0"
-libexecdir = "/home/noa/programming/asteroidsArena/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/libexec/x86_64-linux-ghc-9.0.2/asteroidsArena-0.1.0.0"
-sysconfdir = "/home/noa/programming/asteroidsArena/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/etc"
+bindir     = "/home/noa/programming/AsteroidsArena2/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/bin"
+libdir     = "/home/noa/programming/AsteroidsArena2/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/lib/x86_64-linux-ghc-9.0.2/asteroidsArena-0.1.0.0-GIQ8YskYdcy5jQmSXIRaxA-gloss-counter"
+dynlibdir  = "/home/noa/programming/AsteroidsArena2/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/lib/x86_64-linux-ghc-9.0.2"
+datadir    = "/home/noa/programming/AsteroidsArena2/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/share/x86_64-linux-ghc-9.0.2/asteroidsArena-0.1.0.0"
+libexecdir = "/home/noa/programming/AsteroidsArena2/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/libexec/x86_64-linux-ghc-9.0.2/asteroidsArena-0.1.0.0"
+sysconfdir = "/home/noa/programming/AsteroidsArena2/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/etc"
 
 getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: IO FilePath
 getBinDir = catchIO (getEnv "asteroidsArena_bindir") (\_ -> return bindir)

@@ -1,7 +1,9 @@
-{-# LANGUAGE InstanceSigs #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use camelCase" #-}
 -- | This module contains the data types
 --   which represent the state of the game
 module Model where
+import Vector (Point, Vector)
 
 data InfoToShow
   = ShowNothing
@@ -12,16 +14,10 @@ nO_SECS_BETWEEN_CYCLES :: Float
 nO_SECS_BETWEEN_CYCLES = 1
 
 
-data Point = Point Double Double
-data Vector = Vector Double Double
+type Position = Point Double
 
-type Position = Point
-type Collision = Point
-
-type Normal   = Vector
-type Velocity = Vector
-
-
+type Normal   = Vector Double
+type Velocity = Vector Double
 
 data Player = Player
   { lives :: Int,
@@ -42,47 +38,12 @@ data Bullet = Bullet
   }
 
 data Wall = Wall {
-  base :: Point,
-  normal :: Vector,
+  base :: Point Double,
+  normal :: Vector Double,
   wvelocity :: Velocity
 }
   
-class PhysicsObject a where
-  move :: a -> Float -> a
-  reflect :: a -> Normal -> a
-  collision ::PhysicsObject b => a -> b -> Maybe Collision
 
-instance PhysicsObject Player where
-  move :: Player -> Float -> Player
-  move = _
-  reflect :: Player -> Normal -> Player
-  reflect = _
-  collision :: PhysicsObject b => Player -> b -> Maybe Collision
-  collision = _
-  
-instance PhysicsObject Asteroid where
-  move :: Asteroid -> Float -> Asteroid
-  move = _
-  reflect :: Asteroid -> Normal -> Asteroid
-  reflect = _
-  collision :: PhysicsObject b => Asteroid -> b -> Maybe Collision
-  collision = _
-
-instance PhysicsObject Bullet where
-  move :: Bullet -> Float -> Bullet
-  move = _
-  reflect :: Bullet -> Normal -> Bullet
-  reflect = _
-  collision :: PhysicsObject b => Bullet -> b -> Maybe Collision
-  collision = _
-
-instance PhysicsObject Wall where
-  move :: Wall -> Float -> Wall
-  move = _
-  reflect :: Wall -> Normal -> Wall
-  reflect = _
-  collision :: PhysicsObject b => Wall -> b -> Maybe Collision
-  collision = _
 
 data GameState = GameState
   { infoToShow :: InfoToShow,
@@ -91,3 +52,4 @@ data GameState = GameState
 
 initialState :: GameState
 initialState = GameState ShowNothing 0
+
