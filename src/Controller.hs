@@ -4,20 +4,20 @@ module Controller where
 
 import Model
 
-import Graphics.Gloss
-import Graphics.Gloss.Interface.IO.Game
-import System.Random
+import System.Random ()
+import Player (Player(..))
+import Rotation (rotate)
+import Graphics.Gloss.Interface.IO.Game (KeyState(..), Event(..),Key(..))
+import Data.Set (Set)
 
 -- | Handle one iteration of the game
-step :: Float -> GameState -> IO GameState
+step :: Float -> GameState -> GameState
 step secs gstate
-  | elapsedTime gstate + secs > nO_SECS_BETWEEN_CYCLES
-  = -- We show a new random number 
-    return gstate 
-  | otherwise
   = -- Just update the elapsed time
-    return $ gstate { elapsedTime = elapsedTime gstate + secs }
+     gstate 
 
 
-input :: Event -> GameState -> IO GameState
-input = _
+input :: Event -> GameState -> GameState
+input (EventKey k Down _ _) g = g {player = rotate (-5) (player g) }
+input (EventKey k Up _ _) g = g {player = rotate (-5) (player g) }
+input _ g = g

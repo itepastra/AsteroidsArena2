@@ -1,10 +1,10 @@
 module Asteroid where
-import Physics (PhysicsObject, HasPhysics (..), move, accelerate)
+
+import Physics (HasPhysics (..), PhysicsObject, accelerate, move)
 
 type Size = Int
 
 data Asteroid = Asteroid PhysicsObject Size
-
 
 instance HasPhysics Asteroid where
   physobj (Asteroid p _) = p

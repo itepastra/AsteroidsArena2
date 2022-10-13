@@ -20,6 +20,16 @@
   (major1) == 4 && (major2) <  15 || \
   (major1) == 4 && (major2) == 15 && (minor) <= 1)
 #endif /* MIN_VERSION_base */
+/* package containers-0.6.4.1 */
+#ifndef VERSION_containers
+#define VERSION_containers "0.6.4.1"
+#endif /* VERSION_containers */
+#ifndef MIN_VERSION_containers
+#define MIN_VERSION_containers(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  6 || \
+  (major1) == 0 && (major2) == 6 && (minor) <= 4)
+#endif /* MIN_VERSION_containers */
 /* package gloss-1.13.2.1 */
 #ifndef VERSION_gloss
 #define VERSION_gloss "1.13.2.1"
@@ -133,7 +143,7 @@
 #endif /* MIN_TOOL_VERSION_strip */
 
 #ifndef CURRENT_COMPONENT_ID
-#define CURRENT_COMPONENT_ID "asteroidsArena-0.1.0.0-GIQ8YskYdcy5jQmSXIRaxA-gloss-counter"
+#define CURRENT_COMPONENT_ID "asteroidsArena-0.1.0.0-D3NvErHsvL69ncIJ2PcE3h-gloss-counter"
 #endif /* CURRENT_COMPONENT_ID */
 #ifndef CURRENT_PACKAGE_VERSION
 #define CURRENT_PACKAGE_VERSION "0.1.0.0"

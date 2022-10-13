@@ -16,9 +16,12 @@ class V2Math a where
   y :: a -> Float
   (|+|) :: V2Math b => a -> b -> a
   (|*|) :: Float -> a -> a
+  (|-|) :: V2Math b => a -> b -> a
   fromTuple :: (Float, Float) -> a
   toTuple :: a -> (Float, Float)
   negate :: a -> a
+  (|.|) :: V2Math b => a -> b -> Float
+  (|#|) :: V2Math b => a -> b -> Float
 
 instance V2Math Point where
   x :: Point -> Float
@@ -35,12 +38,9 @@ instance V2Math Point where
   toTuple (Point a b) = (a, b)
   negate :: Point -> Point
   negate a = Point (-x a) (-y a)
-
-(|.|) :: (V2Math a, V2Math b) => a -> b -> Float
-a |.| b = x a * x b + y a * y b
-
-(|-|) :: (V2Math a, V2Math b) => a -> b -> a
-a |-| b = a |+| negate b
-
-(|#|) :: (V2Math a, V2Math b) => a -> b -> Float
-a |#| b = c |.| c where c = a |-| b
+  (|-|) :: V2Math b => Point -> b -> Point
+  a |-| b = a |+| negate b
+  (|.|) :: V2Math b => Point -> b -> Float
+  a |.| b = x a * x b + y a * y b
+  (|#|) :: V2Math b => Point -> b -> Float
+  a |#| b = c |.| c where c = a |-| b

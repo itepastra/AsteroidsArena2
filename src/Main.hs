@@ -1,13 +1,13 @@
 module Main where
 
 import Controller
-import Graphics.Gloss.Interface.IO.Game
+import Graphics.Gloss
 import Model
 import View
 
 main :: IO ()
 main =
-  playIO
+  play
     (InWindow "Counter" (900, 900) (0, 0)) -- Or FullScreen
     black -- Background color
     30 -- Frames per second

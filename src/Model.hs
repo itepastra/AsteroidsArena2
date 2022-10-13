@@ -11,6 +11,7 @@ import Bullet (Bullet)
 import Physics (PhysicsObject(..))
 import VectorCalc (V2Math(fromTuple))
 import Wall (Wall)
+import Graphics.Gloss.Interface.IO.Game (Key)
 
 
 data InfoToShow
@@ -36,7 +37,7 @@ initialState :: GameState
 initialState = GameState 0 newPlayer [] [] initialWalls
 
 newPlayer :: Player
-newPlayer = Player (PhysObj (fromTuple (0, 0)) (fromTuple (0,0)) 50) 0 (fromTuple (1, 0))
+newPlayer = Player (PhysObj (fromTuple (0, 0)) (fromTuple (0,0)) 50) 0 (fromTuple (1, 0)) 0
 
 initialWalls :: [Wall]
-initialWalls = 
+initialWalls = undefined

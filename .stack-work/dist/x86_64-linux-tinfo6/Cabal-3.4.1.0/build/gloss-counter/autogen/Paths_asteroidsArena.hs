@@ -31,7 +31,7 @@ version = Version [0,1,0,0] []
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 
 bindir     = "/home/noa/programming/AsteroidsArena2/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/bin"
-libdir     = "/home/noa/programming/AsteroidsArena2/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/lib/x86_64-linux-ghc-9.0.2/asteroidsArena-0.1.0.0-GIQ8YskYdcy5jQmSXIRaxA-gloss-counter"
+libdir     = "/home/noa/programming/AsteroidsArena2/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/lib/x86_64-linux-ghc-9.0.2/asteroidsArena-0.1.0.0-D3NvErHsvL69ncIJ2PcE3h-gloss-counter"
 dynlibdir  = "/home/noa/programming/AsteroidsArena2/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/lib/x86_64-linux-ghc-9.0.2"
 datadir    = "/home/noa/programming/AsteroidsArena2/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/share/x86_64-linux-ghc-9.0.2/asteroidsArena-0.1.0.0"
 libexecdir = "/home/noa/programming/AsteroidsArena2/.stack-work/install/x86_64-linux-tinfo6/e52c5290215bf1a37d1729b673617e4bbea258166b00b336a44adabe271a3bfc/9.0.2/libexec/x86_64-linux-ghc-9.0.2/asteroidsArena-0.1.0.0"
