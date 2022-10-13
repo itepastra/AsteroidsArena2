@@ -10,6 +10,7 @@ import Asteroid (Asteroid)
 import Bullet (Bullet)
 import Physics (PhysicsObject(..))
 import VectorCalc (V2Math(fromTuple))
+import Wall (Wall)
 
 
 data InfoToShow
@@ -32,9 +33,10 @@ data GameState = GameState
   }
 
 initialState :: GameState
-initialState = GameState 0 newPlayer [] []
+initialState = GameState 0 newPlayer [] [] initialWalls
 
 newPlayer :: Player
 newPlayer = Player (PhysObj (fromTuple (0, 0)) (fromTuple (0,0)) 50) 0 (fromTuple (1, 0))
 
-infoToShow = "aaa"
+initialWalls :: [Wall]
+initialWalls = 
