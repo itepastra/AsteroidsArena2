@@ -2,6 +2,7 @@ module Wall where
 
 import Data.Maybe (mapMaybe)
 import Physics (Acceleration, HasPhysics (physobj), PhysicsObject (position))
+import Rotation (Rotate (..), rot)
 import VectorCalc (Point (Point), V2Math (..), Vector, (|-|), (|.|))
 
 type Normal = Vector
@@ -28,3 +29,6 @@ wallAcceleration o w
 
 totalAcceleration :: HasPhysics a => a -> [Wall] -> Acceleration
 totalAcceleration o ws = foldr (|+|) (Point 0 0) (mapMaybe (wallAcceleration o) ws)
+
+instance Rotate Wall where
+  rotate a w = Wall {point = rot a (point w), normal = rot a (normal w), strength = strength w}

@@ -1,4 +1,5 @@
 {-# LANGUAGE InstanceSigs #-}
+
 module VectorCalc where
 
 import Prelude hiding (negate)
@@ -43,6 +44,3 @@ a |-| b = a |+| negate b
 
 (|#|) :: (V2Math a, V2Math b) => a -> b -> Float
 a |#| b = c |.| c where c = a |-| b
-
-rot90 :: (V2Math a) => a -> a
-rot90 v = fromTuple (-y v, x v)
