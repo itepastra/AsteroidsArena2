@@ -10,6 +10,7 @@ Should the player hit a wall, they "bounce" off and get forced back into the shr
 The walls do not destroy bullets, instead the shots get "bounced" off like the player.  
 To get a high score the player must survive as long as possible, while destroying as many asteroids as they can.
 The game is finished when the players is out of lives and the player gets hit.
+The brackets in this document mean we are not yet certain whether we will have time to implement this.
 
 ## Design
 
@@ -20,34 +21,78 @@ The game is finished when the players is out of lives and the player gets hit.
 The full state of our game is represented using a GameState data type:  
 
 >``` 
-> data GameState = GameState { player       :: PhysicsObject Double 
+> data GameState = GameState { player       :: Player 
 >                            , score        :: Integer 
->                            , asteroids    :: [PhysicsObject Double] 
->                            , bullets      :: [PhysicsObject Double]
->                            , walls        :: [WallType]
+>                            , asteroids    :: [Asteroid] 
+>                            , bullets      :: [Bullet]
+>                            , walls        :: [Wall]
 >                            } 
 >```   
 
-#### Physics Objects
+#### Physics
 
->``` 
-> data ObjectType a = Player Lives (Vector a) | Asteroid Size | Bullet Lifespan
+We have several data types to help us with the physics in our game.
+
+>```
+> type Vector = Point
+> type TimeStep = Float
+> type Position = Point
+> type Acceleration = Vector
+> type Velocity = Vector
+> type Dist = Float
+> type Collides = Bool
 >
-> data PhysicsObject a = PhysObj {
->    ot :: ObjectType,
->    position :: Position a,
->    velocity :: Velocity a,
->    radius :: a
+> data PhysicsObject = PhysObj { position :: Position
+>                              , velocity :: Velocity
+>                              , radius :: Float 
 >                              }
 >```
 
-#### The Asteroids
+#### Player
 
-#### The Field
+These are the data types used for the player.
 
-#### Player Movement
+>```
+> type Lives = Int
+> type LookDirection = Vector
+>
+> data Player = Player PhysicsObject Lives LookDirection
+>```
 
-### Interface
+#### Bullet
+
+These are the data types used for the bullets.
+
+>```
+> type Lifetime = Float
+>
+> data Bullet = Bullet PhysicsObject Lifetime
+>```
+
+#### Asteroid 
+
+These are the data types used for the asteroids.
+
+>```
+> type Size = Int
+>
+> data Asteroid = Asteroid PhysicsObject Size
+>```
+
+#### Wall
+
+These are the data types used for the walls.
+
+>```
+> type Normal = Vector
+> type InWall = Bool
+> type Strength = Float
+>
+> data Wall = Wall { point :: Point
+>                  , normal :: Normal
+>                  , strength :: Strength
+>                  }
+>```
 
 ## Minimum Requirements
 
@@ -74,8 +119,7 @@ The game is paused when a specific button is pressed (p)
 
 ### Interaction with the File System
 
-A list of high scores will be saved in an external file.  
-(List of levels)
+A list of high scores will be saved in an external file. There will also be different levels put into seperate files.
 
 ## Optional Requirements
 
