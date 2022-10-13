@@ -1,16 +1,17 @@
 module Main where
 
 import Controller
+import Graphics.Gloss.Interface.IO.Game
 import Model
 import View
 
-import Graphics.Gloss.Interface.IO.Game
-
 main :: IO ()
-main = playIO (InWindow "Counter" (400, 400) (0, 0)) -- Or FullScreen
-              black            -- Background color
-              30               -- Frames per second
-              initialState     -- Initial state
-              view             -- View function
-              input            -- Event function
-              step             -- Step function
+main =
+  playIO
+    (InWindow "Counter" (900, 900) (0, 0)) -- Or FullScreen
+    black -- Background color
+    30 -- Frames per second
+    initialState -- Initial state
+    view -- View function
+    input -- Event function
+    step -- Step function

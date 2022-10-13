@@ -16,5 +16,10 @@ executable gloss-counter
   other-modules:       Controller
                      , Model
                      , View
-                     , Vector
+                     , Physics
+                     , VectorCalc
+                     , Player
+                     , Asteroid
+                     , Bullet
+                     , Wall
   default-language:    Haskell2010
