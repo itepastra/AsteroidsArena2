@@ -24,4 +24,6 @@ executable gloss-counter
                      , Bullet
                      , Wall
                      , Rotation
+                     , Level
+                     , Constants
   default-language:    Haskell2010

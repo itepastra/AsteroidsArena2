@@ -12,17 +12,17 @@ view :: GameState ->  Picture
 view = viewPure
 
 viewPure :: GameState -> Picture
-viewPure gs = viewPlayer (player gs)
+viewPure gs = Pictures [viewPlayer (player gs), viewPlayer newPlayer]
 -- viewPure gstate = case ShowNothing gstate of
 --   ShowNothing   -> blank
 --   ShowANumber n -> color green (text (show n))
 --   ShowAChar   c -> color green (text [c])
 
 playerPath :: Path
-playerPath = [(0,0), (4,-7), (0, -4), (-4,-7)]
+playerPath = [(0,4), (4,-3), (0, 0), (-4, -3)]
 
 basePlayer :: Picture
-basePlayer = Color white $ Scale 5 5 $ Polygon playerPath
+basePlayer = Color magenta $ Scale 5 5 $ Polygon playerPath
 
 viewPlayer :: Player -> Picture
 viewPlayer (Player phy _ _ a) = translate (x t) (y t) $ rotate a basePlayer

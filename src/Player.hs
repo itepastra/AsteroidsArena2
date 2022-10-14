@@ -1,8 +1,9 @@
 module Player where
-import Physics (PhysicsObject (..), HasPhysics (..), accelerate, move, TimeStep)
-import VectorCalc (Vector, V2Math (..))
+
 import Bullet (Bullet (Bullet))
-import Rotation (Rotate (..), rot, Angle)
+import Physics (HasPhysics (..), PhysicsObject (..), TimeStep, accelerate, move, Acceleration)
+import Rotation (Angle, Rotate (..), rot)
+import VectorCalc (V2Math (..), Vector)
 
 type Lives = Int
 
@@ -17,11 +18,12 @@ instance HasPhysics Player where
 
 instance Rotate Player where
   rotate a (Player phys l d an) = Player phys l (rot a d) (an - a)
-  
-lookAccel :: TimeStep -> Player -> Player
-lookAccel dt p@(Player _ _ d _) = accelStep p dt d
+
+lookAccel :: TimeStep -> Player -> Acceleration
+lookAccel dt p@(Player _ _ d _) = (750 * dt) |*| d
 
 shoot :: Player -> Bullet
 shoot (Player phys _ ld _) = Bullet (PhysObj (position phys |+| pv) (velocity phys |+| bv) 0.1) 5
-  where bv = 34 |*| ld
-        pv = 3 |*| ld
+  where
+    bv = 34 |*| ld
+    pv = 3 |*| ld

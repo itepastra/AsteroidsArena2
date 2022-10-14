@@ -1,4 +1,3 @@
-
 module Physics where
 
 import VectorCalc (Point, V2Math ((|*|), (|+|)), Vector, (|#|))
@@ -11,9 +10,6 @@ type Acceleration = Vector
 
 type Velocity = Vector
 
-
-
-
 type Dist = Float
 
 type Collides = Bool
@@ -23,7 +19,6 @@ data PhysicsObject = PhysObj
     velocity :: Velocity,
     radius :: Float
   }
-
 
 class HasPhysics a where
   physobj :: a -> PhysicsObject

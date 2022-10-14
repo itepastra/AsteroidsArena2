@@ -11,7 +11,8 @@ main =
     (InWindow "Counter" (900, 900) (0, 0)) -- Or FullScreen
     black -- Background color
     30 -- Frames per second
-    initialState -- Initial state
+    (startState . head $ defaultLevels) -- Initial state
     view -- View function
     input -- Event function
     step -- Step function
+
