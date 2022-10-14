@@ -1,6 +1,7 @@
 module Physics where
 
-import VectorCalc (Point, V2Math ((|*|), (|+|)), Vector, (|#|))
+import VectorCalc (Point, Vector)
+import TypeClasses (V2Math(..))
 
 type TimeStep = Float
 

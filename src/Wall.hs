@@ -3,7 +3,8 @@ module Wall where
 import Data.Maybe (mapMaybe)
 import Physics (Acceleration, HasPhysics (physobj), PhysicsObject (position))
 import Rotation (Rotate (..), rot)
-import VectorCalc (Point (Point), V2Math (..), Vector)
+import VectorCalc (Point (Point), Vector)
+import TypeClasses (V2Math(..))
 
 type Normal = Vector
 

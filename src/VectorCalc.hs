@@ -3,6 +3,7 @@
 module VectorCalc where
 
 import Prelude hiding (negate)
+import TypeClasses (V2Math (..))
 
 -- import Graphics.Gloss.Data.Point (Point)
 -- import Graphics.Gloss.Data.Vector (Vector)
@@ -11,17 +12,6 @@ data Point = Point Float Float
 
 type Vector = Point
 
-class V2Math a where
-  x :: a -> Float
-  y :: a -> Float
-  (|+|) :: V2Math b => a -> b -> a
-  (|*|) :: Float -> a -> a
-  (|-|) :: V2Math b => a -> b -> a
-  fromTuple :: (Float, Float) -> a
-  toTuple :: a -> (Float, Float)
-  negate :: a -> a
-  (|.|) :: V2Math b => a -> b -> Float
-  (|#|) :: V2Math b => a -> b -> Float
 
 instance V2Math Point where
   x :: Point -> Float

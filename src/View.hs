@@ -2,28 +2,49 @@
 --   the game state into a picture
 module View where
 
+import Bullet (Bullet (Bullet))
 import Graphics.Gloss
-import Model
+  ( Path,
+    Picture (Color, Pictures, Polygon, Scale),
+    blank,
+    circleSolid,
+    green,
+    magenta,
+    rotate,
+    translate,
+  )
+import Model (GameState (..), newPlayer)
+import Physics (HasPhysics (physobj), PhysicsObject (PhysObj, position))
 import Player (Player (Player))
-import Physics (PhysicsObject(position))
-import VectorCalc (V2Math(..))
+import Sprites (baseStar, starrySky)
+import TypeClasses (Pictured (..), V2Math (..))
+import VectorCalc (Point (Point))
+import qualified TypeClasses as VectorCalc
 
-view :: GameState ->  Picture
+view :: GameState -> Picture
 view = viewPure
 
 viewPure :: GameState -> Picture
-viewPure gs = Pictures [viewPlayer (player gs), viewPlayer newPlayer]
--- viewPure gstate = case ShowNothing gstate of
---   ShowNothing   -> blank
---   ShowANumber n -> color green (text (show n))
---   ShowAChar   c -> color green (text [c])
+viewPure gs@(GameState {player = p}) = Pictures (viewBackground gs :  [moveWorldToCenter (physobj p) $ Pictures [viewPlayer gs, viewBullets gs, viewAsteroids gs]])
+viewPure _ = blank
 
-playerPath :: Path
-playerPath = [(0,4), (4,-3), (0, 0), (-4, -3)]
+viewBackground :: GameState -> Picture
+viewBackground (GameState {player = p, starPositions = sps}) = starrySky $ map ((|-| position (physobj p)) . fromTuple) sps
+viewBackground _ = blank
 
-basePlayer :: Picture
-basePlayer = Color magenta $ Scale 5 5 $ Polygon playerPath
+viewPlayer :: GameState -> Picture
+viewPlayer (GameState {player = p}) = getGlobalPicture p
+viewPlayer _ = blank
 
-viewPlayer :: Player -> Picture
-viewPlayer (Player phy _ _ a) = translate (x t) (y t) $ rotate a basePlayer
-    where t = position phy
+viewAsteroids :: GameState -> Picture
+viewAsteroids (GameState {player = p, asteroids = as}) = (Pictures . map getGlobalPicture) as
+viewAsteroids _ = blank
+
+viewBullets :: GameState -> Picture
+viewBullets (GameState {player = p, bullets = as}) = (Pictures . map getGlobalPicture) as
+viewBullets _ = blank
+
+type CamOffset = Point
+
+moveWorldToCenter :: PhysicsObject -> Picture -> Picture
+moveWorldToCenter (PhysObj {position = t}) = translate (-x t) (-y t)

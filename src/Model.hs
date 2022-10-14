@@ -6,13 +6,17 @@
 --   which represent the state of the game
 module Model where
 
-import Asteroid (Asteroid)
+import Asteroid (Asteroid (Asteroid))
 import Bullet (Bullet)
+import Constants (asteroidRadius, playerRadius)
 import Data.Set (Set, empty)
+import qualified Graphics.Gloss as Gloss
 import Graphics.Gloss.Interface.IO.Game (Key)
 import Physics (PhysicsObject (..))
 import Player (Lives, Player (Player))
-import VectorCalc (V2Math (fromTuple))
+import System.Random (RandomGen, StdGen)
+import System.Random.Stateful (mkStdGen)
+import VectorCalc (Point (Point))
 import Wall (Wall)
 
 data InfoToShow
@@ -32,13 +36,35 @@ data GameState
         asteroids :: [Asteroid],
         bullets :: [Bullet],
         walls :: [Wall],
-        keys :: Set Key
+        keys :: Set Key,
+        rand :: StdGen,
+        starPositions :: [Gloss.Point],
+        timeSinceLastShot :: Float
       }
   | DeathState {lives :: Lives}
   | MenuState {levels :: [Level]}
 
 newPlayer :: Player
-newPlayer = Player (PhysObj (fromTuple (0, 0)) (fromTuple (0, 0)) 50) 0 (fromTuple (0, 1)) 0
+newPlayer = Player (PhysObj (Point 0 0) (Point 0 0) playerRadius) 0 (Point 0 1) 0
+
+gameStateFromLevel :: StdGen -> [Gloss.Point] -> Level -> GameState
+gameStateFromLevel r pts (Level {startState = gs}) = gs {rand = r, starPositions = pts}
 
 defaultLevels :: [Level]
-defaultLevels = [Level {name = "empty", startState = GameState 0 newPlayer [] [] [] empty}]
+defaultLevels =
+  [ Level
+      { name = "empty",
+        startState =
+          GameState
+            { elapsedTime = 0,
+              player = newPlayer,
+              asteroids = [Asteroid (PhysObj (Point 160 0) (Point 0 0) asteroidRadius) 1],
+              bullets = [],
+              walls = [],
+              keys = empty,
+              rand = mkStdGen 0,
+              starPositions = [],
+              timeSinceLastShot = 0
+            }
+      }
+  ]

@@ -1,28 +1,32 @@
 /home/noa/programming/asteroidsArena/src/Controller.hs:
-  hash: aeb26a569ad5ad60c42ab53851f81c0e14a1669104aa379d37de755e7e31df2c
+  hash: 33b7331f3f8527e9d1d9e562aec273efa593f79c4240f3559cc2e7d75de18f0a
 /home/noa/programming/asteroidsArena/src/VectorCalc.hs:
-  hash: 62f5bdd236c3f2c812d000e57d40a5c5f5fc472bfa22f9cc87fcd09c92ede08d
+  hash: 2d3a0a5c275a1b212bce915c71393fe024082bfd3a0a5f25d857234b220deb95
 /home/noa/programming/asteroidsArena/src/Rotation.hs:
-  hash: a9767513500036f5ae6e4aed397886d6a7e321dc42570d308ba36f2e4a22c46d
+  hash: 23fb4418e6326bd93113cce7db806f2e74e1a4f6b42183d490110031515f3fdc
 /home/noa/programming/asteroidsArena/src/View.hs:
-  hash: 7b487a836f5ed1db091d4b7662cd117c8bdee7c09fa61f775644b1ecc3a7a45b
+  hash: 4006d5c4e623d3bc4f6f3698ea3d8974cf83022d511f8a78bba06499625322ca
 /home/noa/programming/asteroidsArena/src/Player.hs:
-  hash: 3ee9cda62297d694035527a377f46d6ac50db0eef584c20b7653934bb94f931b
+  hash: cbc6aa6ecf16fc5654adcbf5213f3ed189276abe8536712832fbed96eb423cda
 /home/noa/programming/asteroidsArena/src/Physics.hs:
-  hash: 24864931a1307e0cfb1be57e7daf8723072aa27235dfb227d2ecc0edcc8f9cb5
+  hash: 057e29ba093ce10eec264bd472560e525eca1d07c9c96f42d60e57e2ce13e330
 /home/noa/programming/asteroidsArena/src/Asteroid.hs:
-  hash: 18e117a3c72fcf4d71a024a6c8bf9e8caaad05c50ba21b3614c45f15fd05f7d9
+  hash: 6670c414a56b483d46f2607a4882e3523fae9183bbdab70dedc96245f9a37c7b
 /home/noa/programming/asteroidsArena/src/Wall.hs:
-  hash: 9db460fd157e3e352216ec81487e0c22c1b59fa2a78695ef17f442f2fe8f3bcd
+  hash: b2ac319be66190c19ad626388a7a077d993ae0dd4211a967354fa208550de1e6
 /home/noa/programming/asteroidsArena/src/Bullet.hs:
-  hash: 539c561191a75e08248560ec544e071f846402e8cbb7693510aeb6b5cab13289
+  hash: 39e3a3b772d33ed46625d0161eb9375493a79e0f022391ae98a4051a5be2d91f
 /home/noa/programming/asteroidsArena/src/Level.hs:
   hash: f59adb5ded478d8f2d2e874da15ef86d01f9e37bcc6693b3df35122c54fbbca9
 /home/noa/programming/asteroidsArena/src/Model.hs:
-  hash: 48b8d3a5beebd7b4e5e9ba8742c6e99f0e412cb58f879f46412e2fa710ed8351
+  hash: 72f4145f6aeaf8283060be95519f00a7d3e83c0db45322d845094cfb6953f993
+/home/noa/programming/asteroidsArena/src/Sprites.hs:
+  hash: 0d250a64c5f2e77283c698988e1234e6f25f2c31e4f7fe7840749eb3b831a13a
 /home/noa/programming/asteroidsArena/asteroidsArena.cabal:
-  hash: 44dde876d75c8ef938200b8ff75358c482514ba6b23e21fcda625f22914f6bd4
+  hash: 64a7c2474e681444f055c026a41a964b0eb526dc8149e412b579429616390657
 /home/noa/programming/asteroidsArena/src/Constants.hs:
-  hash: ea2ca16c55c67c8e04e038bf3695ee9b88b26d46ffbdb00141fdc764a98b5327
+  hash: 089eb412c0b5c70f1581ffa3eedea23ab7f45d718208cadeea56d2b41cd75731
+/home/noa/programming/asteroidsArena/src/TypeClasses.hs:
+  hash: 8e4aafbc02202239e0fa8bc22a0ebf914d60a33aebecc20e7ec61ef39c5cee81
 /home/noa/programming/asteroidsArena/src/Main.hs:
-  hash: e2d2e4001f2198a0d4dd38abae0a36f82290a9f22427f2400cac6c4c3c9bd1ae
+  hash: b9bc0bbad58e007b0b8154c248bb1454e57680332e198f62c70a36ecde739d35
