@@ -20,6 +20,7 @@ import Sprites (baseStar, starrySky)
 import TypeClasses (Pictured (..), V2Math (..))
 import VectorCalc (Point (Point))
 import qualified TypeClasses as VectorCalc
+import qualified Constants
 
 view :: GameState -> Picture
 view = viewPure
@@ -29,7 +30,7 @@ viewPure gs@(GameState {player = p}) = Pictures (viewBackground gs :  [moveWorld
 viewPure _ = blank
 
 viewBackground :: GameState -> Picture
-viewBackground (GameState {player = p, starPositions = sps}) = starrySky $ map ((|-| position (physobj p)) . fromTuple) sps
+viewBackground (GameState {player = p, starPositions = sps}) = starrySky $ map ((|-| (Constants.parallax |*| position (physobj p))) . fromTuple) sps
 viewBackground _ = blank
 
 viewPlayer :: GameState -> Picture

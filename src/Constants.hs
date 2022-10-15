@@ -36,3 +36,6 @@ playerAcceleration = 6000
 
 starAmount :: Int
 starAmount = 37
+
+parallax :: Float
+parallax = 0.5
