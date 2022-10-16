@@ -7,6 +7,7 @@ import VectorCalc (Point (Point))
 import GHC.Float (float2Int)
 import Data.Fixed (mod')
 import Colors (playerColor, bulletColor, asteroidColor, starColor, wallColor)
+import Data.Bifunctor (Bifunctor(bimap))
 
 basePlayer :: Picture
 basePlayer = Color playerColor $ Polygon [(0, 20), (20, -15), (0, 0), (-20, -15)]
@@ -26,5 +27,4 @@ baseWall = Color wallColor $ rectangleUpperSolid 10000 10000
 starrySky :: [Point] -> Picture
 starrySky = translate (-xw/2) (-yh/2) . Pictures . map (\(Point a b) -> translate  (a `mod'` xw) (b `mod'` yh) baseStar)
   where
-    xw = fromIntegral $ fst Constants.pageSize
-    yh = fromIntegral $ snd Constants.pageSize
+    (xw, yh) = bimap fromIntegral fromIntegral Constants.pageSize
