@@ -39,7 +39,9 @@ data GameState
         keys :: Set Key,
         rand :: StdGen,
         starPositions :: [Gloss.Point],
-        timeSinceLastShot :: Float
+        timeSinceLastShot :: Float,
+        timeTillNextAsteroid :: Float,
+        score :: Int
       }
   | DeathState {lives :: Lives}
   | MenuState {levels :: [Level]}
@@ -58,13 +60,15 @@ defaultLevels =
           GameState
             { elapsedTime = 0,
               player = newPlayer,
-              asteroids = [Asteroid (PhysObj (Point 160 0) (Point 0 0) asteroidRadius) 1],
+              asteroids = [],
               bullets = [],
-              walls = [Wall (Point 0 400) (Point 0 (-1)) 300 180, Wall (Point (-400) 0) (Point 1 0) 300 (-90), Wall (Point 0 (-400)) (Point 0 1) 300 0, Wall (Point 400 0) (Point (-1) 0) 300 90],
+              walls = [Wall (Point 0 400) (Point 0 (-1)) 450 180, Wall (Point (-400) 0) (Point 1 0) 450 (-90), Wall (Point 0 (-400)) (Point 0 1) 450 0, Wall (Point 400 0) (Point (-1) 0) 450 90],
               keys = empty,
               rand = mkStdGen 0,
               starPositions = [],
-              timeSinceLastShot = 0
+              timeSinceLastShot = 0,
+              timeTillNextAsteroid = 0,
+              score = 0
             }
       }
   ]

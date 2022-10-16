@@ -1,8 +1,7 @@
 module Constants where
 
-
 asteroidDespawnRange2 :: Float
-asteroidDespawnRange2 = 500000
+asteroidDespawnRange2 =  fromIntegral (fst pageSize ^ 2 + snd pageSize ^ 2) * 3
 
 pageSize :: (Int, Int)
 pageSize = (900, 900)
@@ -29,13 +28,20 @@ playerRadius :: Float
 playerRadius = 25
 
 asteroidRadius :: Float
-asteroidRadius = 40
+asteroidRadius = 7
 
 playerAcceleration :: Float
-playerAcceleration = 100
+playerAcceleration = 300
 
 starAmount :: Int
-starAmount = 37
+starAmount = 4 * (uncurry (*) pageSize `div` 90000)
 
 parallax :: Float
 parallax = 0.5
+
+playerFrictionExponent :: Float
+playerFrictionExponent = 0.6
+
+spawnDistance :: Float
+spawnDistance = sqrt (fromIntegral (((fst pageSize `div` 2) ^ 2) + ((snd pageSize `div` 2) ^ 2)))
+-- spawnDistance = 300

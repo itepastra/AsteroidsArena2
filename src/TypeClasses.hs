@@ -13,6 +13,7 @@ class V2Math a where
   negate :: a -> a
   (|.|) :: V2Math b => a -> b -> Float
   (|#|) :: V2Math b => a -> b -> Float
+  normalize :: a -> a
 
 
 class Pictured a where

@@ -2,8 +2,8 @@
 
 module VectorCalc where
 
-import Prelude hiding (negate)
 import TypeClasses (V2Math (..))
+import Prelude hiding (negate)
 
 -- import Graphics.Gloss.Data.Point (Point)
 -- import Graphics.Gloss.Data.Vector (Vector)
@@ -11,7 +11,6 @@ import TypeClasses (V2Math (..))
 data Point = Point Float Float
 
 type Vector = Point
-
 
 instance V2Math Point where
   x :: Point -> Float
@@ -34,3 +33,5 @@ instance V2Math Point where
   a |.| b = x a * x b + y a * y b
   (|#|) :: V2Math b => Point -> b -> Float
   a |#| b = c |.| c where c = a |-| b
+  normalize :: Point -> Point
+  normalize a = (1 / sqrt (a |.| a)) |*| a

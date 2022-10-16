@@ -5,13 +5,13 @@ module View where
 import Bullet (Bullet (Bullet))
 import Graphics.Gloss
   ( Path,
-    Picture (Color, Pictures, Polygon, Scale),
+    Picture (Color, Pictures, Polygon, Scale, Text),
     blank,
     circleSolid,
     green,
     magenta,
     rotate,
-    translate,
+    translate, white,
   )
 import Model (GameState (..), newPlayer)
 import Physics (HasPhysics (physobj), PhysicsObject (PhysObj, position))
@@ -26,8 +26,12 @@ view :: GameState -> Picture
 view = viewPure
 
 viewPure :: GameState -> Picture
-viewPure gs@(GameState {player = p}) = Pictures (viewBackground gs :  [moveWorldToCenter (physobj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs]])
+viewPure gs@(GameState {player = p}) = Pictures (viewBackground gs :  Pictures [moveWorldToCenter (physobj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs]] : [viewHud gs])
 viewPure _ = blank
+
+viewHud :: GameState -> Picture
+viewHud (GameState {score = s}) = Color white $ translate (-430) 400 $ Scale 0.3 0.3 $ Text ("score: " ++ show s)
+viewHud _ = blank
 
 viewBackground :: GameState -> Picture
 viewBackground (GameState {player = p, starPositions = sps}) = starrySky $ map ((|-| (Constants.parallax |*| position (physobj p))) . fromTuple) sps

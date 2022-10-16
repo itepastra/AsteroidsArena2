@@ -7,6 +7,7 @@ import Model
 import System.Random (getStdGen, StdGen, Random (randomRs))
 import View
 import qualified VectorCalc
+import qualified Data.Bifunctor
 
 main :: IO ()
 main =
@@ -23,4 +24,4 @@ main =
       step -- Step function
 
 genStarPositions :: StdGen -> Int -> IO [(Float, Float)]
-genStarPositions ra amt = return $ take amt $ randomRs ((0,0), (900, 900)) ra 
+genStarPositions ra amt = return $ take amt $ randomRs ((0,0), Data.Bifunctor.bimap fromIntegral fromIntegral pageSize ) ra

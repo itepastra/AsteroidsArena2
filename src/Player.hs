@@ -1,38 +1,40 @@
 module Player where
 
 import Bullet (Bullet (Bullet))
-import Physics (HasPhysics (..), PhysicsObject (..), TimeStep, accelerate, move, Acceleration)
-import Rotation (Angle, Rotate (..), rot)
-import VectorCalc (Vector)
-import Constants (bulletSpeed, bulletInitialOffset, bulletLifetime, playerAcceleration)
-import TypeClasses (Pictured (..), V2Math (..))
+import Constants (bulletInitialOffset, bulletLifetime, bulletSpeed, playerAcceleration, playerFrictionExponent)
 import Graphics.Gloss (translate)
-import Sprites (basePlayer)
 import qualified Graphics.Gloss as Gloss
+import Physics (Acceleration, HasPhysics (..), PhysicsObject (..), TimeStep, accelerate, move)
+import Rotation (Angle, Rotate (..), rot)
+import Sprites (basePlayer)
+import TypeClasses (Pictured (..), V2Math (..))
+import VectorCalc (Vector)
 
 type Lives = Int
 
 type LookDirection = Vector
 
-data Player = Player PhysicsObject Lives LookDirection Angle
+data Player = Player {phys :: PhysicsObject, lives :: Lives, lookDirection :: LookDirection, lookAngle :: Angle}
 
 instance HasPhysics Player where
-  physobj (Player p _ _ _) = p
-  moveStep (Player phy l d a) dt = Player (move phy dt) l d a
-  accelStep (Player phy l d an) dt a = Player (accelerate phy dt a) l d an
+  physobj = phys
+  moveStep p dt = p {phys = move (phys p) dt}
+  accelStep p dt a = p {phys = accelerate (phys p) dt a}
 
 instance Rotate Player where
-  rotate a (Player phys l d an) = Player phys l (rot a d) (an - a)
+  rotate a p = p {lookDirection = rot a (lookDirection p), lookAngle = lookAngle p - a}
 
 instance Pictured Player where
-  getGlobalPicture (Player (PhysObj {position=t}) _ _ a) = translate (x t) (y t) $ Gloss.rotate a basePlayer
+  getGlobalPicture (Player {phys = (PhysObj {position = t}), lookAngle = a}) = translate (x t) (y t) $ Gloss.rotate a basePlayer
 
-
-lookAccel :: TimeStep -> Player -> Acceleration
-lookAccel dt p@(Player _ _ d _) = playerAcceleration |*| d
+lookAccel :: Player -> Acceleration
+lookAccel p = Constants.playerAcceleration |*| lookDirection p
 
 shoot :: Player -> Bullet
-shoot (Player phys _ ld _) = Bullet (PhysObj (position phys |+| pv) (velocity phys |+| bv) 20) bulletLifetime
+shoot (Player {phys = phy, lookDirection = ld}) = Bullet (PhysObj (position phy |+| pv) (velocity phy |+| bv) 20) bulletLifetime
   where
     bv = bulletSpeed |*| ld
     pv = bulletInitialOffset |*| ld
+
+friction :: TimeStep -> Player -> Player
+friction ts p@(Player phy l d an) = p {phys = (phy {velocity = (playerFrictionExponent ** ts) |*| velocity phy})}
