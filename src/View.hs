@@ -26,7 +26,7 @@ view :: GameState -> Picture
 view = viewPure
 
 viewPure :: GameState -> Picture
-viewPure gs@(GameState {player = p}) = Pictures (viewBackground gs :  [moveWorldToCenter (physobj p) $ Pictures [viewPlayer gs, viewBullets gs, viewAsteroids gs]])
+viewPure gs@(GameState {player = p}) = Pictures (viewBackground gs :  [moveWorldToCenter (physobj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs]])
 viewPure _ = blank
 
 viewBackground :: GameState -> Picture
@@ -38,12 +38,16 @@ viewPlayer (GameState {player = p}) = getGlobalPicture p
 viewPlayer _ = blank
 
 viewAsteroids :: GameState -> Picture
-viewAsteroids (GameState {player = p, asteroids = as}) = (Pictures . map getGlobalPicture) as
+viewAsteroids (GameState {asteroids = as}) = (Pictures . map getGlobalPicture) as
 viewAsteroids _ = blank
 
 viewBullets :: GameState -> Picture
-viewBullets (GameState {player = p, bullets = as}) = (Pictures . map getGlobalPicture) as
+viewBullets (GameState {bullets = as}) = (Pictures . map getGlobalPicture) as
 viewBullets _ = blank
+
+viewWalls :: GameState -> Picture
+viewWalls (GameState {walls = ws}) = (Pictures . map getGlobalPicture) ws
+viewWalls _ = blank
 
 type CamOffset = Point
 

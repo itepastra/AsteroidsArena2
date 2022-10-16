@@ -29,7 +29,7 @@ instance Pictured Player where
 
 
 lookAccel :: TimeStep -> Player -> Acceleration
-lookAccel dt p@(Player _ _ d _) = (playerAcceleration * dt) |*| d
+lookAccel dt p@(Player _ _ d _) = playerAcceleration |*| d
 
 shoot :: Player -> Bullet
 shoot (Player phys _ ld _) = Bullet (PhysObj (position phys |+| pv) (velocity phys |+| bv) 20) bulletLifetime

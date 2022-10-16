@@ -14,7 +14,7 @@ shootingInterval :: Float
 shootingInterval = 0.15
 
 bulletLifetime :: Float
-bulletLifetime = 3.0
+bulletLifetime = 40.0
 
 bulletSpeed :: Float
 bulletSpeed = 400
@@ -32,7 +32,7 @@ asteroidRadius :: Float
 asteroidRadius = 40
 
 playerAcceleration :: Float
-playerAcceleration = 6000
+playerAcceleration = 100
 
 starAmount :: Int
 starAmount = 37

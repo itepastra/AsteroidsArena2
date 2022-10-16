@@ -17,7 +17,7 @@ import Player (Lives, Player (Player))
 import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
 import VectorCalc (Point (Point))
-import Wall (Wall)
+import Wall (Wall (Wall))
 
 data InfoToShow
   = ShowNothing
@@ -60,7 +60,7 @@ defaultLevels =
               player = newPlayer,
               asteroids = [Asteroid (PhysObj (Point 160 0) (Point 0 0) asteroidRadius) 1],
               bullets = [],
-              walls = [],
+              walls = [Wall (Point 0 400) (Point 0 (-1)) 300 180, Wall (Point (-400) 0) (Point 1 0) 300 (-90), Wall (Point 0 (-400)) (Point 0 1) 300 0, Wall (Point 400 0) (Point (-1) 0) 300 90],
               keys = empty,
               rand = mkStdGen 0,
               starPositions = [],
