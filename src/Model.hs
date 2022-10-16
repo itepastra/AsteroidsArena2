@@ -38,7 +38,7 @@ data GameState
         walls :: [Wall],
         keys :: Set Key,
         rand :: StdGen,
-        starPositions :: [Gloss.Point],
+        starPositions :: [[Gloss.Point]],
         timeSinceLastShot :: Float,
         timeTillNextAsteroid :: Float,
         score :: Int
@@ -49,7 +49,7 @@ data GameState
 newPlayer :: Player
 newPlayer = Player (PhysObj (Point 0 0) (Point 0 0) playerRadius) 0 (Point 0 1) 0
 
-gameStateFromLevel :: StdGen -> [Gloss.Point] -> Level -> GameState
+gameStateFromLevel :: StdGen -> [[Gloss.Point]] -> Level -> GameState
 gameStateFromLevel r pts (Level {startState = gs}) = gs {rand = r, starPositions = pts}
 
 defaultLevels :: [Level]
@@ -65,7 +65,7 @@ defaultLevels =
               walls = [Wall (Point 0 400) (Point 0 (-1)) 450 180, Wall (Point (-400) 0) (Point 1 0) 450 (-90), Wall (Point 0 (-400)) (Point 0 1) 450 0, Wall (Point 400 0) (Point (-1) 0) 450 90],
               keys = empty,
               rand = mkStdGen 0,
-              starPositions = [],
+              starPositions = [[]],
               timeSinceLastShot = 0,
               timeTillNextAsteroid = 0,
               score = 0

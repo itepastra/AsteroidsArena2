@@ -1,13 +1,13 @@
 module Sprites where
 
+import Colors (asteroidColor, bulletColor, playerColor, starColor, wallColor)
 import qualified Constants
-import Graphics.Gloss.Data.Picture (Picture (..), circleSolid, scale, translate, lineLoop, rectangleUpperSolid)
+import Data.Bifunctor (Bifunctor (bimap))
+import Data.Fixed (mod')
+import GHC.Float (float2Int)
+import Graphics.Gloss.Data.Picture (Picture (..), circleSolid, lineLoop, rectangleUpperSolid, scale, translate)
 import System.Random (StdGen)
 import VectorCalc (Point (Point))
-import GHC.Float (float2Int)
-import Data.Fixed (mod')
-import Colors (playerColor, bulletColor, asteroidColor, starColor, wallColor)
-import Data.Bifunctor (Bifunctor(bimap))
 
 basePlayer :: Picture
 basePlayer = Color playerColor $ Polygon [(0, 20), (20, -15), (0, 0), (-20, -15)]
@@ -25,6 +25,6 @@ baseWall :: Picture
 baseWall = Color wallColor $ rectangleUpperSolid 10000 10000
 
 starrySky :: [Point] -> Picture
-starrySky = translate (-xw/2) (-yh/2) . Pictures . map (\(Point a b) -> translate  (a `mod'` xw) (b `mod'` yh) baseStar)
+starrySky = translate (-xw / 2) (-yh / 2) . Pictures . map (\(Point a b) -> translate (a `mod'` xw) (b `mod'` yh) baseStar)
   where
     (xw, yh) = bimap fromIntegral fromIntegral Constants.pageSize

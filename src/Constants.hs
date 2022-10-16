@@ -33,11 +33,11 @@ asteroidRadius = 7
 playerAcceleration :: Float
 playerAcceleration = 300
 
-starAmount :: Int
-starAmount = 4 * (uncurry (*) pageSize `div` 90000)
+starAmount :: [Int]
+starAmount = [1 * (uncurry (*) pageSize `div` 90000),1 * (uncurry (*) pageSize `div` 90000),1 * (uncurry (*) pageSize `div` 90000),1 * (uncurry (*) pageSize `div` 90000)]
 
-parallax :: Float
-parallax = 0.5
+parallax :: [Float]
+parallax = [0.5, 0.3, 0.1, 0.01]
 
 playerFrictionExponent :: Float
 playerFrictionExponent = 0.6

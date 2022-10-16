@@ -34,7 +34,10 @@ viewHud (GameState {score = s}) = Color white $ translate (-430) 400 $ Scale 0.3
 viewHud _ = blank
 
 viewBackground :: GameState -> Picture
-viewBackground (GameState {player = p, starPositions = sps}) = starrySky $ map ((|-| (Constants.parallax |*| position (physobj p))) . fromTuple) sps
+viewBackground (GameState {player = p, starPositions = sps}) = Pictures (zipWith (\ pax sp
+  -> (starrySky
+        . map ((|-| (pax |*| position (physobj p))) . fromTuple))
+       sp) Constants.parallax sps)
 viewBackground _ = blank
 
 viewPlayer :: GameState -> Picture
