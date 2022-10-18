@@ -1,4 +1,5 @@
 module Constants where
+import Graphics.Gloss (Path, Picture, polygon)
 
 asteroidDespawnRange2 :: Float
 asteroidDespawnRange2 = fromIntegral (fst pageSize ^ 2 + snd pageSize ^ 2) * 3
@@ -62,3 +63,6 @@ babyAsteroidMinimumRotation = -10
 
 babyAsteroidMaximumRotation :: Float
 babyAsteroidMaximumRotation = 10
+
+asteroidDraw :: Path -> Picture
+asteroidDraw = polygon
