@@ -34,14 +34,26 @@ playerAcceleration :: Float
 playerAcceleration = 300
 
 starAmount :: [Int]
-starAmount = [1 * (uncurry (*) pageSize `div` 90000),1 * (uncurry (*) pageSize `div` 90000),1 * (uncurry (*) pageSize `div` 90000),1 * (uncurry (*) pageSize `div` 90000)]
+starAmount = map (*  (uncurry (*) pageSize `div` 90000))  [1..]
 
 parallax :: [Float]
-parallax = [0.5, 0.3, 0.1, 0.01]
+parallax = [0.333, 0.25, 0.20, 0.16666, 0.1428]
+
 
 playerFrictionExponent :: Float
 playerFrictionExponent = 0.6
 
 spawnDistance :: Float
 spawnDistance = sqrt (fromIntegral (((fst pageSize `div` 2) ^ 2) + ((snd pageSize `div` 2) ^ 2)))
--- spawnDistance = 300
+
+asteroidSpawnAverageInterval :: Float
+asteroidSpawnAverageInterval = 0.5
+
+playerRotateSpeed :: Float
+playerRotateSpeed = 180
+
+babyAsteroidMinimumSpeed :: Float
+babyAsteroidMinimumSpeed = 10
+
+babyAsteroidMaximumSpeed :: Float
+babyAsteroidMaximumSpeed = 50

@@ -10,11 +10,11 @@ import Sprites (basePlayer)
 import TypeClasses (Pictured (..), V2Math (..))
 import VectorCalc (Vector)
 
-type Lives = Int
+type HealthPoints = Float
 
 type LookDirection = Vector
 
-data Player = Player {phys :: PhysicsObject, lives :: Lives, lookDirection :: LookDirection, lookAngle :: Angle}
+data Player = Player {phys :: PhysicsObject, hp :: HealthPoints, lookDirection :: LookDirection, lookAngle :: Angle}
 
 instance HasPhysics Player where
   physobj = phys
@@ -35,6 +35,12 @@ shoot (Player {phys = phy, lookDirection = ld}) = Bullet (PhysObj (position phy 
   where
     bv = bulletSpeed |*| ld
     pv = bulletInitialOffset |*| ld
+
+damage :: Player -> Float -> Player
+damage p d = p {hp = hp p - d}
+
+isDead :: Player -> Bool
+isDead (Player {hp = h}) = h <= 0
 
 friction :: TimeStep -> Player -> Player
 friction ts p@(Player phy l d an) = p {phys = (phy {velocity = (playerFrictionExponent ** ts) |*| velocity phy})}

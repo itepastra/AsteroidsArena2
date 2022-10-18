@@ -13,7 +13,7 @@ import Model (GameState (..))
 import Physics (HasPhysics (accelStep, moveStep, physobj), PhysicsObject (PhysObj, position), checkCollision)
 import Player (Player (..), friction, lookAccel, shoot)
 import Rotation (rotate)
-import System.Random ()
+import System.Random (Random (randomRs), StdGen, split)
 import TypeClasses (V2Math (..))
 import VectorCalc (Point (Point))
 import Wall (totalAcceleration)
@@ -28,7 +28,7 @@ step secs gstate =
       timeSinceLastShot = tsl,
       walls = nw,
       timeTillNextAsteroid = ttna,
-      rand = newrand,
+      rand = newnewrand,
       score = snew
     }
   where
@@ -37,8 +37,8 @@ step secs gstate =
     np = rotate (rotspeed * secs) . friction secs . (\b -> (b `accelStep` secs) ((if member (Char 'w') (keys gstate) then lookAccel b else Point 0 0) |+| totalAcceleration b (walls gstate))) . (`moveStep` secs) $ player gstate
     nw = map (rotate (2 * secs)) (walls gstate)
     rotspeed
-      | member (Char 'a') (keys gstate) = 180
-      | member (Char 'd') (keys gstate) = -180
+      | member (Char 'a') (keys gstate) = Constants.playerRotateSpeed
+      | member (Char 'd') (keys gstate) = -Constants.playerRotateSpeed
       | otherwise = 0
     spawnedBullet = [shoot np | member (SpecialKey KeySpace) (keys gstate) && timeSinceLastShot gstate >= Constants.shootingInterval]
     tsl = case spawnedBullet of
@@ -46,14 +46,16 @@ step secs gstate =
       _ -> 0
     (tnb, tna, da) = wahtot nb na
     (newrand, rna, ttna) = if timeTillNextAsteroid gstate <= 0 then (\(a, b, c) -> (a, b : tna, c)) $ genRandomAsteroid (rand gstate) (player gstate) else (rand gstate, tna, timeTillNextAsteroid gstate - secs)
-    rrna = concatMap (fst . flip getChildAsteroids (rand gstate)) da ++ rna -- scanr ofzo gebruiken om de random state door te geven
-    snew = score gstate + length da 
+    rrna = concatMap (uncurry getChildAsteroids) (zip (randomRs ((0, Constants.babyAsteroidMinimumSpeed), (120, Constants.babyAsteroidMaximumSpeed)) (rand gstate)) da) ++ rna
+    snew = score gstate + length da
+    newnewrand = snd (split newrand)
 
 wahtot :: (HasPhysics a, HasPhysics b) => [a] -> [b] -> ([a], [b], [b])
 wahtot [] [] = ([], [], [])
 wahtot bs [] = (bs, [], [])
 wahtot [] as = ([], as, [])
-wahtot bs as = (\(bs, as) -> (bs, mapMaybe fst as, mapMaybe snd as)) 
+wahtot bs as =
+  (\(bs, as) -> (bs, mapMaybe fst as, mapMaybe snd as))
     (filter (\b -> not $ any (checkCollision b) as) bs, map (\a -> if any (checkCollision a) bs then (Nothing, Just a) else (Just a, Nothing)) as)
 
 -- ######### GEDAAN ##########
@@ -72,8 +74,7 @@ wahtot bs as = (\(bs, as) -> (bs, mapMaybe fst as, mapMaybe snd as))
 -- ######### TE DOEN ##########
 -- check collisions between player and asteroids
 -- check collisions player and bullets
--- fix baby asteroid spawning
-
+-- fix baby asteroid spawning'
 
 input :: Event -> GameState -> GameState
 input (EventKey k Down _ _) g = g {keys = insert k (keys g)}

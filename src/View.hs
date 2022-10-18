@@ -11,7 +11,7 @@ import Graphics.Gloss
     green,
     magenta,
     rotate,
-    translate, white,
+    translate, white, scale,
   )
 import Model (GameState (..), newPlayer)
 import Physics (HasPhysics (physobj), PhysicsObject (PhysObj, position))
@@ -35,7 +35,7 @@ viewHud _ = blank
 
 viewBackground :: GameState -> Picture
 viewBackground (GameState {player = p, starPositions = sps}) = Pictures (zipWith (\ pax sp
-  -> (starrySky
+  -> ( starrySky pax
         . map ((|-| (pax |*| position (physobj p))) . fromTuple))
        sp) Constants.parallax sps)
 viewBackground _ = blank
