@@ -13,7 +13,7 @@ import Data.Set (Set, empty)
 import qualified Graphics.Gloss as Gloss
 import Graphics.Gloss.Interface.IO.Game (Key)
 import Physics (PhysicsObject (..))
-import Player (Lives, Player (Player))
+import Player (HealthPoints, Player (Player))
 import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
 import VectorCalc (Point (Point))
@@ -43,11 +43,11 @@ data GameState
         timeTillNextAsteroid :: Float,
         score :: Int
       }
-  | DeathState {lives :: Lives}
+  | DeathState {score :: Int}
   | MenuState {levels :: [Level]}
 
 newPlayer :: Player
-newPlayer = Player (PhysObj (Point 0 0) (Point 0 0) playerRadius) 0 (Point 0 1) 0
+newPlayer = Player (PhysObj (Point 0 0) (Point 0 0) playerRadius) 100 (Point 0 1) 0
 
 gameStateFromLevel :: StdGen -> [[Gloss.Point]] -> Level -> GameState
 gameStateFromLevel r pts (Level {startState = gs}) = gs {rand = r, starPositions = pts}

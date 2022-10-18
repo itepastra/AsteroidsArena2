@@ -2,7 +2,7 @@
 --   in response to time and user input
 module Controller where
 
-import Asteroid (Asteroid (Asteroid), genRandomAsteroid, getChildAsteroids)
+import Asteroid (Asteroid (Asteroid, phys, rotateSpeed), genRandomAsteroid, getChildAsteroids)
 import Bullet (Bullet (..), updateLifetime)
 import qualified Constants
 import Data.Maybe (mapMaybe)
@@ -33,7 +33,7 @@ step secs gstate =
     }
   where
     nb = spawnedBullet ++ map ((\b -> updateLifetime secs . (b `accelStep` secs) . flip totalAcceleration (walls gstate) $ b) . (`moveStep` secs)) (filter (\(Bullet _ l) -> l > 0) (bullets gstate))
-    na = map (`moveStep` secs) (filter (\(Asteroid (PhysObj {position = p}) _) -> p |#| (position . physobj . player) gstate <= Constants.asteroidDespawnRange2) (asteroids gstate))
+    na = map ((\a -> rotate (secs * rotateSpeed a) a) . (`moveStep` secs)) (filter (\(Asteroid {Asteroid.phys = (PhysObj {position = p})}) -> p |#| (position . physobj . player) gstate <= Constants.asteroidDespawnRange2) (asteroids gstate))
     np = rotate (rotspeed * secs) . friction secs . (\b -> (b `accelStep` secs) ((if member (Char 'w') (keys gstate) then lookAccel b else Point 0 0) |+| totalAcceleration b (walls gstate))) . (`moveStep` secs) $ player gstate
     nw = map (rotate (2 * secs)) (walls gstate)
     rotspeed
@@ -46,9 +46,10 @@ step secs gstate =
       _ -> 0
     (tnb, tna, da) = wahtot nb na
     (newrand, rna, ttna) = if timeTillNextAsteroid gstate <= 0 then (\(a, b, c) -> (a, b : tna, c)) $ genRandomAsteroid (rand gstate) (player gstate) else (rand gstate, tna, timeTillNextAsteroid gstate - secs)
-    rrna = concatMap (uncurry getChildAsteroids) (zip (randomRs ((0, Constants.babyAsteroidMinimumSpeed), (120, Constants.babyAsteroidMaximumSpeed)) (rand gstate)) da) ++ rna
+    rrna = concatMap (uncurry getChildAsteroids) (zip (randomRs ((0, Constants.babyAsteroidMinimumSpeed, Constants.babyAsteroidMinimumRotation), (120, Constants.babyAsteroidMaximumSpeed,Constants.babyAsteroidMaximumRotation)) (rand gstate)) da) ++ rna
     snew = score gstate + length da
     newnewrand = snd (split newrand)
+
 
 wahtot :: (HasPhysics a, HasPhysics b) => [a] -> [b] -> ([a], [b], [b])
 wahtot [] [] = ([], [], [])

@@ -1,16 +1,16 @@
 module Constants where
 
 asteroidDespawnRange2 :: Float
-asteroidDespawnRange2 =  fromIntegral (fst pageSize ^ 2 + snd pageSize ^ 2) * 3
+asteroidDespawnRange2 = fromIntegral (fst pageSize ^ 2 + snd pageSize ^ 2) * 3
 
 pageSize :: (Int, Int)
-pageSize = (900, 900)
+pageSize = (1600, 900)
 
 fps :: Int
 fps = 60
 
 shootingInterval :: Float
-shootingInterval = 0.15
+shootingInterval = 0.25
 
 bulletLifetime :: Float
 bulletLifetime = 40.0
@@ -34,11 +34,10 @@ playerAcceleration :: Float
 playerAcceleration = 300
 
 starAmount :: [Int]
-starAmount = map (*  (uncurry (*) pageSize `div` 90000))  [1..]
+starAmount = map (* (uncurry (*) pageSize `div` 90000)) [1 ..]
 
 parallax :: [Float]
-parallax = [0.333, 0.25, 0.20, 0.16666, 0.1428]
-
+parallax = take 5 $ drop 2 $ map (1/) [1..]
 
 playerFrictionExponent :: Float
 playerFrictionExponent = 0.6
@@ -47,7 +46,7 @@ spawnDistance :: Float
 spawnDistance = sqrt (fromIntegral (((fst pageSize `div` 2) ^ 2) + ((snd pageSize `div` 2) ^ 2)))
 
 asteroidSpawnAverageInterval :: Float
-asteroidSpawnAverageInterval = 0.5
+asteroidSpawnAverageInterval = 5
 
 playerRotateSpeed :: Float
 playerRotateSpeed = 180
@@ -57,3 +56,9 @@ babyAsteroidMinimumSpeed = 10
 
 babyAsteroidMaximumSpeed :: Float
 babyAsteroidMaximumSpeed = 50
+
+babyAsteroidMinimumRotation :: Float
+babyAsteroidMinimumRotation = -10
+
+babyAsteroidMaximumRotation :: Float
+babyAsteroidMaximumRotation = 10
