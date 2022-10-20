@@ -28,4 +28,5 @@ executable asteroids-arena2
                      , Sprites
                      , TypeClasses
                      , Colors
+                     , CoordCalc
   default-language:    Haskell2010

@@ -1,5 +1,6 @@
 module Constants where
-import Graphics.Gloss (Path, Picture, polygon)
+
+import Graphics.Gloss (Path, Picture, lineLoop, polygon)
 
 asteroidDespawnRange2 :: Float
 asteroidDespawnRange2 = fromIntegral (fst pageSize ^ 2 + snd pageSize ^ 2) * 3
@@ -37,8 +38,14 @@ playerAcceleration = 300
 starAmount :: [Int]
 starAmount = map (* (uncurry (*) pageSize `div` 90000)) [1 ..]
 
+parallaxStart :: Int
+parallaxStart = 2
+
+parallaxLayers :: Int
+parallaxLayers = 5
+
 parallax :: [Float]
-parallax = take 5 $ drop 2 $ map (1/) [1..]
+parallax = map ((1 /) . fromIntegral) [parallaxStart .. (parallaxStart + parallaxLayers)]
 
 playerFrictionExponent :: Float
 playerFrictionExponent = 0.6
@@ -63,6 +70,3 @@ babyAsteroidMinimumRotation = -10
 
 babyAsteroidMaximumRotation :: Float
 babyAsteroidMaximumRotation = 10
-
-asteroidDraw :: Path -> Picture
-asteroidDraw = polygon

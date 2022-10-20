@@ -8,7 +8,10 @@ bulletColor :: Color
 bulletColor = green
 
 asteroidColor :: Color
-asteroidColor = cyan
+asteroidColor = makeColor 0 0.8 1.0 0.3
+
+asteroidLineColor :: Color
+asteroidLineColor = makeColor 0 0.8 1.0 1.0
 
 starColor :: Color
 starColor = yellow

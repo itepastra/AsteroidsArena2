@@ -22,8 +22,8 @@ import VectorCalc (Point (Point))
 import qualified TypeClasses as VectorCalc
 import qualified Constants
 
-view :: GameState -> Picture
-view = viewPure
+view :: GameState -> IO Picture
+view = pure . viewPure
 
 viewPure :: GameState -> Picture
 viewPure gs@(GameState {player = p}) = Pictures (viewBackground gs :  Pictures [moveWorldToCenter (physobj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs]] : [viewHud gs])

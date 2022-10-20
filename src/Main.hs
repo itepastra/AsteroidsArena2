@@ -9,13 +9,14 @@ import Model
 import System.Random (Random (randomRs), RandomGen (split), StdGen, getStdGen)
 import qualified VectorCalc
 import View
+import Graphics.Gloss.Interface.IO.Game (playIO)
 
 main :: IO ()
 main =
   do
     randGen <- getStdGen
-    sps <- genStarPositions randGen Constants.starAmount
-    play
+    let sps = genStarPositions randGen Constants.starAmount
+    playIO
       (InWindow "Asteroids Arena 2" Constants.pageSize (0, 0)) -- Or FullScreen
       black -- Background color
       Constants.fps -- Frames per second
@@ -24,5 +25,5 @@ main =
       input -- Event function
       step -- Step function
 
-genStarPositions :: StdGen -> [Int] -> IO [[(Float, Float)]]
-genStarPositions ra amts = return $ zipWith (\amt r -> take amt $ randomRs ((0, 0), Data.Bifunctor.bimap fromIntegral fromIntegral Constants.pageSize) r) amts (iterate' (snd . split) ra)
+genStarPositions :: StdGen -> [Int] -> [[(Float, Float)]]
+genStarPositions ra amts = zipWith (\amt r -> take amt $ randomRs ((0, 0), Data.Bifunctor.bimap fromIntegral fromIntegral Constants.pageSize) r) amts (iterate' (snd . split) ra)

@@ -18,9 +18,12 @@ import TypeClasses (V2Math (..))
 import VectorCalc (Point (Point))
 import Wall (totalAcceleration)
 
+step :: Float -> GameState -> IO GameState
+step = (pure .) . pureStep
+
 -- | Handle one iteration of the game
-step :: Float -> GameState -> GameState
-step secs gstate =
+pureStep :: Float -> GameState -> GameState
+pureStep secs gstate =
   gstate
     { player = np,
       asteroids = rrna,
@@ -46,10 +49,9 @@ step secs gstate =
       _ -> 0
     (tnb, tna, da) = wahtot nb na
     (newrand, rna, ttna) = if timeTillNextAsteroid gstate <= 0 then (\(a, b, c) -> (a, b : tna, c)) $ genRandomAsteroid (rand gstate) (player gstate) else (rand gstate, tna, timeTillNextAsteroid gstate - secs)
-    rrna = concatMap (uncurry getChildAsteroids) (zip (randomRs ((0, Constants.babyAsteroidMinimumSpeed, Constants.babyAsteroidMinimumRotation), (120, Constants.babyAsteroidMaximumSpeed,Constants.babyAsteroidMaximumRotation)) (rand gstate)) da) ++ rna
+    rrna = concatMap (uncurry getChildAsteroids) (zip (randomRs ((0, Constants.babyAsteroidMinimumSpeed, Constants.babyAsteroidMinimumRotation), (120, Constants.babyAsteroidMaximumSpeed, Constants.babyAsteroidMaximumRotation)) (rand gstate)) da) ++ rna
     snew = score gstate + length da
     newnewrand = snd (split newrand)
-
 
 wahtot :: (HasPhysics a, HasPhysics b) => [a] -> [b] -> ([a], [b], [b])
 wahtot [] [] = ([], [], [])
@@ -77,7 +79,10 @@ wahtot bs as =
 -- check collisions player and bullets
 -- fix baby asteroid spawning'
 
-input :: Event -> GameState -> GameState
-input (EventKey k Down _ _) g = g {keys = insert k (keys g)}
-input (EventKey k Up _ _) g = g {keys = delete k (keys g)}
-input _ g = g
+input :: Event -> GameState -> IO GameState
+input = (pure .) . pureInput
+
+pureInput :: Event -> GameState -> GameState
+pureInput (EventKey k Down _ _) g = g {keys = insert k (keys g)}
+pureInput (EventKey k Up _ _) g = g {keys = delete k (keys g)}
+pureInput _ g = g
