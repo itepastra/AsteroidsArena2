@@ -1,5 +1,7 @@
 module Colors where
-import Graphics.Gloss (Color, magenta, green, blue, yellow, makeColor, cyan)
+
+import Graphics.Gloss (Color, blue, cyan, green, magenta, makeColor, mixColors, orange, yellow, addColors, black)
+import Rotation (Angle)
 
 playerColor :: Color
 playerColor = magenta
@@ -19,3 +21,18 @@ starColor = yellow
 wallColor :: Color
 wallColor = makeColor 1 0 0 0.2
 
+rainbowGradientColor :: Float -> Color
+rainbowGradientColor h = makeColor r g b 1
+  where
+    sin2 a = sin (pi * (a / 180)) ^ 2
+    r = sin2 (h + 90)
+    g = sin2 (h + 210)
+    b = sin2 (h + 330)
+
+exhaustGradientColor :: Float -> Color
+exhaustGradientColor s = addColors c1 c2
+  where
+    rRatio = 300
+    bRatio = s
+    c1 = mixColors rRatio bRatio yellow black
+    c2 = mixColors rRatio bRatio black blue

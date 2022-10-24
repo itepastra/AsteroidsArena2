@@ -5,11 +5,11 @@ import Controller
 import qualified Data.Bifunctor
 import Data.List (iterate')
 import Graphics.Gloss (Display (InWindow), black, play)
+import Graphics.Gloss.Interface.IO.Game (playIO)
 import Model
 import System.Random (Random (randomRs), RandomGen (split), StdGen, getStdGen)
 import qualified VectorCalc
 import View
-import Graphics.Gloss.Interface.IO.Game (playIO)
 
 main :: IO ()
 main =
@@ -26,4 +26,8 @@ main =
       step -- Step function
 
 genStarPositions :: StdGen -> [Int] -> [[(Float, Float)]]
-genStarPositions ra amts = zipWith (\amt r -> take amt $ randomRs ((0, 0), Data.Bifunctor.bimap fromIntegral fromIntegral Constants.pageSize) r) amts (iterate' (snd . split) ra)
+genStarPositions ra amts =
+  zipWith
+    (\amt r -> take amt $ randomRs ((0, 0), Data.Bifunctor.bimap fromIntegral fromIntegral Constants.pageSize) r)
+    amts
+    (iterate' (snd . split) ra)

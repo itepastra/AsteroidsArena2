@@ -1,14 +1,14 @@
 module Player where
 
 import Bullet (Bullet (Bullet))
-import Constants (bulletInitialOffset, bulletLifetime, bulletSpeed, playerAcceleration, playerFrictionExponent)
-import Graphics.Gloss (translate)
+import Graphics.Gloss (translate, Picture (Pictures))
 import qualified Graphics.Gloss as Gloss
 import Physics (Acceleration, HasPhysics (..), PhysicsObject (..), TimeStep, accelerate, move)
 import Rotation (Angle, Rotate (..), rot)
-import Sprites (basePlayer)
+import Sprites (basePlayer, baseExhaust)
 import TypeClasses (Pictured (..), V2Math (..))
 import VectorCalc (Vector)
+import qualified Constants
 
 type HealthPoints = Float
 
@@ -25,16 +25,16 @@ instance Rotate Player where
   rotate a p = p {lookDirection = rot a (lookDirection p), lookAngle = lookAngle p - a}
 
 instance Pictured Player where
-  getGlobalPicture (Player {phys = (PhysObj {position = t}), lookAngle = a}) = translate (x t) (y t) $ Gloss.rotate a basePlayer
+  getGlobalPicture (Player {phys = (PhysObj {position = t, velocity = v}), lookAngle = a}) = translate (x t) (y t) $ Pictures $ map (Gloss.rotate a) [baseExhaust v ,basePlayer]
 
 lookAccel :: Player -> Acceleration
 lookAccel p = Constants.playerAcceleration |*| lookDirection p
 
 shoot :: Player -> Bullet
-shoot (Player {phys = phy, lookDirection = ld}) = Bullet (PhysObj (position phy |+| pv) (velocity phy |+| bv) 20) bulletLifetime
+shoot (Player {phys = phy, lookDirection = ld}) = Bullet (PhysObj (position phy |+| pv) (velocity phy |+| bv) 20) Constants.bulletLifetime
   where
-    bv = bulletSpeed |*| ld
-    pv = bulletInitialOffset |*| ld
+    bv = Constants.bulletSpeed |*| ld
+    pv = Constants.bulletInitialOffset |*| ld
 
 damage :: Player -> Float -> Player
 damage p d = p {hp = hp p - d}
@@ -43,4 +43,5 @@ isDead :: Player -> Bool
 isDead (Player {hp = h}) = h <= 0
 
 friction :: TimeStep -> Player -> Player
-friction ts p@(Player phy l d an) = p {phys = (phy {velocity = (playerFrictionExponent ** ts) |*| velocity phy})}
+friction ts p@(Player phy l d an) = p {phys = (phy {velocity = (Constants.playerFrictionExponent ** ts) |*| velocity phy})}
+

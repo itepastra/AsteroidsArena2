@@ -15,7 +15,7 @@ shootingInterval :: Float
 shootingInterval = 0.25
 
 bulletLifetime :: Float
-bulletLifetime = 40.0
+bulletLifetime = 5
 
 bulletSpeed :: Float
 bulletSpeed = 400
@@ -70,3 +70,4 @@ babyAsteroidMinimumRotation = -10
 
 babyAsteroidMaximumRotation :: Float
 babyAsteroidMaximumRotation = 10
+

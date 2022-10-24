@@ -3,6 +3,7 @@
 module View where
 
 import Bullet (Bullet (Bullet))
+import qualified Constants
 import Graphics.Gloss
   ( Path,
     Picture (Color, Pictures, Polygon, Scale, Text),
@@ -11,33 +12,44 @@ import Graphics.Gloss
     green,
     magenta,
     rotate,
-    translate, white, scale,
+    scale,
+    translate,
+    white,
   )
 import Model (GameState (..), newPlayer)
-import Physics (HasPhysics (physobj), PhysicsObject (PhysObj, position))
-import Player (Player (Player))
+import Physics (HasPhysics (physobj), PhysicsObject (PhysObj, position, velocity))
+import Player (Player (Player, phys))
 import Sprites (baseStar, starrySky)
 import TypeClasses (Pictured (..), V2Math (..))
-import VectorCalc (Point (Point))
 import qualified TypeClasses as VectorCalc
-import qualified Constants
+import VectorCalc (Point (Point))
 
 view :: GameState -> IO Picture
 view = pure . viewPure
 
 viewPure :: GameState -> Picture
-viewPure gs@(GameState {player = p}) = Pictures (viewBackground gs :  Pictures [moveWorldToCenter (physobj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs]] : [viewHud gs])
+viewPure gs@(GameState {player = p}) = Pictures (viewBackground gs : Pictures [moveWorldToCenter (physobj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs]] : [viewHud gs])
 viewPure _ = blank
 
 viewHud :: GameState -> Picture
-viewHud (GameState {score = s}) = Color white $ translate (-430) 400 $ Scale 0.3 0.3 $ Text ("score: " ++ show s)
+viewHud (GameState {score = s, player = (Player {phys = (PhysObj {velocity = v})})}) = Pictures (zipWith formatl [400, 350] ["score: " ++ show s, "speed: " ++ show (sqrt (v |.| v))])
+  where
+    formatl h = Color white . translate (-430) h . Scale 0.3 0.3 . Text
 viewHud _ = blank
 
 viewBackground :: GameState -> Picture
-viewBackground (GameState {player = p, starPositions = sps}) = Pictures (zipWith (\ pax sp
-  -> ( starrySky pax
-        . map ((|-| (pax |*| position (physobj p))) . fromTuple))
-       sp) Constants.parallax sps)
+viewBackground (GameState {player = p, starPositions = sps}) =
+  Pictures
+    ( zipWith
+        ( \pax sp ->
+            ( starrySky pax
+                . map ((|-| (pax |*| position (physobj p))) . fromTuple)
+            )
+              sp
+        )
+        Constants.parallax
+        sps
+    )
 viewBackground _ = blank
 
 viewPlayer :: GameState -> Picture

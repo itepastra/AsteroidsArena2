@@ -6,7 +6,7 @@ import Graphics.Gloss (translate)
 
 type Lifetime = Float
 
-data Bullet = Bullet PhysicsObject Lifetime
+data Bullet = Bullet {phys :: PhysicsObject, lifeTime :: Lifetime}
 
 instance HasPhysics Bullet where
   physobj (Bullet p _) = p
@@ -14,7 +14,7 @@ instance HasPhysics Bullet where
   accelStep (Bullet phy l) dt a = Bullet (accelerate phy dt a) l
 
 instance Pictured Bullet where
-  getGlobalPicture (Bullet (PhysObj {position=t}) _ ) = translate (x t) (y t) baseBullet
+  getGlobalPicture (Bullet {phys = (PhysObj {position=t}), lifeTime = lt } ) = translate (x t) (y t) (baseBullet lt)
 
 updateLifetime :: TimeStep -> Bullet -> Bullet
 updateLifetime ts (Bullet p l) = Bullet p (l - ts)

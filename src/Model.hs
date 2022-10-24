@@ -62,6 +62,7 @@ defaultLevels =
               player = newPlayer,
               asteroids = [],
               bullets = [],
+              -- walls = [],
               walls = [Wall (Point 0 400) (Point 0 (-1)) 450 180, Wall (Point (-400) 0) (Point 1 0) 450 (-90), Wall (Point 0 (-400)) (Point 0 1) 450 0, Wall (Point 400 0) (Point (-1) 0) 450 90],
               keys = empty,
               rand = mkStdGen 0,

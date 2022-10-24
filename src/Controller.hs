@@ -85,4 +85,4 @@ input = (pure .) . pureInput
 pureInput :: Event -> GameState -> GameState
 pureInput (EventKey k Down _ _) g = g {keys = insert k (keys g)}
 pureInput (EventKey k Up _ _) g = g {keys = delete k (keys g)}
-pureInput _ g = g
+pureInput _ g = g 
