@@ -12,6 +12,7 @@ import Constants (asteroidRadius, playerRadius)
 import Data.Set (Set, empty)
 import qualified Graphics.Gloss as Gloss
 import Graphics.Gloss.Interface.IO.Game (Key)
+import Level (LevelConfig (LevelConfig))
 import Physics (PhysicsObject (..))
 import Player (HealthPoints, Player (Player))
 import System.Random (RandomGen, StdGen)
@@ -39,7 +40,8 @@ data GameState
         starPositions :: [[Gloss.Point]],
         timeSinceLastShot :: Float,
         timeTillNextAsteroid :: Float,
-        score :: Int
+        score :: Int,
+        levelConfig :: LevelConfig
       }
   | DeathState {score :: Int}
   | MenuState {levels :: [Level]}
@@ -50,9 +52,9 @@ data Level = Level
   }
 
 data GameStateInit = GameStateInit
-  { initPlayer :: Player,
-    initAsteroids :: [Asteroid],
-    initWalls :: [Wall]
+  { initAsteroids :: [Asteroid],
+    initWalls :: [Wall],
+    initConf :: LevelConfig
   }
 
 newPlayer :: Player
@@ -64,14 +66,15 @@ gameStateFromLevel r pts (Level {initState = initState}) =
     { rand = r,
       starPositions = pts,
       elapsedTime = 0,
-      player = initPlayer initState,
+      player = newPlayer,
       asteroids = initAsteroids initState,
       bullets = [],
       timeSinceLastShot = 10,
       timeTillNextAsteroid = 0,
       score = 0,
       walls = initWalls initState,
-      keys = empty
+      keys = empty,
+      levelConfig = initConf initState
     }
 
 defaultLevels :: [Level]
@@ -80,9 +83,14 @@ defaultLevels =
       { name = "empty",
         initState =
           GameStateInit
-            { initPlayer = newPlayer,
-              initAsteroids = [],
-              initWalls = [Wall (Point 0 400) (Point 0 (-1)) 450 180, Wall (Point (-400) 0) (Point 1 0) 450 (-90), Wall (Point 0 (-400)) (Point 0 1) 450 0, Wall (Point 400 0) (Point (-1) 0) 450 90]
+            { initAsteroids = [],
+              initWalls =
+                [ Wall (Point 0 400) (Point 0 (-1)) 450 180,
+                  Wall (Point (-400) 0) (Point 1 0) 450 (-90),
+                  Wall (Point 0 (-400)) (Point 0 1) 450 0,
+                  Wall (Point 400 0) (Point (-1) 0) 450 90
+                ],
+              initConf = LevelConfig id "nah"
             }
       }
   ]

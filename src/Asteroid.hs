@@ -11,6 +11,7 @@ import System.Random (Random (..), RandomGen, StdGen)
 import System.Random.Stateful (randomM)
 import TypeClasses (Pictured (..), V2Math (..))
 import VectorCalc (Point (Point))
+import AsteroidSpawnFunctions (expRandom)
 
 type Size = Int
 
@@ -30,7 +31,7 @@ genRandomAsteroid :: StdGen -> Player -> (StdGen, Asteroid, Float)
 genRandomAsteroid g0 p = (g, Asteroid (PhysObj pos vel rad) size rSpeed rAngle, timeTillNext)
   where
     ((spawnAngle, moveAngle, size, uTime, moveSpeed, rSpeed, rAngle), g) = randomR ((0, -25, 1, 0, 20, -15, 0), (360, 25, 3, 1, 80, 15, 360)) g0
-    timeTillNext = -Constants.asteroidSpawnAverageInterval * log uTime
+    timeTillNext = expRandom uTime
     pos = position (physobj p) |+| (Constants.spawnDistance |*| rot spawnAngle (Point 1 0))
     vel = (rot moveAngle . (moveSpeed |*|) . normalize) (position (physobj p) |-| pos)
     rad = Constants.asteroidRadius * (2 ^ size)

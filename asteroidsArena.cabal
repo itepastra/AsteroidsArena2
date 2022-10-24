@@ -29,4 +29,7 @@ executable asteroids-arena2
                      , TypeClasses
                      , Colors
                      , CoordCalc
+                     , AsteroidSpawnFunctions
+                     , LevelImport
+                     , Level
   default-language:    Haskell2010
