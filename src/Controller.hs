@@ -47,19 +47,20 @@ pureStep secs gstate =
     tsl = case spawnedBullet of
       [] -> timeSinceLastShot gstate + secs
       _ -> 0
-    (tnb, tna, da) = wahtot nb na
+    (tnb, tna, da) = asteroidBulletCollisions nb na
     (newrand, rna, ttna) = if timeTillNextAsteroid gstate <= 0 then (\(a, b, c) -> (a, b : tna, c)) $ genRandomAsteroid (rand gstate) (player gstate) else (rand gstate, tna, timeTillNextAsteroid gstate - secs)
     rrna = concatMap (uncurry getChildAsteroids) (zip (randomRs ((0, Constants.babyAsteroidMinimumSpeed, Constants.babyAsteroidMinimumRotation), (120, Constants.babyAsteroidMaximumSpeed, Constants.babyAsteroidMaximumRotation)) (rand gstate)) da) ++ rna
     snew = score gstate + length da
     newnewrand = snd (split newrand)
 
-wahtot :: (HasPhysics a, HasPhysics b) => [a] -> [b] -> ([a], [b], [b])
-wahtot [] [] = ([], [], [])
-wahtot bs [] = (bs, [], [])
-wahtot [] as = ([], as, [])
-wahtot bs as =
-  (\(bs, as) -> (bs, mapMaybe fst as, mapMaybe snd as))
-    (filter (\b -> not $ any (checkCollision b) as) bs, map (\a -> if any (checkCollision a) bs then (Nothing, Just a) else (Just a, Nothing)) as)
+asteroidBulletCollisions :: (HasPhysics a, HasPhysics b) => [a] -> [b] -> ([a], [b], [b])
+asteroidBulletCollisions [] [] = ([], [], [])
+asteroidBulletCollisions bs [] = (bs, [], [])
+asteroidBulletCollisions [] as = ([], as, [])
+asteroidBulletCollisions bs as =
+  (filter (\b -> not $ any (checkCollision b) as) bs, la, da)
+  where
+    (la, da) = foldr (\a (as, ds) -> if any (checkCollision a) bs then (as, a : ds) else (a : as, ds)) ([], []) as
 
 -- ######### GEDAAN ##########
 -- despawn bullets
@@ -85,4 +86,4 @@ input = (pure .) . pureInput
 pureInput :: Event -> GameState -> GameState
 pureInput (EventKey k Down _ _) g = g {keys = insert k (keys g)}
 pureInput (EventKey k Up _ _) g = g {keys = delete k (keys g)}
-pureInput _ g = g 
+pureInput _ g = g
