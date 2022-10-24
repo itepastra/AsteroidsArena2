@@ -13,6 +13,6 @@ asteroidFunction = expRandom 5
 
 # walls are in the form "(distance from the origin) direction strength"
 wall = 400 (0, -1) 450  # top wall
-wall = 400 (1, 0) 450   # left wall
-wall = 400 (0, 1) 450   # bottom wall
+wall = 400 (1, 0)  450  # left wall
+wall = 400 (0, 1)  450  # bottom wall
 wall = 400 (-1, 0) 450  # right wall

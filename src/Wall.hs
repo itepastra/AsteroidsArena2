@@ -8,6 +8,7 @@ import TypeClasses (V2Math(..), Pictured (..))
 import Sprites (baseWall)
 import Graphics.Gloss (translate)
 import qualified Graphics.Gloss as Gloss
+import GHC.Read (Read(readPrec))
 
 type Normal = Vector
 
@@ -40,3 +41,4 @@ instance Rotate Wall where
 
 instance Pictured Wall where
   getGlobalPicture (Wall p n _ r) =  translate (x p) (y p) $ Gloss.Rotate (-r + 180) baseWall
+
