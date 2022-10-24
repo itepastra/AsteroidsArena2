@@ -10,6 +10,7 @@ import Model
 import System.Random (Random (randomRs), RandomGen (split), StdGen, getStdGen)
 import qualified VectorCalc
 import View
+import Input (input)
 
 main :: IO ()
 main =

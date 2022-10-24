@@ -15,7 +15,19 @@ import VectorCalc (Point (Point))
 
 type Size = Int
 
-data Asteroid = Asteroid {phys :: PhysicsObject, size :: Size, rotateSpeed :: Float, rotateAngle :: Float} | SpaceMine {phys :: PhysicsObject, size :: Size, rotateSpeed :: Float, rotateAngle :: Float}
+data Asteroid
+  = Asteroid
+      { phys :: PhysicsObject,
+        size :: Size,
+        rotateSpeed :: Float,
+        rotateAngle :: Float
+      }
+  | SpaceMine
+      { phys :: PhysicsObject,
+        size :: Size,
+        rotateSpeed :: Float,
+        rotateAngle :: Float
+      }
 
 instance HasPhysics Asteroid where
   physobj = phys

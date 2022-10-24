@@ -45,11 +45,14 @@ data GameState
       }
   | DeathState
       { score :: Int,
-        keys :: Set Key
+        previousState :: GameState
       }
   | MenuState
-      { levels :: [Level],
-        keys :: Set Key
+      { levels :: [Level]
+      }
+  | PauseState
+      { 
+        previousState :: GameState
       }
 
 data Level = Level

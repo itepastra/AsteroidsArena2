@@ -26,7 +26,7 @@ step = (pure .) . pureStep
 pureStep :: Float -> GameState -> GameState
 pureStep secs gstate@(GameState {}) =
   case ndp of
-    Nothing -> DeathState {score = score gstate, keys = keys gstate}
+    Nothing -> DeathState {score = score gstate, previousState = gstate}
     Just pl ->
       gstate
         { player = pl,
@@ -59,6 +59,7 @@ pureStep secs gstate@(GameState {}) =
     snew = score gstate + length da
 pureStep secs gstate@(DeathState {}) = gstate
 pureStep secs gstate@(MenuState {}) = gstate
+pureStep secs gstate@(PauseState {}) = gstate
 
 asteroidBulletCollisions :: [Bullet] -> [Asteroid] -> Player -> ([Bullet], [Asteroid], [Asteroid])
 asteroidBulletCollisions [] [] _ = ([], [], [])
@@ -99,11 +100,4 @@ playerDamage as bs p = case foldl' (bulletDamage p) (foldl' (asteroidDamage p) (
 -- high scores
 -- invurnerability frames maybe?
 -- balancing
-
-input :: Event -> GameState -> IO GameState
-input = (pure .) . pureInput
-
-pureInput :: Event -> GameState -> GameState
-pureInput (EventKey k Down _ _) g = g {keys = insert k (keys g)}
-pureInput (EventKey k Up _ _) g = g {keys = delete k (keys g)}
-pureInput _ g = g
+-- SPACE MINES

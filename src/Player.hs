@@ -1,14 +1,16 @@
+
 module Player where
 
 import Bullet (Bullet (Bullet))
-import Graphics.Gloss (translate, Picture (Pictures))
+import qualified Constants
+import Data.Aeson (ToJSON (toEncoding), object, (.=), FromJSON (parseJSON), withObject, (.:))
+import Graphics.Gloss (Picture (Pictures), translate)
 import qualified Graphics.Gloss as Gloss
 import Physics (Acceleration, HasPhysics (..), PhysicsObject (..), TimeStep, accelerate, move)
 import Rotation (Angle, Rotate (..), rot)
-import Sprites (basePlayer, baseExhaust)
+import Sprites (baseExhaust, basePlayer)
 import TypeClasses (Pictured (..), V2Math (..))
 import VectorCalc (Vector)
-import qualified Constants
 
 type HealthPoints = Float
 
@@ -25,7 +27,7 @@ instance Rotate Player where
   rotate a p = p {lookDirection = rot a (lookDirection p), lookAngle = lookAngle p - a}
 
 instance Pictured Player where
-  getGlobalPicture (Player {phys = (PhysObj {position = t, velocity = v}), lookAngle = a}) = translate (x t) (y t) $ Pictures $ map (Gloss.rotate a) [baseExhaust v ,basePlayer]
+  getGlobalPicture (Player {phys = (PhysObj {position = t, velocity = v}), lookAngle = a}) = translate (x t) (y t) $ Pictures $ map (Gloss.rotate a) [baseExhaust v, basePlayer]
 
 lookAccel :: Player -> Acceleration
 lookAccel p = Constants.playerAcceleration |*| lookDirection p
