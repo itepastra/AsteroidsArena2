@@ -2,9 +2,10 @@
 --   in response to time and user input
 module Controller where
 
-import Asteroid (Asteroid (Asteroid, phys, rotateSpeed), genRandomAsteroid, getChildAsteroids)
+import Asteroid (Asteroid (Asteroid, phys, rotateSpeed, size), genRandomAsteroid, getChildAsteroids)
 import Bullet (Bullet (..), updateLifetime)
 import qualified Constants
+import Data.Foldable (foldl')
 import Data.Maybe (mapMaybe)
 import Data.Set (Set, delete, insert, member)
 import GHC.Base (ap)
@@ -31,7 +32,7 @@ pureStep secs gstate =
       timeSinceLastShot = tsl,
       walls = nw,
       timeTillNextAsteroid = ttna,
-      rand = newnewrand,
+      rand = newrand,
       score = snew
     }
   where
@@ -51,7 +52,6 @@ pureStep secs gstate =
     (newrand, rna, ttna) = if timeTillNextAsteroid gstate <= 0 then (\(a, b, c) -> (a, b : tna, c)) $ genRandomAsteroid (rand gstate) (player gstate) else (rand gstate, tna, timeTillNextAsteroid gstate - secs)
     rrna = concatMap (uncurry getChildAsteroids) (zip (randomRs ((0, Constants.babyAsteroidMinimumSpeed, Constants.babyAsteroidMinimumRotation), (120, Constants.babyAsteroidMaximumSpeed, Constants.babyAsteroidMaximumRotation)) (rand gstate)) da) ++ rna
     snew = score gstate + length da
-    newnewrand = snd (split newrand)
 
 asteroidBulletCollisions :: (HasPhysics a, HasPhysics b) => [a] -> [b] -> ([a], [b], [b])
 asteroidBulletCollisions [] [] = ([], [], [])
@@ -61,6 +61,16 @@ asteroidBulletCollisions bs as =
   (filter (\b -> not $ any (checkCollision b) as) bs, la, da)
   where
     (la, da) = foldr (\a (as, ds) -> if any (checkCollision a) bs then (as, a : ds) else (a : as, ds)) ([], []) as
+
+playerDamage :: Player -> [Asteroid] -> [Bullet] -> Maybe Player
+playerDamage p as bs = case foldl' (bulletDamage p) (foldl' (asteroidDamage p) (Just (hp p)) as) bs of
+        Just health -> Just p {hp = health}
+        Nothing -> Nothing
+  where
+    bulletDamage _ Nothing _ = Nothing
+    bulletDamage p (Just hp) b = if checkCollision p b then Just (hp - 15) else Just hp
+    asteroidDamage _ Nothing _ = Nothing
+    asteroidDamage p (Just hp) a = if checkCollision p a then Just (hp - 5*2^size a) else Just hp
 
 -- ######### GEDAAN ##########
 -- despawn bullets

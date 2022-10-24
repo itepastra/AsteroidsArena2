@@ -17,6 +17,8 @@ basePlayer = Color playerColor $ Polygon [(0, 20), (20, -15), (0, 0), (-20, -15)
 baseBullet :: Float -> Picture
 baseBullet a = Color (rainbowGradientColor (90 * a)) $ circleSolid (Constants.bulletRadius * (1 - (((Constants.bulletLifetime - a) / Constants.bulletLifetime) ^ 32)))
 
+-- c*(1-((c-x)/c) ^ 32)
+
 baseAsteroid :: Picture
 baseAsteroid = scale 3 3 $ Pictures [outline, fill]
   where

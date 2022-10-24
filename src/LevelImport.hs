@@ -1,24 +1,21 @@
 module LevelImport where
 
 import Model (Level (Level), GameStateInit (GameStateInit))
-import Text.Parsec
-import Text.Parsec.String (GenParser)
+
 import Level (LevelConfig(LevelConfig))
+import Text.Megaparsec
+import Data.Void
+import Data.Text (Text)
+
 
 importLevel :: FilePath -> IO Level
 importLevel fp = do
   contents <- readFile fp
   return emptyLvl
 
---   return $ readLvl (lines contents)
 
 emptyLvl :: Level
-emptyLvl = Level "" (GameStateInit [] [] (LevelConfig id 5))
+emptyLvl = Level "" (GameStateInit [] [] (LevelConfig id "weh"))
 
-readLvl :: GenParser Char st Level
-readLvl =
-  do
-    result <- many line
-    eof
-    return result
 
+type Parser = Parsec Void Text
