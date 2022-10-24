@@ -31,7 +31,7 @@ lookAccel :: Player -> Acceleration
 lookAccel p = Constants.playerAcceleration |*| lookDirection p
 
 shoot :: Player -> Bullet
-shoot (Player {phys = phy, lookDirection = ld}) = Bullet (PhysObj (position phy |+| pv) (velocity phy |+| bv) 20) Constants.bulletLifetime
+shoot (Player {phys = phy, lookDirection = ld}) = Bullet (PhysObj (position phy |+| pv) (velocity phy |+| bv) Constants.bulletRadius) Constants.bulletLifetime
   where
     bv = Constants.bulletSpeed |*| ld
     pv = Constants.bulletInitialOffset |*| ld

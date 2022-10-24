@@ -43,8 +43,14 @@ data GameState
         score :: Int,
         levelConfig :: LevelConfig
       }
-  | DeathState {score :: Int}
-  | MenuState {levels :: [Level]}
+  | DeathState
+      { score :: Int,
+        keys :: Set Key
+      }
+  | MenuState
+      { levels :: [Level],
+        keys :: Set Key
+      }
 
 data Level = Level
   { name :: String,

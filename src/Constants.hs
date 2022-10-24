@@ -12,7 +12,7 @@ fps :: Int
 fps = 60
 
 shootingInterval :: Float
-shootingInterval = 2
+shootingInterval = 0.25
 
 bulletLifetime :: Float
 bulletLifetime = 5
@@ -21,7 +21,7 @@ bulletSpeed :: Float
 bulletSpeed = 400
 
 bulletInitialOffset :: Float
-bulletInitialOffset = 30
+bulletInitialOffset = 40
 
 bulletRadius :: Float
 bulletRadius = 4

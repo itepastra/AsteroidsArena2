@@ -4,7 +4,6 @@ module VectorCalc where
 
 import TypeClasses (V2Math (..))
 import Prelude hiding (negate)
-import Data.Bifunctor (Bifunctor)
 
 -- import Graphics.Gloss.Data.Point (Point)
 -- import Graphics.Gloss.Data.Vector (Vector)

@@ -18,7 +18,7 @@ import Graphics.Gloss
   )
 import Model (GameState (..), newPlayer)
 import Physics (HasPhysics (physobj), PhysicsObject (PhysObj, position, velocity))
-import Player (Player (Player, phys))
+import Player (Player (Player, phys, hp))
 import Sprites (baseStar, starrySky)
 import TypeClasses (Pictured (..), V2Math (..))
 import qualified TypeClasses as VectorCalc
@@ -32,7 +32,7 @@ viewPure gs@(GameState {player = p}) = Pictures (viewBackground gs : Pictures [m
 viewPure _ = blank
 
 viewHud :: GameState -> Picture
-viewHud (GameState {score = s, player = (Player {phys = (PhysObj {velocity = v})})}) = Pictures (zipWith formatl [400, 350] ["score: " ++ show s, "speed: " ++ show (sqrt (v |.| v))])
+viewHud (GameState {score = s, player = (Player {phys = (PhysObj {velocity = v}), hp = health})}) = Pictures (zipWith formatl [400, 350, 300] ["score: " ++ show s, "speed: " ++ show (sqrt (v |.| v)), "HP: " ++ show health])
   where
     formatl h = Color white . translate (-430) h . Scale 0.3 0.3 . Text
 viewHud _ = blank
