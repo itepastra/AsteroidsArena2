@@ -90,11 +90,15 @@ playerDamage as bs p = case foldl' (bulletDamage p) (foldl' (asteroidDamage p) (
 -- delay between shots
 -- check collisions between asteroids and bullets
 -- spawn asteroids (spawn angle, speed angle, speed, timetillnext, picture angle, size)
-
--- ######### TE DOEN ##########
 -- check collisions between player and asteroids
 -- check collisions player and bullets
 -- fix baby asteroid spawning'
+
+-- ######### TE DOEN ##########
+-- levels
+-- high scores
+-- invurnerability frames maybe?
+-- balancing
 
 input :: Event -> GameState -> IO GameState
 input = (pure .) . pureInput
