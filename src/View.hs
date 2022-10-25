@@ -28,7 +28,7 @@ view :: GameState -> IO Picture
 view = pure . viewPure
 
 viewPure :: GameState -> Picture
-viewPure gs@(GameState {player = p}) = Pictures (viewBackground gs : Pictures [moveWorldToCenter (physobj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs]] : [viewHud gs])
+viewPure gs@(GameState {player = p}) = Pictures [viewBackground gs, Pictures [moveWorldToCenter (physobj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs]], viewHud gs]
 viewPure _ = blank
 
 viewHud :: GameState -> Picture
