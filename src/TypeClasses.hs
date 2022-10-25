@@ -14,6 +14,7 @@ class V2Math a where
   (|.|) :: V2Math b => a -> b -> Float
   (|#|) :: V2Math b => a -> b -> Float
   normalize :: a -> a
+  vmap :: (Float -> Float) -> a -> a
 
 
 class Pictured a where

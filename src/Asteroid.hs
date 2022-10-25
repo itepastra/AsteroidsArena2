@@ -4,14 +4,14 @@ import AsteroidSpawnFunctions (expRandom)
 import qualified Constants
 import Data.Fixed (mod')
 import Graphics.Gloss (rotate, scale, translate)
-import Physics (HasPhysics (..), PhysicsObject (..), accelerate, move)
+import Physics (HasPhysics (..), PhysicsObject (..), accelerate, move, TimeStep)
 import Player (Player)
 import Rotation (Angle, Rotate (..), rot)
-import Sprites (baseAsteroid)
+import Sprites (baseAsteroid, spaceMine)
 import System.Random (Random (..), RandomGen, StdGen)
 import System.Random.Stateful (randomM)
 import TypeClasses (Pictured (..), V2Math (..))
-import VectorCalc (Point (Point))
+import VectorCalc (Point (..))
 
 type Size = Int
 
@@ -35,7 +35,7 @@ instance HasPhysics Asteroid where
   accelStep as dt a = as {phys = accelerate (phys as) dt a}
 
 instance Pictured Asteroid where
-  getGlobalPicture (SpaceMine {phys = (PhysObj {position = t}), size = s, rotateAngle = ra}) = translate (x t) (y t) $ Graphics.Gloss.rotate (-ra) $ scale f f baseAsteroid
+  getGlobalPicture (SpaceMine {phys = (PhysObj {position = t}), size = s, rotateAngle = ra}) = translate (x t) (y t) $ Graphics.Gloss.rotate (-ra) $ scale f f spaceMine
     where
       f = 2 ^ s
   getGlobalPicture (Asteroid {phys = (PhysObj {position = t}), size = s, rotateAngle = ra}) = translate (x t) (y t) $ Graphics.Gloss.rotate (-ra) $ scale f f baseAsteroid
@@ -43,13 +43,16 @@ instance Pictured Asteroid where
       f = 2 ^ s
 
 genRandomAsteroid :: StdGen -> Player -> (StdGen, Asteroid, Float)
-genRandomAsteroid g0 p = (g, Asteroid (PhysObj pos vel rad) size rSpeed rAngle, timeTillNext)
+genRandomAsteroid g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAngle, timeTillNext)
   where
-    ((spawnAngle, moveAngle, size, uTime, moveSpeed, rSpeed, rAngle), g) = randomR ((0, -25, 1, 0, 20, -15, 0), (360, 25, 3, 1, 80, 15, 360)) g0
+    ((spawnAngle, moveAngle, size, uTime, moveSpeed, rSpeed, rAngle), g1) = randomR ((0, -25, 1, 0, 20, -15, 0), (360, 25, 3, 1, 80, 15, 360)) g0
+    (atype, g) = randomR (0,1) g1
     timeTillNext = expRandom uTime
     pos = position (physobj p) |+| (Constants.spawnDistance |*| rot spawnAngle (Point 1 0))
     vel = (rot moveAngle . (moveSpeed |*|) . normalize) (position (physobj p) |-| pos)
     rad = Constants.asteroidRadius * (2 ^ size)
+    constr | atype < Constants.spaceMineOdds = SpaceMine
+           | otherwise = Asteroid
 
 getChildAsteroids :: (Angle, Float, Float) -> Asteroid -> [Asteroid]
 getChildAsteroids _ (Asteroid {size = 1}) = []
@@ -68,6 +71,10 @@ getChildAsteroids (angle, speed, rSpeed) (Asteroid {size = s, phys = phy, rotate
         [-120, 0, 120]
         [0, -rSpeed, rSpeed]
 getChildAsteroids _ (SpaceMine {}) = []
+
+track :: Player -> TimeStep -> Asteroid -> Asteroid
+track _ _ a@(Asteroid {}) = a
+track p secs a@(SpaceMine  {}) = accelStep a secs ((position . physobj) p |-| (position . physobj ) a)
 
 instance Rotate Asteroid where
   rotate a asteroid = asteroid {rotateAngle = (rotateAngle asteroid + a) `mod'` 360}

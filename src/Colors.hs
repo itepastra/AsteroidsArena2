@@ -1,6 +1,6 @@
 module Colors where
 
-import Graphics.Gloss (Color, blue, cyan, green, magenta, makeColor, mixColors, orange, yellow, addColors, black)
+import Graphics.Gloss (Color, blue, cyan, green, magenta, makeColor, mixColors, orange, yellow, addColors, black, red)
 import Rotation (Angle)
 
 playerColor :: Color
@@ -36,3 +36,6 @@ exhaustGradientColor s = addColors c1 c2
     bRatio = s
     c1 = mixColors rRatio bRatio yellow black
     c2 = mixColors rRatio bRatio black blue
+
+spaceMineColor :: Color
+spaceMineColor = red

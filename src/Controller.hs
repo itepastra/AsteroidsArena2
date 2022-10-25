@@ -2,7 +2,7 @@
 --   in response to time and user input
 module Controller where
 
-import Asteroid (Asteroid (Asteroid, phys, rotateSpeed, size), genRandomAsteroid, getChildAsteroids)
+import Asteroid (Asteroid (Asteroid, phys, rotateSpeed, size), genRandomAsteroid, getChildAsteroids, track)
 import Bullet (Bullet (..), updateLifetime)
 import qualified Constants
 import Data.Foldable (foldl')
@@ -40,7 +40,7 @@ pureStep secs gstate@(GameState {}) =
         }
   where
     nb = spawnedBullet ++ map ((\b -> updateLifetime secs . (b `accelStep` secs) . flip totalAcceleration (walls gstate) $ b) . (`moveStep` secs)) (filter (\(Bullet _ l) -> l > 0) (bullets gstate))
-    na = map ((\a -> rotate (secs * rotateSpeed a) a) . (`moveStep` secs)) (filter (\(Asteroid {Asteroid.phys = (PhysObj {position = p})}) -> p |#| (position . physobj . player) gstate <= Constants.asteroidDespawnRange2) (asteroids gstate))
+    na = map ((\a -> rotate (secs * rotateSpeed a) a) . track (player gstate) secs . (`moveStep` secs)) (filter (\a -> (position . physobj) a |#| (position . physobj . player) gstate <= Constants.asteroidDespawnRange2) (asteroids gstate))
     np = rotate (rotspeed * secs) . friction secs . (\b -> (b `accelStep` secs) ((if member (Char 'w') (keys gstate) then lookAccel b else Point 0 0) |+| totalAcceleration b (walls gstate))) . (`moveStep` secs) $ player gstate
     ndp = playerDamage na nb np
     nw = map (rotate (2 * secs)) (walls gstate)
@@ -101,3 +101,4 @@ playerDamage as bs p = case foldl' (bulletDamage p) (foldl' (asteroidDamage p) (
 -- invurnerability frames maybe?
 -- balancing
 -- SPACE MINES
+

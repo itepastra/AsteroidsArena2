@@ -1,6 +1,6 @@
 module Sprites where
 
-import Colors (asteroidColor, asteroidLineColor, bulletColor, exhaustGradientColor, playerColor, rainbowGradientColor, starColor, wallColor)
+import Colors (asteroidColor, asteroidLineColor, bulletColor, exhaustGradientColor, playerColor, rainbowGradientColor, starColor, wallColor, spaceMineColor)
 import qualified Constants
 import Data.Bifunctor (Bifunctor (bimap))
 import Data.Fixed (mod')
@@ -50,3 +50,6 @@ mysqrt :: Fractional a => a -> a -> a
 mysqrt x y =
   let z = x + y ^ 2
    in z / (4 * y) + x * y / z
+
+spaceMine :: Picture
+spaceMine = Color spaceMineColor $ circleSolid Constants.asteroidRadius
