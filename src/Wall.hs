@@ -1,7 +1,7 @@
 module Wall where
 
 import Data.Maybe (mapMaybe)
-import Physics (Acceleration, HasPhysics (physobj), PhysicsObject (position))
+import Physics (Acceleration, HasPhysics (getPhysObj), PhysicsObject (position))
 import Rotation (Rotate (..), rot, Angle)
 import VectorCalc (Point (Point), Vector)
 import TypeClasses (V2Math(..), Pictured (..))
@@ -26,15 +26,15 @@ type InWall = Bool
 isInWall :: HasPhysics a => a -> Wall -> InWall
 isInWall obj (Wall p n _ _) = (pos |-| p) |.| n <= 0
   where
-    pos = (position . physobj) obj
+    pos = (position . getPhysObj) obj
 
 wallAcceleration :: HasPhysics a => a -> Wall -> Maybe Acceleration
 wallAcceleration o w
   | isInWall o w = Just (strength w |*| normal w)
   | otherwise = Nothing
 
-totalAcceleration :: HasPhysics a => a -> [Wall] -> Acceleration
-totalAcceleration o ws = foldr (|+|) (Point 0 0) (mapMaybe (wallAcceleration o) ws)
+totalAcceleration :: HasPhysics a => [Wall] -> a -> Acceleration
+totalAcceleration ws o = foldr (|+|) (Point 0 0) (mapMaybe (wallAcceleration o) ws)
 
 instance Rotate Wall where
   rotate a w = Wall {point = rot a (point w), normal = rot a (normal w), strength = strength w, angle = angle w + a}

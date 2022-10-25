@@ -2,8 +2,8 @@
 
 module VectorCalc where
 
-import TypeClasses (V2Math (..))
 import Prelude hiding (negate)
+import TypeClasses (V2Math (..))
 
 data Point = Point Float Float
 

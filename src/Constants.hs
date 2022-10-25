@@ -72,4 +72,4 @@ babyAsteroidMaximumRotation :: Float
 babyAsteroidMaximumRotation = 10
 
 spaceMineOdds :: Float
-spaceMineOdds = 0.32
+spaceMineOdds = 1

@@ -4,31 +4,39 @@ module View where
 
 import Bullet (Bullet (Bullet))
 import qualified Constants
+import Data.Bifunctor (Bifunctor (bimap))
 import Graphics.Gloss
   ( Path,
     Picture (Color, Pictures, Polygon, Scale, Text),
+    addColors,
+    black,
     blank,
     circleSolid,
+    color,
     green,
     magenta,
+    mixColors,
+    rectangleSolid,
     rotate,
     scale,
     translate,
     white,
   )
 import Model (GameState (..), newPlayer)
-import Physics (HasPhysics (physobj), PhysicsObject (PhysObj, position, velocity))
-import Player (Player (Player, phys, hp))
+import Physics (HasPhysics (getPhysObj), PhysicsObject (PhysObj, position, velocity))
+import Player (Player (Player, hp, phys))
 import Sprites (baseStar, starrySky)
 import TypeClasses (Pictured (..), V2Math (..))
 import qualified TypeClasses as VectorCalc
 import VectorCalc (Point (Point))
+import qualified Colors
 
 view :: GameState -> IO Picture
 view = pure . viewPure
 
 viewPure :: GameState -> Picture
-viewPure gs@(GameState {player = p}) = Pictures [viewBackground gs, moveWorldToCenter (physobj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs], viewHud gs]
+viewPure gs@(GameState {player = p}) = Pictures [viewBackground gs, moveWorldToCenter (getPhysObj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs], viewHud gs]
+viewPure gs@(PauseState {}) = Pictures [color Colors.overlayColor $ uncurry rectangleSolid $ bimap fromIntegral fromIntegral Constants.pageSize, viewPure (previousState gs)]
 viewPure _ = blank
 
 viewHud :: GameState -> Picture
@@ -43,7 +51,7 @@ viewBackground (GameState {player = p, starPositions = sps}) =
     ( zipWith
         ( \pax sp ->
             ( starrySky pax
-                . map ((|-| (pax |*| position (physobj p))) . fromTuple)
+                . map ((|-| (pax |*| position (getPhysObj p))) . fromTuple)
             )
               sp
         )

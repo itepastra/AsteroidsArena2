@@ -11,13 +11,13 @@ import Data.Set (Set, delete, insert, member)
 import GHC.Base (ap)
 import Graphics.Gloss.Interface.IO.Game (Event (..), Key (..), KeyState (..), SpecialKey (KeySpace))
 import Model (GameState (..), newPlayer)
-import Physics (HasPhysics (accelStep, moveStep, physobj), PhysicsObject (PhysObj, position), checkCollision)
+import Physics (HasPhysics (getPhysObj), PhysicsObject (PhysObj, position), TimeStep, accelStep, checkCollision, moveStep, Acceleration)
 import Player (Player (..), friction, lookAccel, shoot)
-import Rotation (rotate)
+import Rotation (Angle, rotate)
 import System.Random (Random (randomRs), StdGen, split)
 import TypeClasses (V2Math (..))
 import VectorCalc (Point (Point))
-import Wall (totalAcceleration)
+import Wall (Wall, totalAcceleration)
 
 step :: Float -> GameState -> IO GameState
 step = (pure .) . pureStep
@@ -36,12 +36,13 @@ pureStep secs gstate@(GameState {}) =
           walls = nw,
           timeTillNextAsteroid = ttna,
           rand = nnrand,
-          score = snew
+          score = snew,
+          elapsedTime = elapsedTime gstate + secs
         }
   where
-    nb = spawnedBullet ++ map ((\b -> updateLifetime secs . (b `accelStep` secs) . flip totalAcceleration (walls gstate) $ b) . (`moveStep` secs)) (filter (\(Bullet _ l) -> l > 0) (bullets gstate))
-    na = map ((\a -> rotate (secs * rotateSpeed a) a) . track (player gstate) secs . (`moveStep` secs)) (filter (\a -> (position . physobj) a |#| (position . physobj . player) gstate <= Constants.asteroidDespawnRange2) (asteroids gstate))
-    np = rotate (rotspeed * secs) . friction secs . (\b -> (b `accelStep` secs) ((if member (Char 'w') (keys gstate) then lookAccel b else Point 0 0) |+| totalAcceleration b (walls gstate))) . (`moveStep` secs) $ player gstate
+    nb = spawnedBullet ++ map (updateBullet secs (walls gstate)) (filter (\(Bullet {lifeTime = l}) -> l > 0) (bullets gstate))
+    na = map (updateAsteroid secs (player gstate)) (filter (\a -> (position . getPhysObj) a |#| (position . getPhysObj . player) gstate <= Constants.asteroidDespawnRange2) (asteroids gstate))
+    np = updatePlayer rotspeed (walls gstate) secs (if member (Char 'w') (keys gstate) then lookAccel (player gstate) else Point 0 0) $ player gstate
     ndp = playerDamage na nb np
     nw = map (rotate (2 * secs)) (walls gstate)
     rotspeed
@@ -79,10 +80,23 @@ playerDamage as bs p = case foldl' (bulletDamage p) (foldl' (asteroidDamage p) (
     asteroidDamage p (Just hp) a = if checkCollision p a then (if hp > ad a then Just (hp - ad a) else Nothing) else Just hp
     ad a = 5 * 2 ^ size a
 
+updateBullet :: TimeStep -> [Wall] -> Bullet -> Bullet
+updateBullet secs walls = (\b -> updateLifetime secs . accelStep secs (totalAcceleration walls b) $ b) . moveStep secs
+
+updateAsteroid :: TimeStep -> Player -> Asteroid -> Asteroid
+updateAsteroid secs p = (\a -> rotate (secs * rotateSpeed a) a) . track p secs . moveStep secs
+
+updatePlayer :: Angle -> [Wall] -> TimeStep -> Acceleration -> Player -> Player
+updatePlayer rotspeed ws secs accel =
+  rotate (rotspeed * secs)
+    . friction secs
+    . (\p -> accelStep secs  (accel |+| totalAcceleration ws p) p)
+    . moveStep secs
+
 -- ######### GEDAAN ##########
 -- despawn bullets
 -- bullets bewegen
--- despawn asteroids
+-- despawn asteroids@
 -- asteroids bewegen
 -- player beweegt
 -- player inputs
@@ -101,4 +115,3 @@ playerDamage as bs p = case foldl' (bulletDamage p) (foldl' (asteroidDamage p) (
 -- invurnerability frames maybe?
 -- balancing
 -- SPACE MINES
-

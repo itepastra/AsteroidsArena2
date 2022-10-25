@@ -1,7 +1,6 @@
 module TypeClasses where
 import Graphics.Gloss (Picture)
 
-
 class V2Math a where
   x :: a -> Float
   y :: a -> Float
@@ -19,3 +18,4 @@ class V2Math a where
 
 class Pictured a where
   getGlobalPicture :: a -> Picture
+

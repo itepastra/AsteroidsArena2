@@ -19,9 +19,8 @@ type LookDirection = Vector
 data Player = Player {phys :: PhysicsObject, hp :: HealthPoints, lookDirection :: LookDirection, lookAngle :: Angle}
 
 instance HasPhysics Player where
-  physobj = phys
-  moveStep p dt = p {phys = move (phys p) dt}
-  accelStep p dt a = p {phys = accelerate (phys p) dt a}
+  getPhysObj = phys
+  setPhysObj a po = a {phys = po}
 
 instance Rotate Player where
   rotate a p = p {lookDirection = rot a (lookDirection p), lookAngle = lookAngle p - a}
@@ -45,5 +44,4 @@ isDead :: Player -> Bool
 isDead (Player {hp = h}) = h <= 0
 
 friction :: TimeStep -> Player -> Player
-friction ts p@(Player phy l d an) = p {phys = (phy {velocity = (Constants.playerFrictionExponent ** ts) |*| velocity phy})}
-
+friction ts p@(Player {phys = phy}) = p {phys = (phy {velocity = (Constants.playerFrictionExponent ** ts) |*| velocity phy})}

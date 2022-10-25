@@ -1,7 +1,7 @@
 module Physics where
 
+import TypeClasses
 import VectorCalc (Point, Vector)
-import TypeClasses (V2Math(..))
 
 type TimeStep = Float
 
@@ -22,20 +22,32 @@ data PhysicsObject = PhysObj
   }
 
 class HasPhysics a where
-  physobj :: a -> PhysicsObject
-  moveStep :: a -> TimeStep -> a
-  accelStep :: a -> TimeStep -> Acceleration -> a
+  getPhysObj :: a -> PhysicsObject
+  setPhysObj :: a -> PhysicsObject -> a
 
-move :: PhysicsObject -> TimeStep -> PhysicsObject
-move (PhysObj p v r) dt = PhysObj (p |+| (dt |*| v)) v r
+updatePhysObj :: HasPhysics a => (PhysicsObject -> PhysicsObject) -> a -> a
+updatePhysObj f p = setPhysObj p $ f $ getPhysObj p
 
-accelerate :: PhysicsObject -> TimeStep -> Acceleration -> PhysicsObject
-accelerate (PhysObj p v r) dt a = PhysObj p (v |+| (dt |*| a)) r
+move :: TimeStep -> PhysicsObject -> PhysicsObject
+move dt (PhysObj p v r) = PhysObj (p |+| (dt |*| v)) v r
+
+accelerate :: TimeStep -> Acceleration -> PhysicsObject -> PhysicsObject
+accelerate dt a (PhysObj p v r) = PhysObj p (v |+| (dt |*| a)) r
+
+friction :: Float -> TimeStep -> PhysicsObject -> PhysicsObject
+friction m dt p = p {velocity = (m ** dt) |*| velocity p}
 
 checkCollision :: (HasPhysics a, HasPhysics b) => a -> b -> Collides
 checkCollision p b = position pp |#| position pb <= r2
   where
-    pp = physobj p
-    pb = physobj b
+    pp = getPhysObj p
+    pb = getPhysObj b
     r = radius pp + radius pb
     r2 = r * r
+
+moveStep :: HasPhysics a => TimeStep -> a -> a
+moveStep secs = updatePhysObj (move secs)
+
+accelStep :: HasPhysics a => TimeStep -> Acceleration -> a -> a
+accelStep secs a = updatePhysObj $ accelerate secs a 
+

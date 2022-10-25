@@ -4,7 +4,7 @@ import AsteroidSpawnFunctions (expRandom)
 import qualified Constants
 import Data.Fixed (mod')
 import Graphics.Gloss (rotate, scale, translate)
-import Physics (HasPhysics (..), PhysicsObject (..), accelerate, move, TimeStep)
+import Physics (HasPhysics (..), PhysicsObject (..), TimeStep, accelerate, move, accelStep)
 import Player (Player)
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseAsteroid, spaceMine)
@@ -30,9 +30,8 @@ data Asteroid
       }
 
 instance HasPhysics Asteroid where
-  physobj = phys
-  moveStep a dt = a {phys = move (phys a) dt}
-  accelStep as dt a = as {phys = accelerate (phys as) dt a}
+  getPhysObj = phys
+  setPhysObj a po = a {phys = po}
 
 instance Pictured Asteroid where
   getGlobalPicture (SpaceMine {phys = (PhysObj {position = t}), size = s, rotateAngle = ra}) = translate (x t) (y t) $ Graphics.Gloss.rotate (-ra) $ scale f f spaceMine
@@ -46,13 +45,14 @@ genRandomAsteroid :: StdGen -> Player -> (StdGen, Asteroid, Float)
 genRandomAsteroid g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAngle, timeTillNext)
   where
     ((spawnAngle, moveAngle, size, uTime, moveSpeed, rSpeed, rAngle), g1) = randomR ((0, -25, 1, 0, 20, -15, 0), (360, 25, 3, 1, 80, 15, 360)) g0
-    (atype, g) = randomR (0,1) g1
+    (atype, g) = randomR (0, 1) g1
     timeTillNext = expRandom uTime
-    pos = position (physobj p) |+| (Constants.spawnDistance |*| rot spawnAngle (Point 1 0))
-    vel = (rot moveAngle . (moveSpeed |*|) . normalize) (position (physobj p) |-| pos)
+    pos = position (getPhysObj p) |+| (Constants.spawnDistance |*| rot spawnAngle (Point 1 0))
+    vel = (rot moveAngle . (moveSpeed |*|) . normalize) (position (getPhysObj p) |-| pos)
     rad = Constants.asteroidRadius * (2 ^ size)
-    constr | atype < Constants.spaceMineOdds = SpaceMine
-           | otherwise = Asteroid
+    constr
+      | atype < Constants.spaceMineOdds = SpaceMine
+      | otherwise = Asteroid
 
 getChildAsteroids :: (Angle, Float, Float) -> Asteroid -> [Asteroid]
 getChildAsteroids _ (Asteroid {size = 1}) = []
@@ -74,7 +74,10 @@ getChildAsteroids _ (SpaceMine {}) = []
 
 track :: Player -> TimeStep -> Asteroid -> Asteroid
 track _ _ a@(Asteroid {}) = a
-track p secs a@(SpaceMine  {}) = accelStep a secs ((position . physobj) p |-| (position . physobj ) a)
+track p secs a@(SpaceMine {}) = accelStep secs (((300^2) / (pp |#| pa)) |*| (pp |-| pa)) a
+  where
+    pp = (position . getPhysObj) p
+    pa = (position . getPhysObj) a
 
 instance Rotate Asteroid where
   rotate a asteroid = asteroid {rotateAngle = (rotateAngle asteroid + a) `mod'` 360}

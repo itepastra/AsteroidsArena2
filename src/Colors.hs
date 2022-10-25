@@ -21,6 +21,9 @@ starColor = yellow
 wallColor :: Color
 wallColor = makeColor 1 0 0 0.2
 
+overlayColor :: Color
+overlayColor = makeColor 0 0 0 1
+
 rainbowGradientColor :: Float -> Color
 rainbowGradientColor h = makeColor r g b 1
   where
