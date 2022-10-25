@@ -43,5 +43,3 @@ damage p d = p {hp = hp p - d}
 isDead :: Player -> Bool
 isDead (Player {hp = h}) = h <= 0
 
-friction :: TimeStep -> Player -> Player
-friction ts p@(Player {phys = phy}) = p {phys = (phy {velocity = (Constants.playerFrictionExponent ** ts) |*| velocity phy})}
