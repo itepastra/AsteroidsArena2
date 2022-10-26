@@ -1,18 +1,20 @@
 module Wall where
 
 import Data.Maybe (mapMaybe)
-import Physics (Acceleration, HasPhysics (getPhysObj), PhysicsObject (position))
-import Rotation (Rotate (..), rot, Angle)
-import VectorCalc (Point (Point), Vector)
-import TypeClasses (V2Math(..), Pictured (..))
-import Sprites (baseWall)
+import GHC.Read (Read (readPrec))
 import Graphics.Gloss (translate)
 import qualified Graphics.Gloss as Gloss
-import GHC.Read (Read(readPrec))
+import Physics (Acceleration, HasPhysics (getPhysObj), PhysicsObject (position))
+import Rotation (Angle, Rotate (..), rot)
+import Sprites (baseWall)
+import TypeClasses (Pictured (..), V2Math (..))
+import VectorCalc (Point (Point), Vector)
 
 type Normal = Vector
 
 type Strength = Float
+
+type InWall = Bool
 
 data Wall = Wall
   { point :: Point,
@@ -21,7 +23,11 @@ data Wall = Wall
     angle :: Angle
   }
 
-type InWall = Bool
+instance Rotate Wall where
+  rotate a w = Wall {point = rot a (point w), normal = rot a (normal w), strength = strength w, angle = angle w + a}
+
+instance Pictured Wall where
+  getGlobalPicture (Wall p n _ r) = translate (x p) (y p) $ Gloss.Rotate (-r + 180) baseWall
 
 isInWall :: HasPhysics a => a -> Wall -> InWall
 isInWall obj (Wall p n _ _) = (pos |-| p) |.| n <= 0
@@ -35,10 +41,3 @@ wallAcceleration o w
 
 totalAcceleration :: HasPhysics a => [Wall] -> a -> Acceleration
 totalAcceleration ws o = foldr (|+|) (Point 0 0) (mapMaybe (wallAcceleration o) ws)
-
-instance Rotate Wall where
-  rotate a w = Wall {point = rot a (point w), normal = rot a (normal w), strength = strength w, angle = angle w + a}
-
-instance Pictured Wall where
-  getGlobalPicture (Wall p n _ r) =  translate (x p) (y p) $ Gloss.Rotate (-r + 180) baseWall
-

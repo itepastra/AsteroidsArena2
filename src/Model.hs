@@ -20,14 +20,6 @@ import System.Random.Stateful (mkStdGen)
 import VectorCalc (Point (Point))
 import Wall (Wall (Wall))
 
-data InfoToShow
-  = ShowNothing
-  | ShowANumber Int
-  | ShowAChar Char
-
-nO_SECS_BETWEEN_CYCLES :: Float
-nO_SECS_BETWEEN_CYCLES = 1
-
 data GameState
   = GameState
       { elapsedTime :: Float,

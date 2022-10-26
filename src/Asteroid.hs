@@ -4,10 +4,10 @@ import AsteroidSpawnFunctions (expRandom)
 import qualified Constants
 import Data.Fixed (mod')
 import Graphics.Gloss (rotate, scale, translate)
-import Physics (HasPhysics (..), PhysicsObject (..), TimeStep, accelerate, move, accelStep, frictionStep)
+import Physics (HasPhysics (..), PhysicsObject (..), TimeStep, accelStep, accelerate, frictionStep, move)
 import Player (Player)
 import Rotation (Angle, Rotate (..), rot)
-import Sprites (baseAsteroid, spaceMine)
+import Sprites (baseAsteroid, baseSpaceMine)
 import System.Random (Random (..), RandomGen, StdGen)
 import System.Random.Stateful (randomM)
 import TypeClasses (Pictured (..), V2Math (..))
@@ -34,12 +34,15 @@ instance HasPhysics Asteroid where
   setPhysObj a po = a {phys = po}
 
 instance Pictured Asteroid where
-  getGlobalPicture (SpaceMine {phys = (PhysObj {position = t}), size = s, rotateAngle = ra}) = translate (x t) (y t) $ Graphics.Gloss.rotate (-ra) $ scale f f spaceMine
+  getGlobalPicture (SpaceMine {phys = (PhysObj {position = t}), size = s, rotateAngle = ra}) = translate (x t) (y t) $ Graphics.Gloss.rotate (-ra) $ scale f f baseSpaceMine
     where
       f = 2 ^ s
   getGlobalPicture (Asteroid {phys = (PhysObj {position = t}), size = s, rotateAngle = ra}) = translate (x t) (y t) $ Graphics.Gloss.rotate (-ra) $ scale f f baseAsteroid
     where
       f = 2 ^ s
+
+instance Rotate Asteroid where
+  rotate a asteroid = asteroid {rotateAngle = (rotateAngle asteroid + a) `mod'` 360}
 
 genRandomAsteroid :: StdGen -> Player -> (StdGen, Asteroid, Float)
 genRandomAsteroid g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAngle, timeTillNext)
@@ -74,10 +77,7 @@ getChildAsteroids _ (SpaceMine {}) = []
 
 track :: Player -> TimeStep -> Asteroid -> Asteroid
 track _ _ a@(Asteroid {}) = a
-track p secs a@(SpaceMine {}) = frictionStep Constants.asteroidFrictionExponent secs . accelStep secs (((300^2) / (pp |#| pa)) |*| (pp |-| pa)) $ a
+track p secs a@(SpaceMine {}) = frictionStep Constants.asteroidFrictionExponent secs . accelStep secs (((300 ^ 2) / (pp |#| pa)) |*| (pp |-| pa)) $ a
   where
     pp = (position . getPhysObj) p
     pa = (position . getPhysObj) a
-
-instance Rotate Asteroid where
-  rotate a asteroid = asteroid {rotateAngle = (rotateAngle asteroid + a) `mod'` 360}

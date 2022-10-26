@@ -1,9 +1,8 @@
-
 module Player where
 
 import Bullet (Bullet (Bullet))
 import qualified Constants
-import Data.Aeson (ToJSON (toEncoding), object, (.=), FromJSON (parseJSON), withObject, (.:))
+import Data.Aeson (FromJSON (parseJSON), ToJSON (toEncoding), object, withObject, (.:), (.=))
 import Graphics.Gloss (Picture (Pictures), translate)
 import qualified Graphics.Gloss as Gloss
 import Physics (Acceleration, HasPhysics (..), PhysicsObject (..), TimeStep, accelerate, move)
@@ -16,7 +15,12 @@ type HealthPoints = Float
 
 type LookDirection = Vector
 
-data Player = Player {phys :: PhysicsObject, hp :: HealthPoints, lookDirection :: LookDirection, lookAngle :: Angle}
+data Player = Player
+  { phys :: PhysicsObject,
+    hp :: HealthPoints,
+    lookDirection :: LookDirection,
+    lookAngle :: Angle
+  }
 
 instance HasPhysics Player where
   getPhysObj = phys
@@ -36,10 +40,3 @@ shoot (Player {phys = phy, lookDirection = ld}) = Bullet (PhysObj (position phy 
   where
     bv = Constants.bulletSpeed |*| ld
     pv = Constants.bulletInitialOffset |*| ld
-
-damage :: Player -> Float -> Player
-damage p d = p {hp = hp p - d}
-
-isDead :: Player -> Bool
-isDead (Player {hp = h}) = h <= 0
-

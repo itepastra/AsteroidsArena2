@@ -2,38 +2,13 @@ module Constants where
 
 import Graphics.Gloss (Path, Picture, lineLoop, polygon)
 
-asteroidDespawnRange2 :: Float
-asteroidDespawnRange2 = fromIntegral (fst pageSize ^ 2 + snd pageSize ^ 2) * 3
-
 pageSize :: (Int, Int)
 pageSize = (1600, 900)
 
 fps :: Int
 fps = 60
 
-shootingInterval :: Float
-shootingInterval = 0.25
-
-bulletLifetime :: Float
-bulletLifetime = 5
-
-bulletSpeed :: Float
-bulletSpeed = 400
-
-bulletInitialOffset :: Float
-bulletInitialOffset = 40
-
-bulletRadius :: Float
-bulletRadius = 4
-
-playerRadius :: Float
-playerRadius = 25
-
-asteroidRadius :: Float
-asteroidRadius = 10
-
-playerAcceleration :: Float
-playerAcceleration = 300
+-- Background Things
 
 starAmount :: [Int]
 starAmount = map (* (uncurry (*) pageSize `div` 90000)) [1 ..]
@@ -47,17 +22,19 @@ parallaxLayers = 5
 parallax :: [Float]
 parallax = map ((1 /) . fromIntegral) [parallaxStart .. (parallaxStart + parallaxLayers)]
 
-playerFrictionExponent :: Float
-playerFrictionExponent = 0.6
+-- Asteroid Things
+
+asteroidDespawnRange2 :: Float
+asteroidDespawnRange2 = fromIntegral (fst pageSize ^ 2 + snd pageSize ^ 2) * 3
+
+asteroidRadius :: Float
+asteroidRadius = 10
 
 spawnDistance :: Float
 spawnDistance = sqrt (fromIntegral (((fst pageSize `div` 2) ^ 2) + ((snd pageSize `div` 2) ^ 2)))
 
 asteroidSpawnAverageInterval :: Float
 asteroidSpawnAverageInterval = 5
-
-playerRotateSpeed :: Float
-playerRotateSpeed = 180
 
 babyAsteroidMinimumSpeed :: Float
 babyAsteroidMinimumSpeed = 10
@@ -76,3 +53,34 @@ asteroidFrictionExponent = 0.5
 
 spaceMineOdds :: Float
 spaceMineOdds = 0.1
+
+-- Player Things
+
+shootingInterval :: Float
+shootingInterval = 0.25
+
+playerRadius :: Float
+playerRadius = 25
+
+playerAcceleration :: Float
+playerAcceleration = 300
+
+playerFrictionExponent :: Float
+playerFrictionExponent = 0.6
+
+playerRotateSpeed :: Float
+playerRotateSpeed = 180
+
+-- Bullet Things
+
+bulletLifetime :: Float
+bulletLifetime = 5
+
+bulletSpeed :: Float
+bulletSpeed = 400
+
+bulletInitialOffset :: Float
+bulletInitialOffset = 40
+
+bulletRadius :: Float
+bulletRadius = 4

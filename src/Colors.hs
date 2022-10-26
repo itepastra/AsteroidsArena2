@@ -1,6 +1,6 @@
 module Colors where
 
-import Graphics.Gloss (Color, blue, cyan, green, magenta, makeColor, mixColors, orange, yellow, addColors, black, red)
+import Graphics.Gloss (Color, addColors, black, blue, cyan, green, magenta, makeColor, mixColors, orange, red, yellow)
 import Rotation (Angle)
 
 playerColor :: Color
@@ -11,6 +11,9 @@ bulletColor = green
 
 asteroidColor :: Color
 asteroidColor = makeColor 0 0.8 1.0 0.3
+
+spaceMineColor :: Color
+spaceMineColor = red
 
 asteroidLineColor :: Color
 asteroidLineColor = makeColor 0 0.8 1.0 1.0
@@ -42,6 +45,3 @@ exhaustGradientColor s = addColors c1 c2
     bRatio = s
     c1 = mixColors rRatio bRatio yellow black
     c2 = mixColors rRatio bRatio black blue
-
-spaceMineColor :: Color
-spaceMineColor = red
