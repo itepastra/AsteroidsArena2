@@ -4,7 +4,7 @@ module View where
 
 import Bullet (Bullet (Bullet))
 import qualified Constants
-import Data.Bifunctor (Bifunctor (bimap))
+import Data.Bifunctor (Bifunctor (bimap), second)
 import Graphics.Gloss
   ( Path,
     Picture (Color, Pictures, Polygon, Scale, Text),
@@ -36,13 +36,13 @@ view = pure . viewPure
 
 viewPure :: GameState -> Picture
 viewPure gs@(GameState {player = p}) = Pictures [viewBackground gs, moveWorldToCenter (getPhysObj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs], viewHud gs]
-viewPure gs@(PauseState {}) = Pictures [color Colors.overlayColor $ uncurry rectangleSolid $ bimap fromIntegral fromIntegral Constants.pageSize, viewPure (previousState gs)]
+viewPure gs@(PauseState {}) = Pictures [viewPure (previousState gs), color Colors.overlayColor $ uncurry rectangleSolid $ bimap fromIntegral fromIntegral Constants.pageSize]
 viewPure _ = blank
 
 viewHud :: GameState -> Picture
 viewHud (GameState {score = s, player = (Player {phys = (PhysObj {velocity = v}), hp = health})}) = Pictures (zipWith formatl [400, 350, 300] ["score: " ++ show s, "speed: " ++ show (sqrt (v |.| v)), "HP: " ++ show health])
   where
-    formatl h = Color white . translate (-430) h . Scale 0.3 0.3 . Text
+    formatl h = color Colors.textColor . translate (20-fromIntegral (fst Constants.pageSize)/2) h . Scale 0.3 0.3 . Text
 viewHud _ = blank
 
 viewBackground :: GameState -> Picture

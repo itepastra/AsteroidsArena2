@@ -22,7 +22,10 @@ wallColor :: Color
 wallColor = makeColor 1 0 0 0.2
 
 overlayColor :: Color
-overlayColor = makeColor 0 0 0 1
+overlayColor = makeColor 0 0 0 0.4
+
+textColor :: Color
+textColor = makeColor 0.95 0.95 0.95 1
 
 rainbowGradientColor :: Float -> Color
 rainbowGradientColor h = makeColor r g b 1

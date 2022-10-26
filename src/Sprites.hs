@@ -10,6 +10,7 @@ import Physics (Velocity)
 import System.Random (StdGen)
 import TypeClasses (V2Math ((|.|)))
 import VectorCalc (Point (Point))
+import Graphics.Gloss (green, color, makeColor)
 
 basePlayer :: Picture
 basePlayer = Color playerColor $ Polygon [(0, 20), (20, -15), (0, 0), (-20, -15)]
@@ -20,7 +21,7 @@ baseBullet a = Color (rainbowGradientColor (90 * a)) $ circleSolid (Constants.bu
 -- c*(1-((c-x)/c) ^ 32)
 
 baseAsteroid :: Picture
-baseAsteroid = scale 3 3 $ Pictures [outline, fill]
+baseAsteroid = Pictures [scale 3 3 $ Pictures [outline, fill],color (makeColor 0 0.8 0 0.5) $ circleSolid Constants.asteroidRadius]
   where
     outline = Color asteroidLineColor $ lineLoop poly
     fill = Color asteroidColor $ polygon poly
