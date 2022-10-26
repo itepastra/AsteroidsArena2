@@ -51,3 +51,5 @@ moveStep secs = updatePhysObj (move secs)
 accelStep :: HasPhysics a => TimeStep -> Acceleration -> a -> a
 accelStep secs a = updatePhysObj $ accelerate secs a 
 
+frictionStep :: HasPhysics a => Float -> TimeStep -> a -> a
+frictionStep exp secs = updatePhysObj $ friction exp secs

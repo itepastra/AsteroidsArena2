@@ -4,7 +4,7 @@ import AsteroidSpawnFunctions (expRandom)
 import qualified Constants
 import Data.Fixed (mod')
 import Graphics.Gloss (rotate, scale, translate)
-import Physics (HasPhysics (..), PhysicsObject (..), TimeStep, accelerate, move, accelStep)
+import Physics (HasPhysics (..), PhysicsObject (..), TimeStep, accelerate, move, accelStep, frictionStep)
 import Player (Player)
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseAsteroid, spaceMine)
@@ -74,7 +74,7 @@ getChildAsteroids _ (SpaceMine {}) = []
 
 track :: Player -> TimeStep -> Asteroid -> Asteroid
 track _ _ a@(Asteroid {}) = a
-track p secs a@(SpaceMine {}) = accelStep secs (((300^2) / (pp |#| pa)) |*| (pp |-| pa)) a
+track p secs a@(SpaceMine {}) = frictionStep Constants.asteroidFrictionExponent secs . accelStep secs (((300^2) / (pp |#| pa)) |*| (pp |-| pa)) $ a
   where
     pp = (position . getPhysObj) p
     pa = (position . getPhysObj) a
