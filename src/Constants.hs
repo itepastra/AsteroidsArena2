@@ -30,7 +30,7 @@ playerRadius :: Float
 playerRadius = 25
 
 asteroidRadius :: Float
-asteroidRadius = 7
+asteroidRadius = 10
 
 playerAcceleration :: Float
 playerAcceleration = 300
@@ -71,5 +71,8 @@ babyAsteroidMinimumRotation = -10
 babyAsteroidMaximumRotation :: Float
 babyAsteroidMaximumRotation = 10
 
+asteroidFrictionExponent :: Float
+asteroidFrictionExponent = 0.5
+
 spaceMineOdds :: Float
-spaceMineOdds = 1
+spaceMineOdds = 0.1
