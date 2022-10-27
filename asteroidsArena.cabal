@@ -39,4 +39,6 @@ executable asteroids-arena2
                      , Level
                      , Input
                      , JSONfuncs
+                     , Hasa
+                     , Types1
   default-language:    Haskell2010
