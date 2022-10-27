@@ -4,17 +4,13 @@ import Data.Maybe (mapMaybe)
 import GHC.Read (Read (readPrec))
 import Graphics.Gloss (translate)
 import qualified Graphics.Gloss as Gloss
-import Physics (Acceleration, HasPhysics (getPhysObj), PhysicsObject (position))
+import Physics (HasPhysics (getPhysObj), PhysicsObject (position))
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseWall)
 import TypeClasses (Pictured (..), V2Math (..))
-import VectorCalc (Point (Point), Vector)
+import VectorCalc (Point (Point))
+import Types1 (Normal, Strength, InWall, Acceleration)
 
-type Normal = Vector
-
-type Strength = Float
-
-type InWall = Bool
 
 data Wall = Wall
   { point :: Point,

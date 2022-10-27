@@ -1,19 +1,10 @@
 module Physics where
 
-import TypeClasses
-import VectorCalc (Point, Vector)
+import TypeClasses ( V2Math((|#|), (|+|), (|*|)) )
+import Types1 (TimeStep, Position, Velocity, Acceleration, Collides)
 
-type TimeStep = Float
 
-type Position = Point
 
-type Acceleration = Vector
-
-type Velocity = Vector
-
-type Dist = Float
-
-type Collides = Bool
 
 data PhysicsObject = PhysObj
   { position :: Position,

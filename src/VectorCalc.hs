@@ -5,10 +5,8 @@ module VectorCalc where
 import Prelude hiding (negate)
 import TypeClasses (V2Math (..))
 
+
 data Point = Point Float Float
-
-type Vector = Point
-
 
 instance V2Math Point where
   x :: Point -> Float

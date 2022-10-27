@@ -1,10 +1,9 @@
 module Bullet where
-import Physics (PhysicsObject (..), HasPhysics (..), accelerate, move, TimeStep)
+import Physics (PhysicsObject (..), HasPhysics (..), accelerate, move)
 import TypeClasses (Pictured (..), V2Math (..))
 import Sprites (baseBullet)
 import Graphics.Gloss (translate)
-
-type Lifetime = Float
+import Types1 ( TimeStep, Lifetime )
 
 data Bullet = Bullet {phys :: PhysicsObject, lifeTime :: Lifetime}
 

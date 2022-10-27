@@ -1,6 +1,6 @@
+{-# LANGUAGE Safe #-}
 module Constants where
 
-import Graphics.Gloss (Path, Picture, lineLoop, polygon)
 
 pageSize :: (Int, Int)
 pageSize = (1600, 900)
@@ -34,7 +34,7 @@ spawnDistance :: Float
 spawnDistance = sqrt (fromIntegral (((fst pageSize `div` 2) ^ 2) + ((snd pageSize `div` 2) ^ 2)))
 
 asteroidSpawnAverageInterval :: Float
-asteroidSpawnAverageInterval = 5
+asteroidSpawnAverageInterval = 3
 
 babyAsteroidMinimumSpeed :: Float
 babyAsteroidMinimumSpeed = 10
@@ -72,7 +72,7 @@ playerRotateSpeed :: Float
 playerRotateSpeed = 180
 
 playerMaxHp :: Float
-playerMaxHp = 1
+playerMaxHp = 100
 
 -- Bullet Things
 

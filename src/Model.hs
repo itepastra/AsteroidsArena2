@@ -14,11 +14,12 @@ import qualified Graphics.Gloss as Gloss
 import Graphics.Gloss.Interface.IO.Game (Key)
 import Level (LevelConfig (LevelConfig))
 import Physics (PhysicsObject (..))
-import Player (HealthPoints, Player (Player))
+import Player (Player (Player))
 import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
 import VectorCalc (Point (Point))
 import Wall (Wall (Wall))
+import Types1 (Time)
 
 data GameState
   = GameState
@@ -37,7 +38,8 @@ data GameState
       }
   | DeathState
       { 
-        previousState :: GameState
+        previousState :: GameState,
+        timeSinceDeath :: Time
       }
   | MenuState
       { levels :: [Level]

@@ -4,16 +4,14 @@ import AsteroidSpawnFunctions (expRandom)
 import qualified Constants
 import Data.Fixed (mod')
 import Graphics.Gloss (rotate, scale, translate)
-import Physics (HasPhysics (..), PhysicsObject (..), TimeStep, accelStep, accelerate, frictionStep, move)
-import Player (Player)
+import Physics (HasPhysics (..), PhysicsObject (..), accelStep, accelerate, frictionStep, move)
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseAsteroid, baseSpaceMine)
 import System.Random (Random (..), RandomGen, StdGen)
 import System.Random.Stateful (randomM)
 import TypeClasses (Pictured (..), V2Math (..))
-import VectorCalc (Point (..))
-
-type Size = Int
+import Types1 (TimeStep, Size)
+import VectorCalc ( Point(Point) )
 
 data Asteroid
   = Asteroid
@@ -44,14 +42,14 @@ instance Pictured Asteroid where
 instance Rotate Asteroid where
   rotate a asteroid = asteroid {rotateAngle = (rotateAngle asteroid + a) `mod'` 360}
 
-genRandomAsteroid :: StdGen -> Player -> (StdGen, Asteroid, Float)
+genRandomAsteroid :: StdGen -> PhysicsObject -> (StdGen, Asteroid, Float)
 genRandomAsteroid g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAngle, timeTillNext)
   where
     ((spawnAngle, moveAngle, size, uTime, moveSpeed, rSpeed, rAngle), g1) = randomR ((0, -25, 1, 0, 20, -15, 0), (360, 25, 3, 1, 80, 15, 360)) g0
     (atype, g) = randomR (0, 1) g1
     timeTillNext = expRandom uTime
-    pos = position (getPhysObj p) |+| (Constants.spawnDistance |*| rot spawnAngle (Point 1 0))
-    vel = (rot moveAngle . (moveSpeed |*|) . normalize) (position (getPhysObj p) |-| pos)
+    pos = position p |+| (Constants.spawnDistance |*| rot spawnAngle (Point 1 0))
+    vel = (rot moveAngle . (moveSpeed |*|) . normalize) (position p |-| pos)
     rad = Constants.asteroidRadius * (2 ^ size)
     constr
       | atype < Constants.spaceMineOdds = SpaceMine
@@ -75,9 +73,9 @@ getChildAsteroids (angle, speed, rSpeed) (Asteroid {size = s, phys = phy, rotate
         [0, -rSpeed, rSpeed]
 getChildAsteroids _ (SpaceMine {}) = []
 
-track :: Player -> TimeStep -> Asteroid -> Asteroid
+track :: PhysicsObject -> TimeStep -> Asteroid -> Asteroid
 track _ _ a@(Asteroid {}) = a
 track p secs a@(SpaceMine {}) = frictionStep Constants.asteroidFrictionExponent secs . accelStep secs (((300 ^ 2) / (pp |#| pa)) |*| (pp |-| pa)) $ a
   where
-    pp = (position . getPhysObj) p
+    pp = position p
     pa = (position . getPhysObj) a

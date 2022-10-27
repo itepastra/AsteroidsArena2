@@ -1,10 +1,8 @@
 module AsteroidSpawnFunctions where
 
 import qualified Constants
+import Types1 (UniformTime, Time)
 
-type Time = Float
-
-type UniformTime = Time
 
 expRandom :: UniformTime -> Time
 expRandom uTime = -Constants.asteroidSpawnAverageInterval * log uTime

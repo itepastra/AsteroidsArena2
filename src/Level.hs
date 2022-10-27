@@ -1,5 +1,5 @@
 module Level where
-import AsteroidSpawnFunctions (UniformTime, Time)
+import Types1 (Time, UniformTime)
 
 data LevelConfig = LevelConfig
   { asteroidSpawnFunction :: UniformTime -> Time,
