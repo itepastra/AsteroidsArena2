@@ -13,7 +13,7 @@ instance HasPhysics Bullet where
   setPhysObj a po = a {phys = po}
 
 instance Pictured Bullet where
-  getGlobalPicture (Bullet {phys = (PhysObj {position=t}), lifeTime = lt } ) = translate (x t) (y t) (baseBullet lt)
+  getPicture (Bullet {phys = (PhysObj {position=t}), lifeTime = lt } ) = translate (x t) (y t) (baseBullet lt)
 
 updateLifetime :: TimeStep -> Bullet -> Bullet
 updateLifetime ts (Bullet p l) = Bullet p (l - ts)

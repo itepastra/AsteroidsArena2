@@ -12,6 +12,8 @@ import Data.Set (Set, member)
 import Graphics.Gloss.Interface.IO.Game (Key (Char, SpecialKey), SpecialKey (KeySpace))
 import Model (GameState (..))
 import Physics (Acceleration, HasPhysics (getPhysObj), PhysicsObject (..), TimeStep, accelStep, checkCollision, frictionStep, moveStep, updatePhysObj)
+import qualified Physics as Asteroid
+import qualified Physics as Player
 import Player (Player (hp), lookAccel, shoot)
 import Rotation (Angle, Rotate (rotate))
 import System.Random (Random (random, randomRs), RandomGen (split))
@@ -25,11 +27,11 @@ step = (pure .) . pureStep
 -- | Handle one iteration of the game
 pureStep :: Float -> GameState -> GameState
 pureStep secs gstate@(GameState {}) =
-  case newDamagedPlayer of
-    Nothing -> DeathState {score = score gstate, previousState = gstate}
-    Just pl ->
+  case hp (player gstate) of
+    0 -> DeathState {previousState = gstate}
+    _ ->
       gstate
-        { player = pl,
+        { player = newDamagedPlayer,
           asteroids = rrna,
           bullets = trueNewBullets,
           timeSinceLastShot = newTimeSinceLast,
@@ -45,7 +47,8 @@ pureStep secs gstate@(GameState {}) =
     newPlayer = updatePlayer (rotSpeed $ keys gstate) (walls gstate) secs (if member (Char 'w') (keys gstate) then lookAccel (player gstate) else Point 0 0) $ player gstate
     newDamagedPlayer = playerDamage newAsteroids newBullets newPlayer
     newWalls = map (rotate (2 * secs)) (walls gstate)
-    (trueNewBullets, trueNewAsteroids, destroyedAsteroids) = asteroidBulletCollisions newBullets newAsteroids newPlayer
+    trueNewBullets = bulletCollisions newAsteroids newPlayer newBullets
+    (trueNewAsteroids, destroyedAsteroids) = asteroidCollisions newBullets newPlayer newAsteroids
     (newrand, rna, ttna) = if timeTillNextAsteroid gstate <= 0 then (\(a, b, c) -> (a, b : trueNewAsteroids, c)) $ genRandomAsteroid (rand gstate) (player gstate) else (rand gstate, trueNewAsteroids, timeTillNextAsteroid gstate - secs)
     nnrand
       | not (null destroyedAsteroids) = snd (split newrand)
@@ -56,18 +59,21 @@ pureStep secs gstate@(DeathState {}) = gstate
 pureStep secs gstate@(MenuState {}) = gstate
 pureStep secs gstate@(PauseState {}) = gstate
 
-asteroidBulletCollisions :: [Bullet] -> [Asteroid] -> Player -> ([Bullet], [Asteroid], [Asteroid])
-asteroidBulletCollisions [] [] _ = ([], [], [])
-asteroidBulletCollisions bs as p =
-  (filter (\b -> not (any (checkCollision b) as || checkCollision p b)) bs, la, da)
-  where
-    (la, da) = foldr (\a (as, ds) -> if checkCollision p a then (as, ds) else (if any (checkCollision a) bs then (as, a : ds) else (a : as, ds))) ([], []) as
+bulletCollisions :: [Asteroid] -> Player -> [Bullet] -> [Bullet]
+bulletCollisions as p = filter (\b -> not (any (checkCollision b) as || checkCollision p b))
 
-playerDamage :: [Asteroid] -> [Bullet] -> Player -> Maybe Player
-playerDamage as bs p = case foldl' (bulletDamage p) (foldl' (asteroidDamage p) (Just (hp p)) as) bs of
-  Just health -> Just p {hp = health}
-  Nothing -> Nothing
+asteroidCollisions :: [Bullet] -> Player -> [Asteroid] -> ([Asteroid], [Asteroid])
+asteroidCollisions bs p = foldr (\a (as, ds) -> if checkCollision p a then (as, ds) else (if any (checkCollision a) bs then (as, a : ds) else (a : as, ds))) ([], [])
+
+playerDamage :: [Asteroid] -> [Bullet] -> Player -> Player
+playerDamage as bs p = np
   where
+    np = case foldl'
+      (bulletDamage p)
+      (foldl' (asteroidDamage p) (Just (hp p)) as)
+      bs of
+      Nothing -> p {hp = 0}
+      Just x -> p {hp = x}
     bulletDamage _ Nothing _ = Nothing
     bulletDamage p (Just hp) b = if checkCollision p b then (if hp > 15 then Just (hp - 15) else Nothing) else Just hp
     asteroidDamage _ Nothing _ = Nothing

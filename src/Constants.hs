@@ -6,7 +6,7 @@ pageSize :: (Int, Int)
 pageSize = (1600, 900)
 
 fps :: Int
-fps = 60
+fps = 30
 
 -- Background Things
 
@@ -70,6 +70,9 @@ playerFrictionExponent = 0.6
 
 playerRotateSpeed :: Float
 playerRotateSpeed = 180
+
+playerMaxHp :: Float
+playerMaxHp = 1
 
 -- Bullet Things
 

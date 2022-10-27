@@ -30,16 +30,13 @@ import Sprites (baseStar, starrySky)
 import TypeClasses (Pictured (..), V2Math (..))
 import qualified TypeClasses as VectorCalc
 import VectorCalc (Point (Point))
+import Data.Function ((&))
 
 type CamOffset = Point
 
 view :: GameState -> IO Picture
-view = pure . viewPure
+view = pure . getPicture
 
-viewPure :: GameState -> Picture
-viewPure gs@(GameState {player = p}) = Pictures [viewBackground gs, moveWorldToCenter (getPhysObj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs], viewHud gs]
-viewPure gs@(PauseState {}) = Pictures [viewPure (previousState gs), color Colors.overlayColor $ uncurry rectangleSolid $ bimap fromIntegral fromIntegral Constants.pageSize]
-viewPure _ = blank
 
 viewHud :: GameState -> Picture
 viewHud (GameState {score = s, player = (Player {phys = (PhysObj {velocity = v}), hp = health})}) = Pictures (zipWith formatl [400, 350, 300] ["score: " ++ show s, "speed: " ++ show (sqrt (v |.| v)), "HP: " ++ show health])
@@ -63,20 +60,32 @@ viewBackground (GameState {player = p, starPositions = sps}) =
 viewBackground _ = blank
 
 viewPlayer :: GameState -> Picture
-viewPlayer (GameState {player = p}) = getGlobalPicture p
+viewPlayer (GameState {player = p}) = getPicture p
 viewPlayer _ = blank
 
 viewAsteroids :: GameState -> Picture
-viewAsteroids (GameState {asteroids = as}) = (Pictures . map getGlobalPicture) as
+viewAsteroids (GameState {asteroids = as}) = (Pictures . map getPicture) as
 viewAsteroids _ = blank
 
 viewBullets :: GameState -> Picture
-viewBullets (GameState {bullets = as}) = (Pictures . map getGlobalPicture) as
+viewBullets (GameState {bullets = as}) = (Pictures . map getPicture) as
 viewBullets _ = blank
 
 viewWalls :: GameState -> Picture
-viewWalls (GameState {walls = ws}) = (Pictures . map getGlobalPicture) ws
+viewWalls (GameState {walls = ws}) = (Pictures . map getPicture) ws
 viewWalls _ = blank
 
 moveWorldToCenter :: PhysicsObject -> Picture -> Picture
 moveWorldToCenter (PhysObj {position = t}) = translate (-x t) (-y t)
+
+viewDimmed :: Picture
+viewDimmed = color Colors.overlayColor $ uncurry rectangleSolid $ bimap fromIntegral fromIntegral Constants.pageSize
+
+viewOverlayText :: String -> Picture
+viewOverlayText s = color Colors.textColor . translate (fromIntegral (-40 * length s)) (-50) . Text $ s
+
+instance Pictured GameState where
+  getPicture gs@(GameState {player = p}) = Pictures [viewBackground gs, moveWorldToCenter (getPhysObj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs], viewHud gs]
+  getPicture gs@(PauseState {}) = Pictures [getPicture (previousState gs), viewDimmed, viewOverlayText "Pause"]
+  getPicture gs@(DeathState {}) = Pictures [getPicture (previousState gs), viewDimmed, viewOverlayText "U Ded"]
+  getPicture gs@(MenuState {}) = undefined

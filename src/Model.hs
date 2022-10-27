@@ -8,7 +8,7 @@ module Model where
 
 import Asteroid (Asteroid (Asteroid))
 import Bullet (Bullet)
-import Constants (asteroidRadius, playerRadius)
+import Constants (asteroidRadius, playerRadius, playerMaxHp)
 import Data.Set (Set, empty)
 import qualified Graphics.Gloss as Gloss
 import Graphics.Gloss.Interface.IO.Game (Key)
@@ -36,7 +36,7 @@ data GameState
         levelConfig :: LevelConfig
       }
   | DeathState
-      { score :: Int,
+      { 
         previousState :: GameState
       }
   | MenuState
@@ -59,7 +59,7 @@ data GameStateInit = GameStateInit
   }
 
 newPlayer :: Player
-newPlayer = Player (PhysObj (Point 0 0) (Point 0 0) playerRadius) 100 (Point 0 1) 0
+newPlayer = Player (PhysObj (Point 0 0) (Point 0 0) playerRadius) Constants.playerMaxHp (Point 0 1) 0
 
 gameStateFromLevel :: StdGen -> [[Gloss.Point]] -> Level -> GameState
 gameStateFromLevel r pts (Level {initState = initState}) =

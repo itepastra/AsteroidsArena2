@@ -17,5 +17,5 @@ class V2Math a where
 
 
 class Pictured a where
-  getGlobalPicture :: a -> Picture
+  getPicture :: a -> Picture
 

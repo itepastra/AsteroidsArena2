@@ -27,7 +27,7 @@ instance Rotate Wall where
   rotate a w = Wall {point = rot a (point w), normal = rot a (normal w), strength = strength w, angle = angle w + a}
 
 instance Pictured Wall where
-  getGlobalPicture (Wall p n _ r) = translate (x p) (y p) $ Gloss.Rotate (-r + 180) baseWall
+  getPicture (Wall p n _ r) = translate (x p) (y p) $ Gloss.Rotate (-r + 180) baseWall
 
 isInWall :: HasPhysics a => a -> Wall -> InWall
 isInWall obj (Wall p n _ _) = (pos |-| p) |.| n <= 0

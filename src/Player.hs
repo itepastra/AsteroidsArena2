@@ -30,7 +30,7 @@ instance Rotate Player where
   rotate a p = p {lookDirection = rot a (lookDirection p), lookAngle = lookAngle p - a}
 
 instance Pictured Player where
-  getGlobalPicture (Player {phys = (PhysObj {position = t, velocity = v}), lookAngle = a}) = translate (x t) (y t) $ Pictures $ map (Gloss.rotate a) [baseExhaust v, basePlayer]
+  getPicture (Player {phys = (PhysObj {position = t, velocity = v}), lookAngle = a}) = translate (x t) (y t) $ Pictures $ map (Gloss.rotate a) [baseExhaust v, basePlayer]
 
 lookAccel :: Player -> Acceleration
 lookAccel p = Constants.playerAcceleration |*| lookDirection p

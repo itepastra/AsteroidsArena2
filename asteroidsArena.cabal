@@ -8,6 +8,7 @@ cabal-version:       >=1.10
 
 
 executable asteroids-arena2
+  ghc-options:         -threaded
   main-is:             Main.hs
   build-depends:       base >= 4,
                        gloss,
