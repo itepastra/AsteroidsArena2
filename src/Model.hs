@@ -19,7 +19,7 @@ import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
 import VectorCalc (Point (Point))
 import Wall (Wall (Wall))
-import Types1 (Time)
+import Types1 (Time, TimeStep)
 
 data GameState
   = GameState
@@ -34,7 +34,8 @@ data GameState
         timeSinceLastShot :: Float,
         timeTillNextAsteroid :: Float,
         score :: Int,
-        levelConfig :: LevelConfig
+        levelConfig :: LevelConfig,
+        frameTime :: TimeStep
       }
   | DeathState
       { 
@@ -77,7 +78,8 @@ gameStateFromLevel r pts (Level {initState = initState}) =
       score = 0,
       walls = initWalls initState,
       keys = empty,
-      levelConfig = initConf initState
+      levelConfig = initConf initState,
+      frameTime = 0
     }
 
 defaultLevels :: [Level]

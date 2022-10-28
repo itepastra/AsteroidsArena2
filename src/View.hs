@@ -6,6 +6,7 @@ import Bullet (Bullet (Bullet))
 import qualified Colors
 import qualified Constants
 import Data.Bifunctor (Bifunctor (bimap), second)
+import Data.Function ((&))
 import Graphics.Gloss
   ( Path,
     Picture (Color, Pictures, Polygon, Scale, Text),
@@ -29,17 +30,17 @@ import Player (Player (Player, hp, phys))
 import Sprites (baseStar, starrySky)
 import TypeClasses (Pictured (..), V2Math (..))
 import qualified TypeClasses as VectorCalc
+import Types1 (Time)
 import VectorCalc (Point (Point))
-import Data.Function ((&))
 
 type CamOffset = Point
 
 view :: GameState -> IO Picture
 view = pure . getPicture
 
-
 viewHud :: GameState -> Picture
-viewHud (GameState {score = s, player = (Player {phys = (PhysObj {velocity = v}), hp = health})}) = Pictures (zipWith formatl [400, 350, 300] ["score: " ++ show s, "speed: " ++ show (sqrt (v |.| v)), "HP: " ++ show health])
+viewHud (DeathState {}) = blank
+viewHud (GameState {score = s, player = (Player {phys = (PhysObj {velocity = v}), hp = health}), asteroids = as}) = Pictures (zipWith formatl [400, 350, 300, 250] ["score: " ++ show s, "speed: " ++ show (sqrt (v |.| v)), "HP: " ++ show health, "LastFrame: " ++ show (length as)])
   where
     formatl h = color Colors.textColor . translate (20 - fromIntegral (fst Constants.pageSize) / 2) h . Scale 0.3 0.3 . Text
 viewHud _ = blank

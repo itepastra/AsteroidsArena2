@@ -17,7 +17,7 @@ parallaxStart :: Int
 parallaxStart = 2
 
 parallaxLayers :: Int
-parallaxLayers = 5
+parallaxLayers = -1
 
 parallax :: [Float]
 parallax = map ((1 /) . fromIntegral) [parallaxStart .. (parallaxStart + parallaxLayers)]
@@ -72,7 +72,7 @@ playerRotateSpeed :: Float
 playerRotateSpeed = 180
 
 playerMaxHp :: Float
-playerMaxHp = 100
+playerMaxHp = 1e67
 
 -- Bullet Things
 

@@ -9,7 +9,7 @@ import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseWall)
 import TypeClasses (Pictured (..), V2Math (..))
 import VectorCalc (Point (Point))
-import Types1 (Normal, Strength, InWall, Acceleration)
+import Types1 (Normal, Strength, InWall, Acceleration, TimeStep, Offset)
 
 
 data Wall = Wall
@@ -20,7 +20,7 @@ data Wall = Wall
   }
 
 instance Rotate Wall where
-  rotate a w = Wall {point = rot a (point w), normal = rot a (normal w), strength = strength w, angle = angle w + a}
+  rotate a w = w {point = rot a (point w), normal = rot a (normal w), angle = angle w + a}
 
 instance Pictured Wall where
   getPicture (Wall p n _ r) = translate (x p) (y p) $ Gloss.Rotate (-r + 180) baseWall
@@ -37,3 +37,18 @@ wallAcceleration o w
 
 totalAcceleration :: HasPhysics a => [Wall] -> a -> Acceleration
 totalAcceleration ws o = foldr (|+|) (Point 0 0) (mapMaybe (wallAcceleration o) ws)
+
+setOffset :: Offset -> Wall -> Wall
+setOffset o w = w {point = (- o) |*| normal w}
+
+setRotation :: Angle -> Wall -> Wall
+setRotation a w = w { point = rot a (Point 1 0), normal = rot a (Point (-1) 0), angle = a }
+
+setStrength :: Strength -> Wall -> Wall
+setStrength s w = w {strength = s}
+
+baseW :: Wall
+baseW = Wall {point =  Point 1 0, normal =  Point (-1) 0, angle = 0 , strength = 1}
+
+createWall :: Offset -> Angle -> Strength -> Wall
+createWall o a s = (setOffset o . setRotation a . setStrength s) baseW

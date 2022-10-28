@@ -12,6 +12,10 @@ type UniformTime = Time
 
 type ElapsedTime = Time
 
+type IntervalTime = Time
+
+type TimeAvg = Time
+
 type Position = Point
 
 type Acceleration = Vector
@@ -35,3 +39,5 @@ type InWall = Bool
 type Size = Int
 
 type Lifetime = Float
+
+type Offset = Float

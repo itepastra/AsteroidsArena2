@@ -29,5 +29,6 @@ retryState g =
       score = 0,
       levelConfig = levelConfig $ previousState g,
       keys = empty,
-      starPositions = starPositions $ previousState g
+      starPositions = starPositions $ previousState g,
+      frameTime = 0
     }

@@ -19,7 +19,8 @@ baseBullet :: Float -> Picture
 baseBullet a = Color (rainbowGradientColor (90 * a)) $ circleSolid (Constants.bulletRadius * (1 - (((Constants.bulletLifetime - a) / Constants.bulletLifetime) ^ 32)))
 
 baseAsteroid :: Picture
-baseAsteroid = Pictures [scale 3 3 $ Pictures [outline, fill], color (makeColor 0 0.8 0 0.5) $ circleSolid Constants.asteroidRadius]
+-- baseAsteroid = scale 3 3 $ Pictures [outline, fill]
+baseAsteroid = scale 3 3 $ Pictures [outline]
   where
     outline = Color asteroidLineColor $ lineLoop poly
     fill = Color asteroidColor $ polygon poly

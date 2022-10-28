@@ -12,6 +12,7 @@ import Asteroid
     getChildAsteroids,
     track,
   )
+import AsteroidSpawnFunctions (divDecay)
 import Bullet (Bullet (lifeTime), updateLifetime)
 import qualified Constants
 import Data.Bifunctor (Bifunctor (second))
@@ -23,7 +24,7 @@ import Model (GameState (..))
 import Physics (HasPhysics (getPhysObj), PhysicsObject (..), accelStep, checkCollision, frictionStep, moveStep, updatePhysObj)
 import qualified Physics as Asteroid
 import qualified Physics as Player
-import Player (Player (Player, hp), lookAccel, playerDamage, playerHeal, shoot)
+import Player (Player (InvPlayer, Player, hp, lookAngle, lookDirection), lookAccel, playerDamage, playerHeal, shoot, swapPlayerType)
 import Rotation (Angle, Rotate (rotate))
 import System.Random (Random (random, randomRs), RandomGen (split))
 import TypeClasses (V2Math (..))
@@ -36,9 +37,26 @@ step = (pure .) . pureStep
 
 -- | Handle one iteration of the game
 pureStep :: Float -> GameState -> GameState
-pureStep secs gstate@(GameState {}) =
+pureStep secs gstate@(DeathState {previousState = g@(DeathState {})}) = pureStep (secs / timeSinceDeath gstate) g
+pureStep secs gstate@(DeathState {}) = gstate {previousState = pureStep (secs / timeSinceDeath gstate) (previousState gstate), timeSinceDeath = timeSinceDeath gstate + secs}
+pureStep secs gstate@(MenuState {}) = gstate
+pureStep secs gstate@(PauseState {}) = gstate
+pureStep secs gstate@(GameState {player = InvPlayer {}}) = pureStep secs $ updateA (playerHeal 1) $ gstate {player = swapPlayerType (player gstate)}
+pureStep secs gstate@(GameState {player = Player {}}) =
   case hp (player gstate) of
-    0 -> DeathState {previousState = updateA emptyKeys $ updateA (playerHeal 1e10) gstate, timeSinceDeath = 0}
+    0 ->
+      DeathState
+        { previousState =
+            updateA emptyKeys $
+              ( \g ->
+                  g
+                    { player =
+                        swapPlayerType (player gstate)
+                    }
+              )
+                gstate,
+          timeSinceDeath = 1
+        }
     _ ->
       gstate
         { player = newDamagedPlayer,
@@ -49,7 +67,8 @@ pureStep secs gstate@(GameState {}) =
           timeTillNextAsteroid = ttna,
           rand = nnrand,
           score = snew,
-          elapsedTime = elapsedTime gstate + secs
+          elapsedTime = elapsedTime gstate + secs,
+          frameTime = secs
         }
   where
     (newTimeSinceLast, newBullets) = second (($ bullets gstate) . (. mapMaybe (updateBullet secs (walls gstate)))) (bulletSpawn (keys gstate) (timeSinceLastShot gstate) secs (player gstate))
@@ -59,20 +78,17 @@ pureStep secs gstate@(GameState {}) =
     newWalls = map (rotate (2 * secs)) (walls gstate)
     trueNewBullets = bulletCollisions newAsteroids newPlayer newBullets
     (trueNewAsteroids, destroyedAsteroids) = asteroidCollisions newBullets newPlayer newAsteroids
-    (newrand, rna, ttna) = if timeTillNextAsteroid gstate <= 0 then (\(a, b, c) -> (a, b : trueNewAsteroids, c)) $ genRandomAsteroid (rand gstate) ((getPhysObj . player) gstate) else (rand gstate, trueNewAsteroids, timeTillNextAsteroid gstate - secs)
+    (newrand, rna, ttna) = if timeTillNextAsteroid gstate <= 0 then (\(a, b, c) -> (a, b : trueNewAsteroids, c)) $ genRandomAsteroid (divDecay (elapsedTime gstate)) (rand gstate) ((getPhysObj . player) gstate) else (rand gstate, trueNewAsteroids, timeTillNextAsteroid gstate - secs)
     nnrand
       | null destroyedAsteroids = newrand
       | otherwise = snd (split newrand)
     rrna = concatMap (uncurry getChildAsteroids) (zip (randomRs ((0, Constants.babyAsteroidMinimumSpeed, Constants.babyAsteroidMinimumRotation), (120, Constants.babyAsteroidMaximumSpeed, Constants.babyAsteroidMaximumRotation)) newrand) destroyedAsteroids) ++ rna
     snew = score gstate + length destroyedAsteroids
-pureStep secs gstate@(DeathState {}) = gstate {previousState = pureStep (secs / 2) (previousState gstate)}
-pureStep secs gstate@(MenuState {}) = gstate
-pureStep secs gstate@(PauseState {}) = gstate
 
-bulletCollisions :: [Asteroid] -> Player -> [Bullet] -> [Bullet]
+bulletCollisions :: (HasPhysics a, HasPhysics b) => [a] -> b -> [Bullet] -> [Bullet]
 bulletCollisions as p = filter (\b -> not (any (checkCollision b) as || checkCollision p b))
 
-asteroidCollisions :: [Bullet] -> Player -> [Asteroid] -> ([Asteroid], [Asteroid])
+asteroidCollisions :: (HasPhysics a, HasPhysics b) => [a] -> b -> [Asteroid] -> ([Asteroid], [Asteroid])
 asteroidCollisions bs p = foldr (\a (as, ds) -> if checkCollision p a then (as, ds) else (if any (checkCollision a) bs then (as, a : ds) else (a : as, ds))) ([], [])
 
 instance HasA Player GameState where
