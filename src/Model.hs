@@ -8,7 +8,7 @@ module Model where
 
 import Asteroid (Asteroid (Asteroid))
 import Bullet (Bullet)
-import Constants (asteroidRadius, playerRadius, playerMaxHp)
+import Constants (asteroidRadius, playerMaxHp, playerRadius)
 import Data.Set (Set, empty)
 import qualified Graphics.Gloss as Gloss
 import Graphics.Gloss.Interface.IO.Game (Key)
@@ -17,9 +17,10 @@ import Physics (PhysicsObject (..))
 import Player (Player (Player))
 import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
+import Types1 (Time, TimeStep)
 import VectorCalc (Point (Point))
 import Wall (Wall (Wall))
-import Types1 (Time, TimeStep)
+import AsteroidSpawnFunctions (expRandom, expDecay)
 
 data GameState
   = GameState
@@ -38,16 +39,14 @@ data GameState
         frameTime :: TimeStep
       }
   | DeathState
-      { 
-        previousState :: GameState,
+      { previousState :: GameState,
         timeSinceDeath :: Time
       }
   | MenuState
       { levels :: [Level]
       }
   | PauseState
-      { 
-        previousState :: GameState
+      { previousState :: GameState
       }
 
 data Level = Level
@@ -95,7 +94,10 @@ defaultLevels =
                   Wall (Point 0 (-400)) (Point 0 1) 450 0,
                   Wall (Point 400 0) (Point (-1) 0) 450 90
                 ],
-              initConf = LevelConfig id "nah"
+              initConf = emptyLvlConf
             }
       }
   ]
+
+emptyLvlConf :: LevelConfig 
+emptyLvlConf = LevelConfig expRandom expDecay

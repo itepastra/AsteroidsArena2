@@ -8,8 +8,5 @@ import Level (LevelConfig(LevelConfig))
 importLevel :: FilePath -> IO Level
 importLevel fp = do
   contents <- readFile fp
-  return emptyLvl
+  return undefined
 
-
-emptyLvl :: Level
-emptyLvl = Level "" (GameStateInit [] [] (LevelConfig id "weh"))

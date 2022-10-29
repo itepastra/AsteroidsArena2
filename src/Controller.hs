@@ -12,7 +12,7 @@ import Asteroid
     getChildAsteroids,
     track,
   )
-import AsteroidSpawnFunctions (divDecay)
+import AsteroidSpawnFunctions (divDecay, expDecay)
 import Bullet (Bullet (lifeTime), updateLifetime)
 import qualified Constants
 import Data.Bifunctor (Bifunctor (second))
@@ -37,7 +37,7 @@ step = (pure .) . pureStep
 
 -- | Handle one iteration of the game
 pureStep :: Float -> GameState -> GameState
-pureStep secs gstate@(DeathState {previousState = g@(DeathState {})}) = pureStep (secs / timeSinceDeath gstate) g
+pureStep secs gstate@(DeathState {previousState = g@(DeathState {})}) = gstate {previousState = pureStep (secs / timeSinceDeath gstate) (previousState g)}
 pureStep secs gstate@(DeathState {}) = gstate {previousState = pureStep (secs / timeSinceDeath gstate) (previousState gstate), timeSinceDeath = timeSinceDeath gstate + secs}
 pureStep secs gstate@(MenuState {}) = gstate
 pureStep secs gstate@(PauseState {}) = gstate
@@ -78,7 +78,7 @@ pureStep secs gstate@(GameState {player = Player {}}) =
     newWalls = map (rotate (2 * secs)) (walls gstate)
     trueNewBullets = bulletCollisions newAsteroids newPlayer newBullets
     (trueNewAsteroids, destroyedAsteroids) = asteroidCollisions newBullets newPlayer newAsteroids
-    (newrand, rna, ttna) = if timeTillNextAsteroid gstate <= 0 then (\(a, b, c) -> (a, b : trueNewAsteroids, c)) $ genRandomAsteroid (divDecay (elapsedTime gstate)) (rand gstate) ((getPhysObj . player) gstate) else (rand gstate, trueNewAsteroids, timeTillNextAsteroid gstate - secs)
+    (newrand, rna, ttna) = if timeTillNextAsteroid gstate <= 0 then (\(a, b, c) -> (a, b : trueNewAsteroids, c)) $ genRandomAsteroid (expDecay Constants.asteroidSpawnAverageInterval (elapsedTime gstate)) (rand gstate) ((getPhysObj . player) gstate) else (rand gstate, trueNewAsteroids, timeTillNextAsteroid gstate - secs)
     nnrand
       | null destroyedAsteroids = newrand
       | otherwise = snd (split newrand)

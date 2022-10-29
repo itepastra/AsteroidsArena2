@@ -1,7 +1,7 @@
 module AsteroidSpawnFunctions where
 
 import qualified Constants
-import Types1 (IntervalTime, Time, UniformTime, TimeAvg)
+import Types1 (IntervalTime, Time, TimeAvg, UniformTime)
 
 expRandom :: TimeAvg -> UniformTime -> IntervalTime
 expRandom t uTime = (-t) * log uTime
@@ -9,8 +9,8 @@ expRandom t uTime = (-t) * log uTime
 uniRandom :: TimeAvg -> UniformTime -> IntervalTime
 uniRandom = (*) . (2 *)
 
-expDecay :: Time -> TimeAvg
-expDecay = (Constants.asteroidSpawnAverageInterval *) . (0.99 **)
+expDecay :: IntervalTime -> Time -> TimeAvg
+expDecay i = (i *) . (0.99 **)
 
-divDecay :: Time -> TimeAvg
-divDecay = (Constants.asteroidSpawnAverageInterval /) . (1+)
+divDecay :: IntervalTime -> Time -> TimeAvg
+divDecay i = (i /) . (1 +)
