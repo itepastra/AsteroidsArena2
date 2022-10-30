@@ -2,8 +2,7 @@ module Level where
 import Types1 (Time, UniformTime)
 
 data LevelConfig = LevelConfig
-  { asteroidSpawnFunction :: UniformTime -> Time,
-    wah :: String
+  { asteroidSpawnFunction :: String
   }
 
 

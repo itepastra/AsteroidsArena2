@@ -5,10 +5,13 @@ module JSONfuncs where
 import Asteroid (Asteroid (..))
 import Bullet (Bullet (..))
 import Data.Aeson (FromJSON (parseJSON), KeyValue ((.=)), ToJSON (toJSON), object, withObject, (.:))
+import Model (GameState (GameState), GameStateInit (..), Level (..))
 import Physics (PhysicsObject (PhysObj, position, radius, velocity))
 import Player (Player (..))
 import TypeClasses (V2Math (..))
 import VectorCalc (Point (Point))
+import Wall (Wall (..))
+import Level (LevelConfig(..))
 
 instance FromJSON Point where
   parseJSON = withObject "Point" $ \v ->
@@ -98,4 +101,63 @@ instance ToJSON Bullet where
     object
       [ "phys" .= Bullet.phys p,
         "lifeTime" .= lifeTime p
+      ]
+
+instance FromJSON Level where
+  parseJSON = withObject "Level" $ \v ->
+    Level <$> v .: "name" <*> v .: "initState"
+
+instance ToJSON Level where
+  toJSON l =
+    object
+      [ "name" .= name l,
+        "initState" .= initState l
+      ]
+
+instance FromJSON Wall where
+  parseJSON = withObject "Wall" $ \v ->
+    Wall
+      <$> v
+      .: "point"
+      <*> v
+      .: "normal"
+      <*> v
+      .: "strength"
+      <*> v
+      .: "angle"
+
+instance ToJSON Wall where
+  toJSON w =
+    object
+      [ "point" .= point w,
+        "normal" .= normal w,
+        "strength" .= strength w,
+        "angle" .= angle w
+      ]
+
+instance FromJSON LevelConfig where
+  parseJSON = withObject "LevelConfig" $ \v ->
+    LevelConfig
+      <$> v
+      .: "asteroidSpawnFunction"
+
+instance ToJSON LevelConfig where
+  toJSON w =
+    object
+      [ "asteroidSpawnFunction" .= asteroidSpawnFunction w
+      ]
+
+instance FromJSON GameStateInit where
+  parseJSON = withObject "GameStateInit" $ \v ->
+    GameStateInit
+      <$> v
+      .: "initWalls"
+      <*> v
+      .: "initConf"
+
+instance ToJSON GameStateInit where
+  toJSON w =
+    object
+      [ "initWalls" .= initWalls w,
+        "initConf" .= initConf w
       ]

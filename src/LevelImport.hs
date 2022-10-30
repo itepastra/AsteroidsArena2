@@ -12,4 +12,4 @@ importLevel fp = do
 
 
 emptyLvl :: Level
-emptyLvl = Level "" (GameStateInit [] [] (LevelConfig id "weh"))
+emptyLvl = Level "" (GameStateInit [] (LevelConfig "id"))

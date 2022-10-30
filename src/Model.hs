@@ -8,7 +8,7 @@ module Model where
 
 import Asteroid (Asteroid (Asteroid))
 import Bullet (Bullet)
-import Constants (asteroidRadius, playerRadius, playerMaxHp)
+import Constants (asteroidRadius, playerMaxHp, playerRadius)
 import Data.Set (Set, empty)
 import qualified Graphics.Gloss as Gloss
 import Graphics.Gloss.Interface.IO.Game (Key)
@@ -17,9 +17,9 @@ import Physics (PhysicsObject (..))
 import Player (Player (Player))
 import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
+import Types1 (Time, TimeStep)
 import VectorCalc (Point (Point))
 import Wall (Wall (Wall))
-import Types1 (Time, TimeStep)
 
 data GameState
   = GameState
@@ -38,16 +38,14 @@ data GameState
         frameTime :: TimeStep
       }
   | DeathState
-      { 
-        previousState :: GameState,
+      { previousState :: GameState,
         timeSinceDeath :: Time
       }
   | MenuState
       { levels :: [Level]
       }
   | PauseState
-      { 
-        previousState :: GameState
+      { previousState :: GameState
       }
 
 data Level = Level
@@ -56,8 +54,7 @@ data Level = Level
   }
 
 data GameStateInit = GameStateInit
-  { initAsteroids :: [Asteroid],
-    initWalls :: [Wall],
+  { initWalls :: [Wall],
     initConf :: LevelConfig
   }
 
@@ -71,7 +68,7 @@ gameStateFromLevel r pts (Level {initState = initState}) =
       starPositions = pts,
       elapsedTime = 0,
       player = newPlayer,
-      asteroids = initAsteroids initState,
+      asteroids = [],
       bullets = [],
       timeSinceLastShot = 10,
       timeTillNextAsteroid = 0,
@@ -88,14 +85,13 @@ defaultLevels =
       { name = "empty",
         initState =
           GameStateInit
-            { initAsteroids = [],
-              initWalls =
+            { initWalls =
                 [ Wall (Point 0 400) (Point 0 (-1)) 450 180,
                   Wall (Point (-400) 0) (Point 1 0) 450 (-90),
                   Wall (Point 0 (-400)) (Point 0 1) 450 0,
                   Wall (Point 400 0) (Point (-1) 0) 450 90
                 ],
-              initConf = LevelConfig id "nah"
+              initConf = LevelConfig "id"
             }
       }
   ]
