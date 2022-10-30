@@ -1,8 +1,14 @@
 module Level where
 
-import Types1 (Time, TimeAvg, UniformTime, IntervalTime)
+import AsteroidSpawnFunctions (DecayFunctions, RandomFunctions)
+import Types1 (IntervalTime, Time, TimeAvg, UniformTime)
+
+data InitLevelConfig = InitLevelConfig
+  { iasteroidSpawnFunction :: RandomFunctions,
+    iasteroidDecayFunction :: DecayFunctions
+  }
 
 data LevelConfig = LevelConfig
-  { asteroidSpawnFunction :: TimeAvg -> UniformTime -> Time,
+  { asteroidSpawnFunction :: TimeAvg -> UniformTime -> IntervalTime,
     asteroidDecayFunction :: IntervalTime -> Time -> TimeAvg
   }

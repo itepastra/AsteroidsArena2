@@ -3,15 +3,16 @@
 module JSONfuncs where
 
 import Asteroid (Asteroid (..))
+import AsteroidSpawnFunctions (RandomFunctions (..))
 import Bullet (Bullet (..))
 import Data.Aeson (FromJSON (parseJSON), KeyValue ((.=)), ToJSON (toJSON), object, withObject, (.:))
+import Level (InitLevelConfig (..), LevelConfig (..))
 import Model (GameState (GameState), GameStateInit (..), Level (..))
 import Physics (PhysicsObject (PhysObj, position, radius, velocity))
 import Player (Player (..))
 import TypeClasses (V2Math (..))
 import VectorCalc (Point (Point))
 import Wall (Wall (..))
-import Level (LevelConfig(..))
 
 instance FromJSON Point where
   parseJSON = withObject "Point" $ \v ->
@@ -103,17 +104,6 @@ instance ToJSON Bullet where
         "lifeTime" .= lifeTime p
       ]
 
-instance FromJSON Level where
-  parseJSON = withObject "Level" $ \v ->
-    Level <$> v .: "name" <*> v .: "initState"
-
-instance ToJSON Level where
-  toJSON l =
-    object
-      [ "name" .= name l,
-        "initState" .= initState l
-      ]
-
 instance FromJSON Wall where
   parseJSON = withObject "Wall" $ \v ->
     Wall
@@ -135,16 +125,19 @@ instance ToJSON Wall where
         "angle" .= angle w
       ]
 
-instance FromJSON LevelConfig where
-  parseJSON = withObject "LevelConfig" $ \v ->
-    LevelConfig
+instance FromJSON InitLevelConfig where
+  parseJSON = withObject "InitLevelConfig" $ \v ->
+    InitLevelConfig
       <$> v
       .: "asteroidSpawnFunction"
+      <*> v
+      .: "asteroidDecayFunction"
 
-instance ToJSON LevelConfig where
+instance ToJSON InitLevelConfig where
   toJSON w =
     object
-      [ "asteroidSpawnFunction" .= asteroidSpawnFunction w
+      [ "asteroidSpawnFunction" .= iasteroidSpawnFunction w,
+        "asteroidDecayFunction" .= iasteroidDecayFunction w
       ]
 
 instance FromJSON GameStateInit where
@@ -160,4 +153,15 @@ instance ToJSON GameStateInit where
     object
       [ "initWalls" .= initWalls w,
         "initConf" .= initConf w
+      ]
+
+instance FromJSON Level where
+  parseJSON = withObject "Level" $ \v ->
+    Level <$> v .: "name" <*> v .: "initState"
+
+instance ToJSON Level where
+  toJSON l =
+    object
+      [ "name" .= name l,
+        "initState" .= initState l
       ]

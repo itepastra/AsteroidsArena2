@@ -7,12 +7,13 @@
 module Model where
 
 import Asteroid (Asteroid (Asteroid))
+import AsteroidSpawnFunctions (DecayFunctions (..), RandomFunctions (..), expDecay, expRandom, getDecayFunc, getRandomFunc)
 import Bullet (Bullet)
 import Constants (asteroidRadius, playerMaxHp, playerRadius)
 import Data.Set (Set, empty)
 import qualified Graphics.Gloss as Gloss
 import Graphics.Gloss.Interface.IO.Game (Key)
-import Level (LevelConfig (LevelConfig))
+import Level (InitLevelConfig (..), LevelConfig (LevelConfig))
 import Physics (PhysicsObject (..))
 import Player (Player (Player))
 import System.Random (RandomGen, StdGen)
@@ -20,7 +21,6 @@ import System.Random.Stateful (mkStdGen)
 import Types1 (Time, TimeStep)
 import VectorCalc (Point (Point))
 import Wall (Wall (Wall))
-import AsteroidSpawnFunctions (expRandom, expDecay)
 
 data GameState
   = GameState
@@ -56,7 +56,7 @@ data Level = Level
 
 data GameStateInit = GameStateInit
   { initWalls :: [Wall],
-    initConf :: LevelConfig
+    initConf :: InitLevelConfig
   }
 
 newPlayer :: Player
@@ -76,7 +76,7 @@ gameStateFromLevel r pts (Level {initState = initState}) =
       score = 0,
       walls = initWalls initState,
       keys = empty,
-      levelConfig = initConf initState,
+      levelConfig = initToReal (initConf initState),
       frameTime = 0
     }
 
@@ -97,5 +97,8 @@ defaultLevels =
       }
   ]
 
-emptyLvlConf :: LevelConfig 
-emptyLvlConf = LevelConfig expRandom expDecay
+emptyLvlConf :: InitLevelConfig
+emptyLvlConf = InitLevelConfig ExpRandom ExpDecay
+
+initToReal :: InitLevelConfig -> LevelConfig
+initToReal ic = LevelConfig (getRandomFunc (iasteroidSpawnFunction ic)) (getDecayFunc (iasteroidDecayFunction ic))

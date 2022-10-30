@@ -128,6 +128,8 @@ bulletSpawn ks ts secs p
   | member (SpecialKey KeySpace) ks && ts >= Constants.shootingInterval = (0, (shoot p :))
   | otherwise = (ts + secs, id)
 
+ff = flip flip id
+
 -- ######### GEDAAN ##########
 -- despawn bullets
 -- bullets bewegen
