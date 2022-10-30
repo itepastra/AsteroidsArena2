@@ -1,11 +1,8 @@
 module Level where
-import Types1 (Time, UniformTime)
+
+import Types1 (Time, TimeAvg, UniformTime, IntervalTime)
 
 data LevelConfig = LevelConfig
-  { asteroidSpawnFunction :: String
+  { asteroidSpawnFunction :: TimeAvg -> UniformTime -> Time,
+    asteroidDecayFunction :: IntervalTime -> Time -> TimeAvg
   }
-
-
-aaa :: (b -> a -> c) -> (a -> b) -> a -> c
-aaa = (=<<)
-

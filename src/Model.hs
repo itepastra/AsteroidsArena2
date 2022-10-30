@@ -20,6 +20,7 @@ import System.Random.Stateful (mkStdGen)
 import Types1 (Time, TimeStep)
 import VectorCalc (Point (Point))
 import Wall (Wall (Wall))
+import AsteroidSpawnFunctions (expRandom, expDecay)
 
 data GameState
   = GameState
@@ -91,7 +92,10 @@ defaultLevels =
                   Wall (Point 0 (-400)) (Point 0 1) 450 0,
                   Wall (Point 400 0) (Point (-1) 0) 450 90
                 ],
-              initConf = LevelConfig "id"
+              initConf = emptyLvlConf
             }
       }
   ]
+
+emptyLvlConf :: LevelConfig 
+emptyLvlConf = LevelConfig expRandom expDecay
