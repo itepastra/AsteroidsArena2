@@ -1,4 +1,3 @@
-.stack-work/
-stack.sqlite3*
-.stack-work/stack.sqlite3
-.stack-work/stack.sqlite3
+.stack-work/**/*
+.stack-work/*
+.stack-work
