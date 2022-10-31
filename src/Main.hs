@@ -1,26 +1,26 @@
 module Main where
 
 import qualified Constants
-import Controller
+import Controller (step)
+import Data.Aeson (encodeFile)
 import qualified Data.Bifunctor
 import Data.List (iterate')
 import Graphics.Gloss (Display (InWindow), black, play)
 import Graphics.Gloss.Interface.IO.Game (playIO)
-import Model
+import Input (input)
+import LevelImport (cleanFileLevels, encodeLevels, fileLevels)
+import Model (Level (name), defaultLevels, gameStateFromLevel)
+import System.Directory.Tree (AnchoredDirTree ((:/)), DirTree, flattenDir, readDirectory)
 import System.Random (Random (randomRs), RandomGen (split), StdGen, getStdGen)
 import qualified VectorCalc
-import View
-import Input (input)
-import System.Directory.Tree (readDirectory, flattenDir, AnchoredDirTree ((:/)))
-import LevelImport (testie)
-import Data.Aeson (encodeFile)
+import View (view)
 
 main :: IO ()
 main =
   do
-    -- encodeFile "levels/test.aa2" (head defaultLevels)
-    (:/) _ levelStrings <- testie
-    print (flattenDir levelStrings)
+    encodeLevels defaultLevels
+    levels <- cleanFileLevels
+    print levels
     randGen <- getStdGen
     let sps = genStarPositions randGen Constants.starAmount
     playIO
@@ -38,4 +38,3 @@ genStarPositions ra amts =
     (\amt r -> take amt $ randomRs ((0, 0), Data.Bifunctor.bimap fromIntegral fromIntegral Constants.pageSize) r)
     amts
     (iterate' (snd . split) ra)
-
