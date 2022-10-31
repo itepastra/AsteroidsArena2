@@ -16,8 +16,7 @@ executable asteroids-arena2
                        containers,
                        aeson,
                        directory-tree,
-                       text,
-                       lens
+                       text
   hs-source-dirs:      src
   other-modules:       Controller
                      , Model

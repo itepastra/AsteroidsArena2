@@ -2,6 +2,7 @@
 
 
 module Hasa where
+import GHC.Base (join)
 
 class HasA a b where
   getA :: b -> a

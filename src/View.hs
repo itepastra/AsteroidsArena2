@@ -24,13 +24,13 @@ import Graphics.Gloss
     translate,
     white,
   )
-import Model (GameState (..), newPlayer)
+import Model (GameState (..), Level (name), newPlayer)
 import Physics (HasPhysics (getPhysObj), PhysicsObject (PhysObj, position, velocity))
 import Player (Player (Player, hp, phys))
 import Sprites (baseStar, starrySky)
 import TypeClasses (Pictured (..), V2Math (..))
 import qualified TypeClasses as VectorCalc
-import Types1 (Time)
+import Types1 (Selected (..), Time)
 import VectorCalc (Point (Point))
 
 type CamOffset = Point
@@ -90,3 +90,10 @@ instance Pictured GameState where
   getPicture gs@(PauseState {}) = Pictures [getPicture (previousState gs), viewDimmed, viewOverlayText "Pause"]
   getPicture gs@(DeathState {}) = Pictures [getPicture (previousState gs), viewDimmed, viewOverlayText "U Ded"]
   getPicture gs@(MenuState {}) = undefined
+
+viewLevel :: Level -> Selected -> Picture
+viewLevel l s = color lc $ scale 0.3 0.3 $ Text (name l)
+  where
+    lc = case s of
+      NotSelected -> white
+      Selected x -> Colors.rainbowGradientColor x

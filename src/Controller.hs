@@ -102,7 +102,7 @@ instance HasA (Set Key) GameState where
 emptyKeys :: Set Key -> Set Key
 emptyKeys = const empty
 
-updateBullet :: TimeStep -> [Wall] -> Bullet -> Maybe Bullet
+updateBullet :: TimeStep -> [Wall] ->  Bullet -> Maybe Bullet
 updateBullet secs walls b
   | 0 >= lifeTime b = Nothing
   | otherwise = Just (((accelStep secs =<< totalAcceleration walls) . updateLifetime secs . moveStep secs) b)

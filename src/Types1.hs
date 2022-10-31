@@ -41,3 +41,5 @@ type Size = Int
 type Lifetime = Float
 
 type Offset = Float
+
+data Selected = NotSelected | Selected ElapsedTime

@@ -43,7 +43,8 @@ data GameState
         timeSinceDeath :: Time
       }
   | MenuState
-      { levels :: [Level]
+      { levels :: [Level],
+        selectedState :: GameState
       }
   | PauseState
       { previousState :: GameState
