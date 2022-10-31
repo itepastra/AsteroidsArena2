@@ -11,10 +11,16 @@ import System.Random (Random (randomRs), RandomGen (split), StdGen, getStdGen)
 import qualified VectorCalc
 import View
 import Input (input)
+import System.Directory.Tree (readDirectory, flattenDir, AnchoredDirTree ((:/)))
+import LevelImport (testie)
+import Data.Aeson (encodeFile)
 
 main :: IO ()
 main =
   do
+    -- encodeFile "levels/test.aa2" (head defaultLevels)
+    (:/) _ levelStrings <- testie
+    print (flattenDir levelStrings)
     randGen <- getStdGen
     let sps = genStarPositions randGen Constants.starAmount
     playIO
@@ -32,3 +38,4 @@ genStarPositions ra amts =
     (\amt r -> take amt $ randomRs ((0, 0), Data.Bifunctor.bimap fromIntegral fromIntegral Constants.pageSize) r)
     amts
     (iterate' (snd . split) ra)
+

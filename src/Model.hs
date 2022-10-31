@@ -1,6 +1,6 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use camelCase" #-}
+{-# LANGUAGE InstanceSigs #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 -- | This module contains the data types
 --   which represent the state of the game
@@ -54,6 +54,10 @@ data Level = Level
   { name :: String,
     initState :: GameStateInit
   }
+
+instance Show Level where
+  show :: Level -> String
+  show f = show [name f, (show. length . initWalls . initState)  f] 
 
 data GameStateInit = GameStateInit
   { initWalls :: [Wall],
