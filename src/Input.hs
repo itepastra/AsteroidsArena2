@@ -6,10 +6,14 @@ import Data.Set (delete, empty, insert)
 import Graphics.Gloss.Interface.IO.Game (Event (EventKey), Key (Char, SpecialKey), KeyState (Down, Up), SpecialKey (KeyEnter, KeyTab))
 import Model (GameState (..), gameStateFromLevel, newPlayer)
 import Select (getSelected, selectNext, selectPrev)
+import System.Random (getStdGen)
 import Types1 (Hud (Visible))
 
 input :: Event -> GameState -> IO GameState
-input = (pure .) . pureInput
+input (EventKey (SpecialKey KeyEnter) Down _ _) g@(DeathState {}) = do
+  randGen <- getStdGen
+  pure $ MenuState [] randGen Nothing
+input k s = ((pure .) . pureInput) k s
 
 pureInput :: Event -> GameState -> GameState
 pureInput (EventKey (Char 's') Down _ _) g@(MenuState {levels = lvls}) = g {levels = selectNext lvls, selectedState = stateSelect (selectNext lvls) (rand g)}
