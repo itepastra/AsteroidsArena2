@@ -100,15 +100,6 @@ defaultLevels =
             }
       },
     Level
-      { name = "5 - Twisty Line",
-        initState =
-          GameStateInit
-            { initWalls =
-                wallPoly 2 400 450,
-              initConf = emptyLvlConf
-            }
-      },
-    Level
       { name = "2 - box",
         initState =
           GameStateInit
@@ -131,6 +122,15 @@ defaultLevels =
         initState =
           GameStateInit
             { initWalls = wallPoly 11 400 450,
+              initConf = emptyLvlConf
+            }
+      },
+    Level
+      { name = "5 - Twisty Line",
+        initState =
+          GameStateInit
+            { initWalls =
+                wallPoly 2 400 450,
               initConf = emptyLvlConf
             }
       }
