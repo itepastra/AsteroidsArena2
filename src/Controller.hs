@@ -32,7 +32,7 @@ import Select (getSelected, sTime, selectFirst)
 import Stars (genStarPositions)
 import System.Random (Random (random, randomRs), RandomGen (split), StdGen, getStdGen)
 import TypeClasses (V2Math (..))
-import Types1 (Acceleration, Hud (Invisible), Selected (NotSelected, Selected, val), TimeStep)
+import Types1 (Acceleration, Hud (..), Selected (NotSelected, Selected, val), TimeStep)
 import VectorCalc (Point (Point))
 import Wall (Wall, totalAcceleration)
 
@@ -44,7 +44,6 @@ step secs gstate@(MenuState {levels = []}) = do
   step secs $ gstate {levels = weh, selectedState = stateSelect weh rd, rand = rd}
 step secs gstate = pure $ pureStep secs gstate
 
--- | Handle one iteration of the game
 pureStep :: Float -> GameState -> GameState
 pureStep secs gstate@(GameState {starPositions = []}) = pureStep secs gstate {starPositions = genStarPositions (rand gstate) Constants.starAmount}
 pureStep secs gstate@(DeathState {previousState = g@(DeathState {})}) = gstate {previousState = pureStep (secs / timeSinceDeath gstate) (previousState g)}
@@ -58,6 +57,7 @@ pureStep secs gstate@(GameState {}) =
     0 ->
       DeathState
         { previousState =
+            updateA (playerHeal 1) $
             updateA emptyKeys gstate {hud = Invisible},
           timeSinceDeath = 1
         }
@@ -78,7 +78,9 @@ pureStep secs gstate@(GameState {}) =
     (newTimeSinceLast, newBullets) = second (($ bullets gstate) . (. mapMaybe (updateBullet secs (walls gstate)))) (bulletSpawn (keys gstate) (timeSinceLastShot gstate) secs (player gstate))
     newAsteroids = map (updateAsteroid secs ((getPhysObj . player) gstate)) (filter (\a -> (position . getPhysObj) a |#| (position . getPhysObj . player) gstate <= Constants.asteroidDespawnRange2) (asteroids gstate))
     newPlayer = updatePlayer (rotSpeed $ keys gstate) (walls gstate) secs (if member (Char 'w') (keys gstate) then lookAccel (player gstate) else Point 0 0) $ player gstate
-    newDamagedPlayer = playerDamage newAsteroids newBullets newPlayer
+    newDamagedPlayer = case hud gstate of
+      Visible -> playerDamage newAsteroids newBullets newPlayer
+      Invisible -> newPlayer
     newWalls = map (rotate (2 * secs)) (walls gstate)
     trueNewBullets = bulletCollisions newAsteroids newPlayer newBullets
     (trueNewAsteroids, destroyedAsteroids) = asteroidCollisions newBullets newPlayer newAsteroids

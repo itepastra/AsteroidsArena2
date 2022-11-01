@@ -40,7 +40,7 @@ shoot p = Bullet (PhysObj (position phy |+| pv) (velocity phy |+| bv) Constants.
     phy = getPhysObj p
     ld = lookDirection p
     bv = Constants.bulletSpeed |*| ld
-    pv = Constants.bulletInitialOffset |*| ld
+    pv = 0.1 |*| (velocity phy |+| bv) 
 
 playerHeal :: HealthPoints -> Player -> Player
 playerHeal h p@(Player {}) = p {hp = h}
