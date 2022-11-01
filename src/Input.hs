@@ -3,7 +3,7 @@ module Input where
 import Controller (stateSelect)
 import qualified Data.Maybe
 import Data.Set (delete, empty, insert)
-import Graphics.Gloss.Interface.IO.Game (Event (EventKey), Key (Char), KeyState (Down, Up))
+import Graphics.Gloss.Interface.IO.Game (Event (EventKey), Key (Char, SpecialKey), KeyState (Down, Up), SpecialKey (KeyEnter, KeyTab))
 import Model (GameState (..), gameStateFromLevel, newPlayer)
 import Select (getSelected, selectNext, selectPrev)
 import Types1 (Hud (Visible))
@@ -14,9 +14,9 @@ input = (pure .) . pureInput
 pureInput :: Event -> GameState -> GameState
 pureInput (EventKey (Char 's') Down _ _) g@(MenuState {levels = lvls}) = g {levels = selectNext lvls, selectedState = stateSelect (selectNext lvls) (rand g)}
 pureInput (EventKey (Char 'w') Down _ _) g@(MenuState {levels = lvls}) = g {levels = selectPrev lvls, selectedState = stateSelect (selectPrev lvls) (rand g)}
-pureInput (EventKey (Char 'e') Down _ _) g@(MenuState {levels = lvls}) = Data.Maybe.fromMaybe g (selectedState g)
-pureInput (EventKey (Char 'm') Down _ _) g@(PauseState {}) = (previousState g) {keys = empty}
-pureInput (EventKey (Char 'm') Down _ _) g@(GameState {}) = PauseState {previousState = g}
+pureInput (EventKey (SpecialKey KeyEnter) Down _ _) g@(MenuState {levels = lvls}) = Data.Maybe.fromMaybe g (selectedState g)
+pureInput (EventKey (SpecialKey KeyTab) Down _ _) g@(PauseState {}) = (previousState g) {keys = empty}
+pureInput (EventKey (SpecialKey KeyTab) Down _ _) g@(GameState {}) = PauseState {previousState = g}
 pureInput (EventKey (Char 'r') Down _ _) g@(DeathState {}) = retryState g
 pureInput (EventKey k Down _ _) g@(GameState {}) = g {keys = insert k (keys g)}
 pureInput (EventKey k Up _ _) g@(GameState {}) = g {keys = delete k (keys g)}
