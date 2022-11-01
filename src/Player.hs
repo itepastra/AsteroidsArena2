@@ -20,12 +20,6 @@ data Player
         lookDirection :: LookDirection,
         lookAngle :: Angle
       }
-  | InvPlayer
-      { phys :: PhysicsObject,
-        lookAngle :: Angle,
-        lookDirection :: LookDirection,
-        hp :: HealthPoints
-      }
 
 instance HasPhysics Player where
   getPhysObj = phys
@@ -36,15 +30,6 @@ instance Rotate Player where
 
 instance Pictured Player where
   getPicture (Player {phys = (PhysObj {position = t, velocity = v}), lookAngle = a}) = translate (x t) (y t) $ Pictures $ map (Gloss.rotate a) [baseExhaust v, basePlayer]
-  getPicture p = translate (x t) (y t) $ Pictures $ map (Gloss.rotate a) [baseExhaust v, basePlayer]
-    where
-      t = (position . getPhysObj) p
-      a = lookAngle p
-      v = (velocity . getPhysObj) p
-
-swapPlayerType :: Player -> Player
-swapPlayerType (InvPlayer a b c d) = Player a b c d
-swapPlayerType (Player a b c d) = InvPlayer a b c d
 
 lookAccel :: Player -> Acceleration
 lookAccel p = Constants.playerAcceleration |*| lookDirection p
@@ -59,10 +44,8 @@ shoot p = Bullet (PhysObj (position phy |+| pv) (velocity phy |+| bv) Constants.
 
 playerHeal :: HealthPoints -> Player -> Player
 playerHeal h p@(Player {}) = p {hp = h}
-playerHeal _ p = p
 
 playerDamage :: [Asteroid] -> [Bullet] -> Player -> Player
-playerDamage _ _ p@(InvPlayer {}) = p
 playerDamage as bs p@(Player {}) = np
   where
     np = case foldl'

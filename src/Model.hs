@@ -18,7 +18,7 @@ import Physics (PhysicsObject (..))
 import Player (Player (Player))
 import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
-import Types1 (Time, TimeStep)
+import Types1 (Time, TimeStep, Selected, Hud (Invisible, Visible))
 import VectorCalc (Point (Point))
 import Wall (Wall (Wall))
 
@@ -36,15 +36,17 @@ data GameState
         timeTillNextAsteroid :: Float,
         score :: Int,
         levelConfig :: LevelConfig,
-        frameTime :: TimeStep
+        frameTime :: TimeStep,
+        hud :: Hud
       }
   | DeathState
       { previousState :: GameState,
         timeSinceDeath :: Time
       }
   | MenuState
-      { levels :: [Level],
-        selectedState :: GameState
+      { levels :: [Selected Level],
+        rand :: StdGen,
+        selectedState :: Maybe GameState
       }
   | PauseState
       { previousState :: GameState
@@ -67,11 +69,11 @@ data GameStateInit = GameStateInit
 newPlayer :: Player
 newPlayer = Player (PhysObj (Point 0 0) (Point 0 0) playerRadius) Constants.playerMaxHp (Point 0 1) 0
 
-gameStateFromLevel :: StdGen -> [[Gloss.Point]] -> Level -> GameState
-gameStateFromLevel r pts (Level {initState = initState}) =
+gameStateFromLevel :: StdGen -> Level -> GameState
+gameStateFromLevel r (Level {initState = initState}) =
   GameState
     { rand = r,
-      starPositions = pts,
+      starPositions = [],
       elapsedTime = 0,
       player = newPlayer,
       asteroids = [],
@@ -82,7 +84,8 @@ gameStateFromLevel r pts (Level {initState = initState}) =
       walls = initWalls initState,
       keys = empty,
       levelConfig = initToReal (initConf initState),
-      frameTime = 0
+      frameTime = 0,
+      hud = Visible
     }
 
 defaultLevels :: [Level]
@@ -107,3 +110,11 @@ emptyLvlConf = InitLevelConfig ExpRandom ExpDecay
 
 initToReal :: InitLevelConfig -> LevelConfig
 initToReal ic = LevelConfig (getRandomFunc (iasteroidSpawnFunction ic)) (getDecayFunc (iasteroidDecayFunction ic))
+
+instance Eq Level where
+  l1 == l2 = name l1 == name l2
+
+
+instance Ord Level where
+  compare :: Level -> Level -> Ordering
+  compare l1 l2= compare (name l1) (name l2)

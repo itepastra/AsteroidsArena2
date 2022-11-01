@@ -30,7 +30,7 @@ import Player (Player (Player, hp, phys))
 import Sprites (baseStar, starrySky)
 import TypeClasses (Pictured (..), V2Math (..))
 import qualified TypeClasses as VectorCalc
-import Types1 (Selected (..), Time)
+import Types1 (Selected (..), Time, Hud (Visible, Invisible))
 import VectorCalc (Point (Point))
 
 type CamOffset = Point
@@ -86,14 +86,26 @@ viewOverlayText :: String -> Picture
 viewOverlayText s = color Colors.textColor . translate (fromIntegral (-40 * length s)) (-50) . Text $ s
 
 instance Pictured GameState where
-  getPicture gs@(GameState {player = p}) = Pictures [viewBackground gs, moveWorldToCenter (getPhysObj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs], viewHud gs]
+  getPicture gs@(GameState {player = p, hud = Invisible}) = Pictures [viewBackground gs, moveWorldToCenter (getPhysObj p) $ Pictures [viewWalls gs, viewBullets gs, viewAsteroids gs]]
+  getPicture gs@(GameState {player = p, hud = Visible}) = Pictures [viewBackground gs, moveWorldToCenter (getPhysObj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs], viewHud gs]
   getPicture gs@(PauseState {}) = Pictures [getPicture (previousState gs), viewDimmed, viewOverlayText "Pause"]
   getPicture gs@(DeathState {}) = Pictures [getPicture (previousState gs), viewDimmed, viewOverlayText "U Ded"]
-  getPicture gs@(MenuState {}) = undefined
+  getPicture gs@(MenuState {}) = Pictures [getPicture (selectedState gs), viewLevelSelect $ levels gs]
 
-viewLevel :: Level -> Selected -> Picture
-viewLevel l s = color lc $ scale 0.3 0.3 $ Text (name l)
+instance Pictured a => Pictured (Maybe a) where
+  getPicture Nothing = blank
+  getPicture (Just x) = getPicture x
+
+viewLevelSelect :: [Selected Level] -> Picture
+viewLevelSelect lvls = Pictures $ zipWith formatLevel [1 ..] lvls
+
+formatLevel :: Int -> Selected Level -> Picture
+formatLevel = (. viewLevel) . translate 0 . fromIntegral . (-) (snd Constants.pageSize `div` 2) . (50 *)
+
+viewLevel :: Selected Level -> Picture
+viewLevel l = color lc $ scale 0.3 0.3 $ Text (name (val l))
   where
-    lc = case s of
-      NotSelected -> white
-      Selected x -> Colors.rainbowGradientColor x
+    lc = case l of
+      NotSelected _ -> white
+      Selected x _ -> Colors.rainbowGradientColor x
+

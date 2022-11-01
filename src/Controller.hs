@@ -16,45 +16,49 @@ import AsteroidSpawnFunctions (divDecay, expDecay)
 import Bullet (Bullet (lifeTime), updateLifetime)
 import qualified Constants
 import Data.Bifunctor (Bifunctor (second))
+import Data.List (sort)
 import Data.Maybe (mapMaybe)
 import Data.Set (Set, empty, member)
 import Graphics.Gloss.Interface.IO.Game (Key (Char, SpecialKey), SpecialKey (KeySpace))
 import Hasa (HasA (getA, setA), updateA)
-import Model (GameState (..))
+import LevelImport (cleanFileLevels)
+import Model (GameState (..), Level (Level), gameStateFromLevel)
 import Physics (HasPhysics (getPhysObj), PhysicsObject (..), accelStep, checkCollision, frictionStep, moveStep, updatePhysObj)
 import qualified Physics as Asteroid
 import qualified Physics as Player
-import Player (Player (InvPlayer, Player, hp, lookAngle, lookDirection), lookAccel, playerDamage, playerHeal, shoot, swapPlayerType)
+import Player (Player (Player, hp, lookAngle, lookDirection), lookAccel, playerDamage, playerHeal, shoot)
 import Rotation (Angle, Rotate (rotate))
-import System.Random (Random (random, randomRs), RandomGen (split))
+import Select (getSelected, sTime, selectFirst)
+import Stars (genStarPositions)
+import System.Random (Random (random, randomRs), RandomGen (split), StdGen, getStdGen)
 import TypeClasses (V2Math (..))
-import Types1 (Acceleration, TimeStep)
+import Types1 (Acceleration, Hud (Invisible), Selected (NotSelected, Selected, val), TimeStep)
 import VectorCalc (Point (Point))
 import Wall (Wall, totalAcceleration)
 
 step :: Float -> GameState -> IO GameState
-step = (pure .) . pureStep
+step secs gstate@(MenuState {levels = []}) = do
+  lvls <- cleanFileLevels
+  rd <- getStdGen
+  let weh = selectFirst $ sort $ map NotSelected lvls
+  step secs $ gstate {levels = weh, selectedState = stateSelect weh rd, rand = rd}
+step secs gstate = pure $ pureStep secs gstate
 
 -- | Handle one iteration of the game
 pureStep :: Float -> GameState -> GameState
+pureStep secs gstate@(GameState {starPositions = []}) = pureStep secs gstate {starPositions = genStarPositions (rand gstate) Constants.starAmount}
 pureStep secs gstate@(DeathState {previousState = g@(DeathState {})}) = gstate {previousState = pureStep (secs / timeSinceDeath gstate) (previousState g)}
 pureStep secs gstate@(DeathState {}) = gstate {previousState = pureStep (secs / timeSinceDeath gstate) (previousState gstate), timeSinceDeath = timeSinceDeath gstate + secs}
-pureStep secs gstate@(MenuState {}) = gstate
+pureStep secs gstate@(MenuState {}) = gstate {levels = sTime (secs*90) (levels gstate), selectedState = case selectedState gstate of
+  Nothing -> Nothing
+  Just gs -> Just $ pureStep secs gs}
 pureStep secs gstate@(PauseState {}) = gstate
-pureStep secs gstate@(GameState {player = InvPlayer {}}) = pureStep secs $ updateA (playerHeal 1) $ gstate {player = swapPlayerType (player gstate)}
-pureStep secs gstate@(GameState {player = Player {}}) =
+pureStep secs gstate@(GameState {}) =
   case hp (player gstate) of
     0 ->
       DeathState
         { previousState =
-            updateA emptyKeys $
-              ( \g ->
-                  g
-                    { player =
-                        swapPlayerType (player gstate)
-                    }
-              )
-                gstate,
+            updateA emptyKeys gstate {hud = Invisible},
           timeSinceDeath = 1
         }
     _ ->
@@ -102,7 +106,7 @@ instance HasA (Set Key) GameState where
 emptyKeys :: Set Key -> Set Key
 emptyKeys = const empty
 
-updateBullet :: TimeStep -> [Wall] ->  Bullet -> Maybe Bullet
+updateBullet :: TimeStep -> [Wall] -> Bullet -> Maybe Bullet
 updateBullet secs walls b
   | 0 >= lifeTime b = Nothing
   | otherwise = Just (((accelStep secs =<< totalAcceleration walls) . updateLifetime secs . moveStep secs) b)
@@ -128,12 +132,10 @@ bulletSpawn ks ts secs p
   | member (SpecialKey KeySpace) ks && ts >= Constants.shootingInterval = (0, (shoot p :))
   | otherwise = (ts + secs, id)
 
-ff = flip flip id
-
 -- ######### GEDAAN ##########
 -- despawn bullets
 -- bullets bewegen
--- despawn asteroids@
+-- despawn asteroids
 -- asteroids bewegen
 -- player beweegt
 -- player inputs
@@ -152,3 +154,8 @@ ff = flip flip id
 -- high scores
 -- invurnerability frames maybe?
 -- balancing????
+
+stateSelect :: [Selected Level] -> StdGen -> Maybe GameState
+stateSelect x d = case getSelected x of
+  Nothing -> Nothing
+  Just le -> Just $ gameStateFromLevel d le

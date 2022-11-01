@@ -40,4 +40,6 @@ executable asteroids-arena2
                      , JSONfuncs
                      , Hasa
                      , Types1
+                     , Stars
+                     , Select
   default-language:    Haskell2010
