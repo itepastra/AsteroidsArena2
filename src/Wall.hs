@@ -41,13 +41,13 @@ setOffset :: Offset -> Wall -> Wall
 setOffset o w = w {point = (-o) |*| normal w}
 
 setRotation :: Angle -> Wall -> Wall
-setRotation a w = w {point = rot a (Point 1 0), normal = rot a (Point (-1) 0), angle = a}
+setRotation a w = w {point = rot a (Point 0 (-1)), normal = rot a (Point 0 1), angle = a}
 
 setStrength :: Strength -> Wall -> Wall
 setStrength s w = w {strength = s}
 
 baseW :: Wall
-baseW = Wall {point = Point 1 0, normal = Point (-1) 0, angle = 0, strength = 1}
+baseW = Wall {point = Point 0 (-1), normal = Point 0 1, angle = 0, strength = 1}
 
 createWall :: Offset -> Angle -> Strength -> Wall
 createWall o a s = (setOffset o . setRotation a . setStrength s) baseW

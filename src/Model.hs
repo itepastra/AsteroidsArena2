@@ -18,9 +18,9 @@ import Physics (PhysicsObject (..))
 import Player (Player (Player))
 import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
-import Types1 (Time, TimeStep, Selected, Hud (Invisible, Visible))
+import Types1 (Hud (Invisible, Visible), Selected, Time, TimeStep)
 import VectorCalc (Point (Point))
-import Wall (Wall (Wall))
+import Wall (Wall (Wall), createWall)
 
 data GameState
   = GameState
@@ -59,7 +59,7 @@ data Level = Level
 
 instance Show Level where
   show :: Level -> String
-  show f = show [name f, (show. length . initWalls . initState)  f] 
+  show f = show [name f, (show . length . initWalls . initState) f]
 
 data GameStateInit = GameStateInit
   { initWalls :: [Wall],
@@ -91,7 +91,16 @@ gameStateFromLevel r (Level {initState = initState}) =
 defaultLevels :: [Level]
 defaultLevels =
   [ Level
-      { name = "empty",
+      { name = "1 - empty",
+        initState =
+          GameStateInit
+            { initWalls =
+                [],
+              initConf = emptyLvlConf
+            }
+      },
+    Level
+      { name = "2 - box",
         initState =
           GameStateInit
             { initWalls =
@@ -102,7 +111,34 @@ defaultLevels =
                 ],
               initConf = emptyLvlConf
             }
-      }
+      },
+    Level
+      { name = "4 - box2",
+        initState =
+          GameStateInit
+            { initWalls =
+                [ 
+                  createWall 400 0 450,
+                  createWall 400 90 450,
+                  createWall 400 180 450,
+                  createWall 400 270 450
+
+                ],
+              initConf = emptyLvlConf
+            }
+      },
+    Level {
+      name = "3 - triangle",
+        initState =
+          GameStateInit
+            { initWalls =
+                [ createWall 400 0 450,
+                  createWall 400 120 450,
+                  createWall 400 (-120) 450
+                ],
+              initConf = emptyLvlConf
+            }
+    }
   ]
 
 emptyLvlConf :: InitLevelConfig
@@ -114,7 +150,6 @@ initToReal ic = LevelConfig (getRandomFunc (iasteroidSpawnFunction ic)) (getDeca
 instance Eq Level where
   l1 == l2 = name l1 == name l2
 
-
 instance Ord Level where
   compare :: Level -> Level -> Ordering
-  compare l1 l2= compare (name l1) (name l2)
+  compare l1 l2 = compare (name l1) (name l2)
