@@ -179,20 +179,19 @@ The player controls the spaceship, being able to accelerate (w), turn left (a) a
 
 ### Enemies
 
-Asteroids get spawned with slightly random direction and size. There is also the shrinking walls making the arena smaller. The bullets the player shoots themselves are also a type of enemy, as they can kill both asteroids and the player.  
-(Turrets spawning on asteroids, turrets on the walls, UFOs)
+Asteroids get spawned with slightly random direction and size. There is also the walls limiting the arena. The bullets the player shoots themselves are also a type of enemy, as they can kill both asteroids and the player. We also have spacemines that track the player's movements.
 
 ### Randomness
 
-The randomness stems from the random size, direction and spawn location of the asteroids, within reason. Meaning that the asteroids should not all be in the same place, or move away from the player too far. It also should not happen that the asteroids get too big and too many that the game becomes impossible. When an asteroid of larger size explodes, its babies should go in random directions.
+The randomness stems from the random size, direction and spawn location of the asteroids and the spacemines. within reason. Meaning that the asteroids should not all be in the same place, or move away from the player too far. It also should not happen that the asteroids get too big and too many that the game becomes impossible. When an asteroid of larger size explodes, its babies should go in random directions.
 
 ### Animation
 
-When the player dies, the spaceship explodes. When an asteroid is shot, the asteroid explodes. 
+The bullets have a rainbow effect, and the spaceship's booster gets bigger as it accelerates.
 
 ### Pause
 
-The game is paused when a specific button is pressed (p) 
+The game is paused when a specific button is pressed (Tab) 
 
 ### Interaction with the File System
 
@@ -201,7 +200,15 @@ A list of high scores will be saved in an external file. There will also be diff
 ## Optional Requirements
 
 ### Custom levels / levels
-(Change the different walls and how they move.) 
 
-### Enemies
-(Turrets on walls as well as turrets on asteroids, in combination with normal asteroids, walls and bullets).
+We have a level selector, that changes the way the walls in the arena behaves.
+
+### Enemies  
+
+We have the asteroids that go in a single direction, and the spacemines that track the movement of the player. The asteroids give points when shot, and explode into smaller asteroids if they are big enough. The spacemines do not give points and do not spawn children.
+
+### Complex Graphics
+
+We have added parallax scrolling to the stars in the background of the game.
+
+### Use JSON to save the full game  state
