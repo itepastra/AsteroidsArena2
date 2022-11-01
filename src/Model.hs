@@ -18,7 +18,7 @@ import Physics (PhysicsObject (..))
 import Player (Player (Player))
 import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
-import Types1 (Hud (Invisible, Visible), Selected, Time, TimeStep)
+import Types1 (Hud (Invisible, Visible), Offset, Selected, Strength, Time, TimeStep)
 import VectorCalc (Point (Point))
 import Wall (Wall (Wall), createWall)
 
@@ -100,45 +100,40 @@ defaultLevels =
             }
       },
     Level
-      { name = "2 - box",
+      { name = "5 - Twisty Line",
         initState =
           GameStateInit
             { initWalls =
-                [ Wall (Point 0 400) (Point 0 (-1)) 450 180,
-                  Wall (Point (-400) 0) (Point 1 0) 450 (-90),
-                  Wall (Point 0 (-400)) (Point 0 1) 450 0,
-                  Wall (Point 400 0) (Point (-1) 0) 450 90
-                ],
+                wallPoly 2 400 450,
               initConf = emptyLvlConf
             }
       },
     Level
-      { name = "4 - box2",
+      { name = "2 - box",
         initState =
           GameStateInit
             { initWalls =
-                [ 
-                  createWall 400 0 450,
-                  createWall 400 90 450,
-                  createWall 400 180 450,
-                  createWall 400 270 450
-
-                ],
+                wallPoly 4 400 450,
               initConf = emptyLvlConf
             }
       },
-    Level {
-      name = "3 - triangle",
+    Level
+      { name = "3 - triangle",
         initState =
           GameStateInit
             { initWalls =
-                [ createWall 400 0 450,
-                  createWall 400 120 450,
-                  createWall 400 (-120) 450
-                ],
+                wallPoly 3 400 450,
               initConf = emptyLvlConf
             }
-    }
+      },
+    Level
+      { name = "4 - ManyGon",
+        initState =
+          GameStateInit
+            { initWalls = wallPoly 11 400 450,
+              initConf = emptyLvlConf
+            }
+      }
   ]
 
 emptyLvlConf :: InitLevelConfig
@@ -153,3 +148,6 @@ instance Eq Level where
 instance Ord Level where
   compare :: Level -> Level -> Ordering
   compare l1 l2 = compare (name l1) (name l2)
+
+wallPoly :: Int -> Offset -> Strength -> [Wall]
+wallPoly n o s = map (\x -> createWall o (fromIntegral x * 360 / fromIntegral n) s) [1 .. n]
