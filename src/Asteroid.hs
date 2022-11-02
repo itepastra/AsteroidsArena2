@@ -1,6 +1,5 @@
 module Asteroid where
 
-import AsteroidSpawnFunctions (expRandom)
 import qualified Constants
 import Data.Fixed (mod')
 import Graphics.Gloss (rotate, scale, translate)
@@ -10,7 +9,7 @@ import Sprites (baseAsteroid, baseSpaceMine)
 import System.Random (Random (..), RandomGen, StdGen)
 import System.Random.Stateful (randomM)
 import TypeClasses (Pictured (..), V2Math (..))
-import Types1 (TimeStep, Size, Time)
+import Types1 (TimeStep, Size, Time, IntervalTime, UniformTime)
 import VectorCalc ( Point(Point) )
 
 data Asteroid
@@ -42,12 +41,12 @@ instance Pictured Asteroid where
 instance Rotate Asteroid where
   rotate a asteroid = asteroid {rotateAngle = (rotateAngle asteroid + a) `mod'` 360}
 
-genRandomAsteroid :: Time -> StdGen -> PhysicsObject -> (StdGen, Asteroid, Float)
+genRandomAsteroid :: (UniformTime -> IntervalTime) -> StdGen -> PhysicsObject -> (StdGen, Asteroid, IntervalTime)
 genRandomAsteroid t g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAngle, timeTillNext)
   where
     ((spawnAngle, moveAngle, size, uTime, moveSpeed, rSpeed, rAngle), g1) = randomR ((0, -25, 1, 0, 20, -15, 0), (360, 25, 3, 1, 80, 15, 360)) g0
     (atype, g) = randomR (0, 1) g1
-    timeTillNext = expRandom t uTime
+    timeTillNext =t uTime
     pos = position p |+| (Constants.spawnDistance |*| rot spawnAngle (Point 1 0))
     vel = (rot moveAngle . (moveSpeed |*|) . normalize) (position p |-| pos)
     rad = Constants.asteroidRadius * (2 ^ size)

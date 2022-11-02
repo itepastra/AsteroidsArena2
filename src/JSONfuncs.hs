@@ -115,6 +115,8 @@ instance FromJSON Wall where
       .: "strength"
       <*> v
       .: "angle"
+      <*> v
+      .: "rotateSpeed"
 
 instance ToJSON Wall where
   toJSON w =
@@ -122,7 +124,8 @@ instance ToJSON Wall where
       [ "point" .= point w,
         "normal" .= normal w,
         "strength" .= strength w,
-        "angle" .= angle w
+        "angle" .= angle w,
+        "rotateSpeed".= frameRotation w
       ]
 
 instance FromJSON InitLevelConfig where
@@ -132,12 +135,18 @@ instance FromJSON InitLevelConfig where
       .: "asteroidSpawnFunction"
       <*> v
       .: "asteroidDecayFunction"
+      <*> v
+      .: "spaceMineOddsFunction"
+      <*> v
+      .: "asteroidSpawnStart"
 
 instance ToJSON InitLevelConfig where
   toJSON w =
     object
       [ "asteroidSpawnFunction" .= iasteroidSpawnFunction w,
-        "asteroidDecayFunction" .= iasteroidDecayFunction w
+        "asteroidDecayFunction" .= iasteroidDecayFunction w,
+        "spaceMineOddsFunction" .= ispaceMineOddsFunction w,
+        "asteroidSpawnStart" .= iasteroidSpawnStart w
       ]
 
 instance FromJSON GameStateInit where

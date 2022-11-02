@@ -7,9 +7,9 @@
 module Model where
 
 import Asteroid (Asteroid (Asteroid))
-import AsteroidSpawnFunctions (DecayFunctions (..), RandomFunctions (..), expDecay, expRandom, getDecayFunc, getRandomFunc)
+import AsteroidSpawnFunctions (DecayFunctions (..), MapFunctions (Pow), RandomFunctions (..), getDecayFunc, getRandomFunc, getSpaceMineOddFunc)
 import Bullet (Bullet)
-import Constants (asteroidRadius, playerMaxHp, playerRadius)
+import Constants (asteroidRadius, asteroidSpawnAverageInterval, playerMaxHp, playerRadius)
 import Data.Set (Set, empty)
 import qualified Graphics.Gloss as Gloss
 import Graphics.Gloss.Interface.IO.Game (Key)
@@ -20,7 +20,7 @@ import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
 import Types1 (Hud (Invisible, Visible), Offset, Selected, Strength, Time, TimeStep)
 import VectorCalc (Point (Point))
-import Wall (Wall (Wall), createWall)
+import Wall (Wall (Wall, frameRotation), createWall)
 
 data GameState
   = GameState
@@ -85,7 +85,7 @@ gameStateFromLevel r (Level {initState = initState}) =
       keys = empty,
       levelConfig = initToReal (initConf initState),
       frameTime = 0,
-      hud = Visible
+      hud = Invisible
     }
 
 defaultLevels :: [Level]
@@ -121,7 +121,9 @@ defaultLevels =
       { name = "4 - ManyGon",
         initState =
           GameStateInit
-            { initWalls = wallPoly 11 400 450,
+            { initWalls =
+                zipWith (\r w -> w {frameRotation = r}) [1 ..] $
+                  wallPoly 11 400 450,
               initConf = emptyLvlConf
             }
       },
@@ -137,10 +139,10 @@ defaultLevels =
   ]
 
 emptyLvlConf :: InitLevelConfig
-emptyLvlConf = InitLevelConfig ExpRandom ExpDecay
+emptyLvlConf = InitLevelConfig ExpRandom ExpDecay Pow Constants.asteroidSpawnAverageInterval
 
 initToReal :: InitLevelConfig -> LevelConfig
-initToReal ic = LevelConfig (getRandomFunc (iasteroidSpawnFunction ic)) (getDecayFunc (iasteroidDecayFunction ic))
+initToReal ic = LevelConfig (getRandomFunc (iasteroidSpawnFunction ic) . getDecayFunc (iasteroidDecayFunction ic) (iasteroidSpawnStart ic)) (getSpaceMineOddFunc (ispaceMineOddsFunction ic))
 
 instance Eq Level where
   l1 == l2 = name l1 == name l2

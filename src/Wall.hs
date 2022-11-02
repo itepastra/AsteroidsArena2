@@ -11,21 +11,23 @@ import TypeClasses (Pictured (..), V2Math (..))
 import Types1 (Acceleration, InWall, Normal, Offset, Strength, TimeStep)
 import VectorCalc (Point (Point))
 
+
 data Wall = Wall
   { point :: Point,
     normal :: Normal,
     strength :: Strength,
-    angle :: Angle
+    angle :: Angle,
+    frameRotation :: Angle
   }
 
 instance Rotate Wall where
   rotate a w = w {point = rot a (point w), normal = rot a (normal w), angle = angle w + a}
 
 instance Pictured Wall where
-  getPicture (Wall p n _ r) = translate (x p) (y p) $ Gloss.Rotate (-r + 180) baseWall
+  getPicture (Wall {point = p, normal = n, angle = r}) = translate (x p) (y p) $ Gloss.Rotate (-r + 180) baseWall
 
 isInWall :: HasPhysics a => a -> Wall -> InWall
-isInWall obj (Wall p n _ _) = (pos |-| p) |.| n <= 0
+isInWall obj (Wall {point = p, normal = n}) = (pos |-| p) |.| n <= 0
   where
     pos = (position . getPhysObj) obj
 
@@ -47,7 +49,7 @@ setStrength :: Strength -> Wall -> Wall
 setStrength s w = w {strength = s}
 
 baseW :: Wall
-baseW = Wall {point = Point 0 (-1), normal = Point 0 1, angle = 0, strength = 1}
+baseW = Wall {point = Point 0 (-1), normal = Point 0 1, angle = 0, strength = 1, frameRotation = 0}
 
 createWall :: Offset -> Angle -> Strength -> Wall
 createWall o a s = (setOffset o . setRotation a . setStrength s) baseW
@@ -56,4 +58,10 @@ toOAS :: Wall -> (Offset, Angle, Strength)
 toOAS w = (sqrt (point w |.| point w), angle w, strength w)
 
 fromOAS :: (Offset, Angle, Strength) -> Wall
-fromOAS (o,a,s) = createWall o a s
+fromOAS (o, a, s) = createWall o a s
+
+fromOASR :: (Offset, Angle, Strength, Angle) -> Wall
+fromOASR (o,a,s,r) = (fromOAS (o,a,s)) {frameRotation = r}
+
+selfRotate :: TimeStep -> Wall -> Wall
+selfRotate  s = rotate . (s *) =<< frameRotation

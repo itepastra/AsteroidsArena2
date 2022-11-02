@@ -12,7 +12,6 @@ import Asteroid
     getChildAsteroids,
     track,
   )
-import AsteroidSpawnFunctions (divDecay, expDecay)
 import Bullet (Bullet (lifeTime), updateLifetime)
 import qualified Constants
 import Data.Bifunctor (Bifunctor (second))
@@ -21,6 +20,7 @@ import Data.Maybe (mapMaybe)
 import Data.Set (Set, empty, member)
 import Graphics.Gloss.Interface.IO.Game (Key (Char, SpecialKey), SpecialKey (KeySpace))
 import Hasa (HasA (getA, setA), updateA)
+import Level (LevelConfig (asteroidSpawnFunction))
 import LevelImport (cleanFileLevels)
 import Model (GameState (..), Level (Level), gameStateFromLevel)
 import Physics (HasPhysics (getPhysObj), PhysicsObject (..), accelStep, checkCollision, frictionStep, moveStep, updatePhysObj)
@@ -32,9 +32,9 @@ import Select (getSelected, sTime, selectFirst)
 import Stars (genStarPositions)
 import System.Random (Random (random, randomRs), RandomGen (split), StdGen, getStdGen)
 import TypeClasses (V2Math (..))
-import Types1 (Acceleration, Hud (..), Selected (NotSelected, Selected, val), TimeStep)
+import Types1 (Acceleration, ElapsedTime, Hud (..), IntervalTime, Selected (NotSelected, Selected, val), Time, TimeStep)
 import VectorCalc (Point (Point))
-import Wall (Wall, totalAcceleration)
+import Wall (Wall, totalAcceleration, selfRotate)
 
 step :: Float -> GameState -> IO GameState
 step secs gstate@(MenuState {levels = []}) = do
@@ -48,9 +48,13 @@ pureStep :: Float -> GameState -> GameState
 pureStep secs gstate@(GameState {starPositions = []}) = pureStep secs gstate {starPositions = genStarPositions (rand gstate) Constants.starAmount}
 pureStep secs gstate@(DeathState {previousState = g@(DeathState {})}) = gstate {previousState = pureStep (secs / timeSinceDeath gstate) (previousState g)}
 pureStep secs gstate@(DeathState {}) = gstate {previousState = pureStep (secs / timeSinceDeath gstate) (previousState gstate), timeSinceDeath = timeSinceDeath gstate + secs}
-pureStep secs gstate@(MenuState {}) = gstate {levels = sTime (secs*90) (levels gstate), selectedState = case selectedState gstate of
-  Nothing -> Nothing
-  Just gs -> Just $ pureStep secs gs}
+pureStep secs gstate@(MenuState {}) =
+  gstate
+    { levels = sTime (secs * 90) (levels gstate),
+      selectedState = case selectedState gstate of
+        Nothing -> Nothing
+        Just gs -> Just $ pureStep secs gs
+    }
 pureStep secs gstate@(PauseState {}) = gstate
 pureStep secs gstate@(GameState {}) =
   case hp (player gstate) of
@@ -58,7 +62,7 @@ pureStep secs gstate@(GameState {}) =
       DeathState
         { previousState =
             updateA (playerHeal 1) $
-            updateA emptyKeys gstate {hud = Invisible},
+              updateA emptyKeys gstate {hud = Invisible},
           timeSinceDeath = 1
         }
     _ ->
@@ -67,7 +71,7 @@ pureStep secs gstate@(GameState {}) =
           asteroids = rrna,
           bullets = trueNewBullets,
           timeSinceLastShot = newTimeSinceLast,
-          walls = newWalls,
+          walls = map (selfRotate secs) (walls gstate),
           timeTillNextAsteroid = ttna,
           rand = nnrand,
           score = snew,
@@ -81,10 +85,9 @@ pureStep secs gstate@(GameState {}) =
     newDamagedPlayer = case hud gstate of
       Visible -> playerDamage newAsteroids newBullets newPlayer
       Invisible -> newPlayer
-    newWalls = map (rotate (2 * secs)) (walls gstate)
     trueNewBullets = bulletCollisions newAsteroids newPlayer newBullets
     (trueNewAsteroids, destroyedAsteroids) = asteroidCollisions newBullets newPlayer newAsteroids
-    (newrand, rna, ttna) = if timeTillNextAsteroid gstate <= 0 then (\(a, b, c) -> (a, b : trueNewAsteroids, c)) $ genRandomAsteroid (expDecay Constants.asteroidSpawnAverageInterval (elapsedTime gstate)) (rand gstate) ((getPhysObj . player) gstate) else (rand gstate, trueNewAsteroids, timeTillNextAsteroid gstate - secs)
+    (newrand, rna, ttna) = spawnNewAsteroid (levelConfig gstate) (elapsedTime gstate) secs (timeTillNextAsteroid gstate) (rand gstate) (getPhysObj $ player gstate) trueNewAsteroids
     nnrand
       | null destroyedAsteroids = newrand
       | otherwise = snd (split newrand)
@@ -96,6 +99,13 @@ bulletCollisions as p = filter (\b -> not (any (checkCollision b) as || checkCol
 
 asteroidCollisions :: (HasPhysics a, HasPhysics b) => [a] -> b -> [Asteroid] -> ([Asteroid], [Asteroid])
 asteroidCollisions bs p = foldr (\a (as, ds) -> if checkCollision p a then (as, ds) else (if any (checkCollision a) bs then (as, a : ds) else (a : as, ds))) ([], [])
+
+spawnNewAsteroid :: LevelConfig -> ElapsedTime -> IntervalTime -> Time -> StdGen -> PhysicsObject -> [Asteroid] -> (StdGen, [Asteroid], IntervalTime)
+spawnNewAsteroid lc et it t rng phy oas
+  | t <= 0 = (\(a, b, c) -> (a, b : oas, c)) $ genRandomAsteroid (asteroidSpawnFunction lc et) rng phy
+  | otherwise = (rng, oas, t - it)
+
+-- (newrand, rna, ttna) = if timeTillNextAsteroid gstate <= 0 then (\(a, b, c) -> (a, b : trueNewAsteroids, c)) $ genRandomAsteroid (asteroidSpawnFunction (levelConfig gstate) (asteroidDecayFunction (levelConfig gstate) (elapsedTime gstate))) (rand gstate) ((getPhysObj . player) gstate) else (rand gstate, trueNewAsteroids, timeTillNextAsteroid gstate - secs)
 
 instance HasA Player GameState where
   getA = player

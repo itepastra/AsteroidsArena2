@@ -40,7 +40,7 @@ view = pure . getPicture
 
 viewHud :: GameState -> Picture
 viewHud (DeathState {}) = blank
-viewHud (GameState {score = s, player = (Player {phys = (PhysObj {velocity = v}), hp = health}), asteroids = as}) = Pictures (zipWith formatl [400, 350, 300, 250] ["score: " ++ show s, "speed: " ++ show (sqrt (v |.| v)), "HP: " ++ show health, "LastFrame: " ++ show (length as)])
+viewHud gs@(GameState {score = s, player = (Player {phys = (PhysObj {velocity = v}), hp = health}), timeTillNextAsteroid = ttna}) = Pictures (zipWith formatl [400, 350, 300, 250] ["score: " ++ show s, "speed: " ++ show (sqrt (v |.| v)), "HP: " ++ show health])
   where
     formatl h = color Colors.textColor . translate (20 - fromIntegral (fst Constants.pageSize) / 2) h . Scale 0.3 0.3 . Text
 viewHud _ = blank

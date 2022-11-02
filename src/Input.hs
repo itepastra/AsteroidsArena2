@@ -18,7 +18,7 @@ input k s = ((pure .) . pureInput) k s
 pureInput :: Event -> GameState -> GameState
 pureInput (EventKey (Char 's') Down _ _) g@(MenuState {levels = lvls}) = g {levels = selectNext lvls, selectedState = stateSelect (selectNext lvls) (rand g)}
 pureInput (EventKey (Char 'w') Down _ _) g@(MenuState {levels = lvls}) = g {levels = selectPrev lvls, selectedState = stateSelect (selectPrev lvls) (rand g)}
-pureInput (EventKey (SpecialKey KeyEnter) Down _ _) g@(MenuState {levels = lvls}) = Data.Maybe.fromMaybe g (selectedState g)
+pureInput (EventKey (SpecialKey KeyEnter) Down _ _) g@(MenuState {levels = lvls}) = (Data.Maybe.fromMaybe g (selectedState g)) {hud = Visible}
 pureInput (EventKey (SpecialKey KeyTab) Down _ _) g@(PauseState {}) = (previousState g) {keys = empty}
 pureInput (EventKey (SpecialKey KeyTab) Down _ _) g@(GameState {}) = PauseState {previousState = g}
 pureInput (EventKey (Char 'r') Down _ _) g@(DeathState {}) = retryState g
