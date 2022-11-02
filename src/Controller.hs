@@ -134,6 +134,11 @@ bulletSpawn ks ts secs p
   | member (SpecialKey KeySpace) ks && ts >= Constants.shootingInterval = (0, (shoot p :))
   | otherwise = (ts + secs, id)
 
+stateSelect :: [Selected Level] -> StdGen -> Maybe GameState
+stateSelect x d = case getSelected x of
+  Nothing -> Nothing
+  Just le -> Just $ gameStateFromLevel d le
+
 -- ######### GEDAAN ##########
 -- despawn bullets
 -- bullets bewegen
@@ -156,8 +161,3 @@ bulletSpawn ks ts secs p
 -- high scores
 -- invurnerability frames maybe?
 -- balancing????
-
-stateSelect :: [Selected Level] -> StdGen -> Maybe GameState
-stateSelect x d = case getSelected x of
-  Nothing -> Nothing
-  Just le -> Just $ gameStateFromLevel d le
