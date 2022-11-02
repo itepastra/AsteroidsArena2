@@ -3,14 +3,14 @@ module Asteroid where
 import qualified Constants
 import Data.Fixed (mod')
 import Graphics.Gloss (rotate, scale, translate)
-import Physics (HasPhysics (..), PhysicsObject (..), accelStep, accelerate, frictionStep, move)
+import Physics (HasPhysics (..), PhysicsObject (..), accelStep, accelerate, frictionStep, move, updatePhysObj)
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseAsteroid, baseSpaceMine)
 import System.Random (Random (..), RandomGen, StdGen)
 import System.Random.Stateful (randomM)
 import TypeClasses (Pictured (..), V2Math (..))
-import Types1 (TimeStep, Size, Time, IntervalTime, UniformTime)
-import VectorCalc ( Point(Point) )
+import Types1 (IntervalTime, Size, Time, TimeStep, UniformTime)
+import VectorCalc (Point (Point))
 
 data Asteroid
   = Asteroid
@@ -46,7 +46,7 @@ genRandomAsteroid t g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAngle, 
   where
     ((spawnAngle, moveAngle, size, uTime, moveSpeed, rSpeed, rAngle), g1) = randomR ((0, -25, 1, 0, 20, -15, 0), (360, 25, 3, 1, 80, 15, 360)) g0
     (atype, g) = randomR (0, 1) g1
-    timeTillNext =t uTime
+    timeTillNext = t uTime
     pos = position p |+| (Constants.spawnDistance |*| rot spawnAngle (Point 1 0))
     vel = (rot moveAngle . (moveSpeed |*|) . normalize) (position p |-| pos)
     rad = Constants.asteroidRadius * (2 ^ size)
@@ -73,8 +73,13 @@ getChildAsteroids (angle, speed, rSpeed) (Asteroid {size = s, phys = phy, rotate
 getChildAsteroids _ (SpaceMine {}) = []
 
 track :: PhysicsObject -> TimeStep -> Asteroid -> Asteroid
-track _ _ a@(Asteroid {}) = a
+track p secs a@(Asteroid {}) = a
 track p secs a@(SpaceMine {}) = frictionStep Constants.asteroidFrictionExponent secs . accelStep secs (((300 ^ 2) / (pp |#| pa)) |*| (pp |-| pa)) $ a
   where
     pp = position p
     pa = (position . getPhysObj) a
+
+flipField :: PhysicsObject -> Asteroid -> Asteroid
+flipField pp a
+  | (position . getPhysObj) a |#| position pp <= Constants.asteroidDespawnRange2 = a
+  | otherwise = updatePhysObj (\pa -> pa {position = position pp |-| ( Constants.spawnDistance |*| normalize (position pa |-| position pp))}) a

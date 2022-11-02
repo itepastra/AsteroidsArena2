@@ -3,7 +3,8 @@ module Constants where
 
 
 pageSize :: (Int, Int)
-pageSize = (1600, 900)
+pageSize = (400, 400)
+-- pageSize = (1600, 900)
 
 fps :: Int
 fps = 30
@@ -25,7 +26,7 @@ parallax = map ((1 /) . fromIntegral) [parallaxStart .. (parallaxStart + paralla
 -- Asteroid Things
 
 asteroidDespawnRange2 :: Float
-asteroidDespawnRange2 = fromIntegral (fst pageSize ^ 2 + snd pageSize ^ 2) * 3
+asteroidDespawnRange2 = fromIntegral (fst pageSize ^ 2 + snd pageSize ^ 2) * 1.1
 
 asteroidRadius :: Float
 asteroidRadius = 10
