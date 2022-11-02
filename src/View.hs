@@ -24,13 +24,14 @@ import Graphics.Gloss
     translate,
     white,
   )
-import Model (GameState (..), Level (name), newPlayer)
+import Level (Level (name))
+import Model (GameState (..), newPlayer)
 import Physics (HasPhysics (getPhysObj), PhysicsObject (PhysObj, position, velocity))
 import Player (Player (Player, hp, phys))
 import Sprites (baseStar, starrySky)
 import TypeClasses (Pictured (..), V2Math (..))
 import qualified TypeClasses as VectorCalc
-import Types1 (Selected (..), Time, Hud (Visible, Invisible))
+import Types1 (Hud (Invisible, Visible), Selected (..), Time)
 import VectorCalc (Point (Point))
 
 type CamOffset = Point
@@ -108,4 +109,3 @@ viewLevel l = color lc $ scale 0.3 0.3 $ Text (name (val l))
     lc = case l of
       NotSelected _ -> white
       Selected x _ -> Colors.rainbowGradientColor x
-

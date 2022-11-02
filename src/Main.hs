@@ -9,11 +9,12 @@ import Graphics.Gloss (Display (InWindow), black, play)
 import Graphics.Gloss.Interface.IO.Game (playIO)
 import Input (input)
 import LevelImport (cleanFileLevels, encodeLevels, fileLevels)
-import Model (GameState (MenuState), Level (name), defaultLevels, gameStateFromLevel)
+import Model (GameState (MenuState),  gameStateFromLevel)
 import System.Directory.Tree (AnchoredDirTree ((:/)), DirTree, flattenDir, readDirectory)
 import System.Random (Random (randomRs), RandomGen (split), StdGen, getStdGen)
 import qualified VectorCalc
 import View (view)
+import DefaultLevels (defaultLevels)
 
 main :: IO ()
 main =

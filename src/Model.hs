@@ -1,5 +1,5 @@
 {-# HLINT ignore "Use camelCase" #-}
-{-# LANGUAGE InstanceSigs #-}
+
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 -- | This module contains the data types
@@ -13,7 +13,7 @@ import Constants (asteroidRadius, asteroidSpawnAverageInterval, playerMaxHp, pla
 import Data.Set (Set, empty)
 import qualified Graphics.Gloss as Gloss
 import Graphics.Gloss.Interface.IO.Game (Key)
-import Level (InitLevelConfig (..), LevelConfig (LevelConfig))
+import Level (InitLevelConfig (..), LevelConfig (LevelConfig), Level (..), GameStateInit (..), initToReal)
 import Physics (PhysicsObject (..))
 import Player (Player (Player))
 import System.Random (RandomGen, StdGen)
@@ -52,19 +52,6 @@ data GameState
       { previousState :: GameState
       }
 
-data Level = Level
-  { name :: String,
-    initState :: GameStateInit
-  }
-
-instance Show Level where
-  show :: Level -> String
-  show f = show [name f, (show . length . initWalls . initState) f]
-
-data GameStateInit = GameStateInit
-  { initWalls :: [Wall],
-    initConf :: InitLevelConfig
-  }
 
 newPlayer :: Player
 newPlayer = Player (PhysObj (Point 0 0) (Point 0 0) playerRadius) Constants.playerMaxHp (Point 0 1) 0
@@ -88,68 +75,4 @@ gameStateFromLevel r (Level {initState = initState}) =
       hud = Invisible
     }
 
-defaultLevels :: [Level]
-defaultLevels =
-  [ Level
-      { name = "1 - empty",
-        initState =
-          GameStateInit
-            { initWalls =
-                [],
-              initConf = emptyLvlConf
-            }
-      },
-    Level
-      { name = "2 - box",
-        initState =
-          GameStateInit
-            { initWalls =
-                wallPoly 4 400 450,
-              initConf = emptyLvlConf
-            }
-      },
-    Level
-      { name = "3 - triangle",
-        initState =
-          GameStateInit
-            { initWalls =
-                wallPoly 3 400 450,
-              initConf = emptyLvlConf
-            }
-      },
-    Level
-      { name = "4 - ManyGon",
-        initState =
-          GameStateInit
-            { initWalls =
-                zipWith (\r w -> w {frameRotation = r}) [1 ..] $
-                  wallPoly 11 400 450,
-              initConf = emptyLvlConf
-            }
-      },
-    Level
-      { name = "5 - Twisty Line",
-        initState =
-          GameStateInit
-            { initWalls =
-                wallPoly 2 400 450,
-              initConf = emptyLvlConf
-            }
-      }
-  ]
 
-emptyLvlConf :: InitLevelConfig
-emptyLvlConf = InitLevelConfig ExpRandom ExpDecay Pow Constants.asteroidSpawnAverageInterval
-
-initToReal :: InitLevelConfig -> LevelConfig
-initToReal ic = LevelConfig (getRandomFunc (iasteroidSpawnFunction ic) . getDecayFunc (iasteroidDecayFunction ic) (iasteroidSpawnStart ic)) (getSpaceMineOddFunc (ispaceMineOddsFunction ic))
-
-instance Eq Level where
-  l1 == l2 = name l1 == name l2
-
-instance Ord Level where
-  compare :: Level -> Level -> Ordering
-  compare l1 l2 = compare (name l1) (name l2)
-
-wallPoly :: Int -> Offset -> Strength -> [Wall]
-wallPoly n o s = map (\x -> createWall o (fromIntegral x * 360 / fromIntegral n) s) [1 .. n]

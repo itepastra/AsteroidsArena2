@@ -20,9 +20,9 @@ import Data.Maybe (mapMaybe)
 import Data.Set (Set, empty, member)
 import Graphics.Gloss.Interface.IO.Game (Key (Char, SpecialKey), SpecialKey (KeySpace))
 import Hasa (HasA (getA, setA), updateA)
-import Level (LevelConfig (asteroidSpawnFunction))
+import Level (LevelConfig (asteroidSpawnFunction), Level)
 import LevelImport (cleanFileLevels)
-import Model (GameState (..), Level (Level), gameStateFromLevel)
+import Model (GameState (..), gameStateFromLevel)
 import Physics (HasPhysics (getPhysObj), PhysicsObject (..), accelStep, checkCollision, frictionStep, moveStep, updatePhysObj)
 import qualified Physics as Asteroid
 import qualified Physics as Player
