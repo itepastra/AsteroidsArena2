@@ -2,9 +2,10 @@ module DefaultLevels (defaultLevels) where
 
 import AsteroidSpawnFunctions (DecayFunctions (..), MapFunctions (..), RandomFunctions (..))
 import qualified Constants
-import Level (InitLevelConfig (..), Level (..), GameStateInit (..))
-import Wall (Wall (frameRotation), createWall)
+import Level (GameStateInit (..), InitLevelConfig (..), Level (..))
+import LevelHelperFunctions
 import Types1 (Offset, Strength)
+import Wall (Wall (frameRotation), createWall)
 
 defaultLvlConfig :: InitLevelConfig
 defaultLvlConfig =
@@ -14,9 +15,6 @@ defaultLvlConfig =
       ispaceMineOddsFunction = Pow,
       iasteroidSpawnStart = Constants.asteroidSpawnAverageInterval
     }
-
-wallPoly :: Int -> Offset -> Strength -> [Wall]
-wallPoly n o s = map (\x -> createWall o (fromIntegral x * 360 / fromIntegral n) s) [1 .. n]
 
 defaultLevels :: [Level]
 defaultLevels =
@@ -52,7 +50,7 @@ defaultLevels =
         initState =
           GameStateInit
             { initWalls =
-                zipWith (\r w -> w {frameRotation = r}) [1 ..] $
+                wallRMap [1 ..] $
                   wallPoly 11 400 450,
               initConf = defaultLvlConfig
             }

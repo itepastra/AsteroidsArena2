@@ -1,1 +1,1 @@
-{"initState":{"initConf":{"asteroidDecayFunction":"ExpDecay","asteroidSpawnFunction":"ExpRandom"},"initWalls":[]},"name":"1 - empty"}
+{"initState":{"initConf":{"asteroidDecayFunction":"ExpDecay","asteroidSpawnFunction":"ExpRandom","asteroidSpawnStart":3,"spaceMineOddsFunction":"Pow"},"initWalls":[]},"name":"1 - empty"}
