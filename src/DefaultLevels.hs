@@ -32,6 +32,7 @@ defaultLevels =
         initState =
           GameStateInit
             { initWalls =
+                wallRMap (flipFlop 10) $
                 wallPoly 4 400 450,
               initConf = defaultLvlConfig
             }
