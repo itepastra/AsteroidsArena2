@@ -46,4 +46,5 @@ executable asteroids-arena2
                      , DefaultLevels
                      , LevelHelperFunctions
                      , ExitStrings
+                     , WallFunctions
   default-language:    Haskell2010

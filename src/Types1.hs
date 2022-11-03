@@ -1,5 +1,6 @@
 module Types1 where
 
+import Rotation (Angle)
 import VectorCalc (Point)
 
 type Vector = Point
@@ -42,6 +43,10 @@ type Lifetime = Float
 
 type Offset = Float
 
+type AngleSpeed = Angle
+
+type Decay = Float
+
 data Selected a = NotSelected {val :: a} | Selected {time :: ElapsedTime, val :: a}
 
 data Hud = Visible | Invisible
@@ -50,4 +55,4 @@ instance Eq a => Eq (Selected a) where
   s1 == s2 = val s1 == val s2
 
 instance Ord a => Ord (Selected a) where
-    compare s1 s2 = compare (val s1) (val s2)
+  compare s1 s2 = compare (val s1) (val s2)

@@ -35,7 +35,7 @@ import System.Random (Random (random, randomRs), RandomGen (split), StdGen, getS
 import TypeClasses (V2Math (..))
 import Types1 (Acceleration, ElapsedTime, Hud (..), IntervalTime, Selected (NotSelected, Selected, val), Time, TimeStep)
 import VectorCalc (Point (Point))
-import Wall (Wall, selfRotate, totalAcceleration)
+import Wall (Wall, selfMove, totalAcceleration)
 
 step :: Float -> GameState -> IO GameState
 step secs gstate@(MenuState {levels = []}) = do
@@ -70,7 +70,7 @@ pureStep secs gstate@(GameState {}) =
       asteroids = rrna,
       bullets = trueNewBullets,
       timeSinceLastShot = newTimeSinceLast,
-      walls = map (selfRotate secs) (walls gstate),
+      walls = map (selfMove (elapsedTime gstate)) (walls gstate),
       timeTillNextAsteroid = ttna,
       rand = nnrand,
       score = snew,

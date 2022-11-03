@@ -2,7 +2,7 @@ module Level where
 
 import AsteroidSpawnFunctions (DecayFunctions, MapFunctions, RandomFunctions, getRandomFunc, getDecayFunc, getSpaceMineOddFunc)
 import Types1 (ElapsedTime, IntervalTime, Time, TimeAvg, UniformTime)
-import Wall (Wall (Wall))
+import Wall (InitWall)
 
 data InitLevelConfig = InitLevelConfig
   { iasteroidSpawnFunction :: RandomFunctions,
@@ -25,7 +25,7 @@ instance Show Level where
   show f = show [name f, (show . length . initWalls . initState) f]
 
 data GameStateInit = GameStateInit
-  { initWalls :: [Wall],
+  { initWalls :: [InitWall],
     initConf :: InitLevelConfig
   }
 

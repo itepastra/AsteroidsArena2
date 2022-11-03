@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use camelCase" #-}
-
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 -- | This module contains the data types
@@ -13,14 +12,14 @@ import Constants (asteroidRadius, asteroidSpawnAverageInterval, playerMaxHp, pla
 import Data.Set (Set, empty)
 import qualified Graphics.Gloss as Gloss
 import Graphics.Gloss.Interface.IO.Game (Key)
-import Level (InitLevelConfig (..), LevelConfig (LevelConfig), Level (..), GameStateInit (..), initToReal)
+import Level (GameStateInit (..), InitLevelConfig (..), Level (..), LevelConfig (LevelConfig), initToReal)
 import Physics (PhysicsObject (..))
 import Player (Player (Player))
 import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
 import Types1 (Hud (Invisible, Visible), Offset, Selected, Strength, Time, TimeStep)
 import VectorCalc (Point (Point))
-import Wall (Wall (Wall, frameRotation), createWall)
+import Wall (Wall, createWall)
 
 data GameState
   = GameState
@@ -52,7 +51,6 @@ data GameState
       { previousState :: GameState
       }
 
-
 newPlayer :: Player
 newPlayer = Player (PhysObj (Point 0 0) (Point 0 0) playerRadius) Constants.playerMaxHp (Point 0 1) 0
 
@@ -68,11 +66,9 @@ gameStateFromLevel r (Level {initState = initState}) =
       timeSinceLastShot = 10,
       timeTillNextAsteroid = 0,
       score = 0,
-      walls = initWalls initState,
+      walls = map createWall (initWalls initState),
       keys = empty,
       levelConfig = initToReal (initConf initState),
       frameTime = 0,
       hud = Invisible
     }
-
-

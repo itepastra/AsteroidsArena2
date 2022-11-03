@@ -6,13 +6,17 @@ import Asteroid (Asteroid (..))
 import AsteroidSpawnFunctions (RandomFunctions (..))
 import Bullet (Bullet (..))
 import Data.Aeson (FromJSON (parseJSON), KeyValue ((.=)), ToJSON (toJSON), object, withObject, (.:))
-import Level (InitLevelConfig (..), LevelConfig (..), GameStateInit (..), Level (..))
+import Level (GameStateInit (..), InitLevelConfig (..), Level (..), LevelConfig (..))
 import Model (GameState (GameState))
 import Physics (PhysicsObject (PhysObj, position, radius, velocity))
 import Player (Player (..))
 import TypeClasses (V2Math (..))
 import VectorCalc (Point (Point))
-import Wall (Wall (..))
+import Wall (InitWall (..), Wall (..))
+import WallFunctions (WallFunction (..))
+import Control.Monad (MonadPlus(mzero))
+import Control.Applicative ((<|>))
+import qualified Data.Aeson.KeyMap as H
 
 instance FromJSON Point where
   parseJSON = withObject "Point" $ \v ->
@@ -104,28 +108,22 @@ instance ToJSON Bullet where
         "lifeTime" .= lifeTime p
       ]
 
-instance FromJSON Wall where
-  parseJSON = withObject "Wall" $ \v ->
-    Wall
+instance FromJSON InitWall where
+  parseJSON = withObject "InitWall" $ \v ->
+    InitWall
       <$> v
-      .: "point"
+      .: "irFunc"
       <*> v
-      .: "normal"
+      .: "ioFunc"
       <*> v
-      .: "strength"
-      <*> v
-      .: "angle"
-      <*> v
-      .: "rotateSpeed"
+      .: "isFunc"
 
-instance ToJSON Wall where
+instance ToJSON InitWall where
   toJSON w =
     object
-      [ "point" .= point w,
-        "normal" .= normal w,
-        "strength" .= strength w,
-        "angle" .= angle w,
-        "rotateSpeed".= frameRotation w
+      [ "ioFunc" .= ioFunc w,
+        "irFunc" .= irFunc w,
+        "isFunc" .= isFunc w
       ]
 
 instance FromJSON InitLevelConfig where
@@ -174,3 +172,23 @@ instance ToJSON Level where
       [ "name" .= name l,
         "initState" .= initState l
       ]
+
+instance ToJSON WallFunction where
+  toJSON (C v) = object ["type" .= ("c" :: String), "v" .= v]
+  toJSON Etime = object ["type" .= ("etime" :: String)]
+  toJSON (SinF f1) = object ["type" .= ("sin" :: String), "f1" .= f1]
+  toJSON (LinF f1 f2) = object ["type" .= ("lin" :: String), "f1" .= f1, "f2" .= f2]
+  toJSON (ExpF f1 f2) = object ["type" .= ("exp" :: String), "f1" .= f1, "f2" .= f2]
+  toJSON (AddF f1 f2) = object ["type" .= ("add" :: String), "f1" .= f1, "f2" .= f2]
+
+instance FromJSON WallFunction where
+  parseJSON  = withObject "WallFunction" $ \v ->
+    case H.lookup "type" v of
+      Nothing -> mzero
+      Just "c" -> C <$> v .: "v"
+      Just "etime" -> return Etime
+      Just "lin" -> LinF <$> v.: "f1" <*> v.: "f2"
+      Just "exp" -> ExpF <$> v.: "f1" <*> v.: "f2"
+      Just "add" -> AddF <$> v.: "f1" <*> v.: "f2"
+      Just "sin" -> SinF <$> v.: "f1"
+      _ -> mzero

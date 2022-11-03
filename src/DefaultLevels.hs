@@ -2,10 +2,11 @@ module DefaultLevels (defaultLevels) where
 
 import AsteroidSpawnFunctions (DecayFunctions (..), MapFunctions (..), RandomFunctions (..))
 import qualified Constants
+import Data.Fixed (mod')
 import Level (GameStateInit (..), InitLevelConfig (..), Level (..))
 import LevelHelperFunctions
 import Types1 (Offset, Strength)
-import Wall (Wall (frameRotation), createWall)
+import WallFunctions (WallFunction (AddF, LinF))
 
 defaultLvlConfig :: InitLevelConfig
 defaultLvlConfig =
@@ -32,8 +33,8 @@ defaultLevels =
         initState =
           GameStateInit
             { initWalls =
-                wallRMap (flipFlop 10) $
-                wallPoly 4 400 450,
+                addRots (flipFlop (repeat 10)) $
+                  wallPoly 4 400 450,
               initConf = defaultLvlConfig
             }
       },
@@ -51,8 +52,8 @@ defaultLevels =
         initState =
           GameStateInit
             { initWalls =
-                wallRMap [1 ..] $
-                  wallPoly 11 400 450,
+                  addRots (flipFlop [1 ..]) $
+                    wallPoly 11 400 450,
               initConf = defaultLvlConfig
             }
       },
