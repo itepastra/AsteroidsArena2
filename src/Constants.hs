@@ -1,10 +1,9 @@
 {-# LANGUAGE Safe #-}
+
 module Constants where
 
-
 pageSize :: (Int, Int)
-pageSize = (400, 400)
--- pageSize = (1600, 900)
+pageSize = (1600, 900)
 
 fps :: Int
 fps = 30
@@ -26,13 +25,13 @@ parallax = map ((1 /) . fromIntegral) [parallaxStart .. (parallaxStart + paralla
 -- Asteroid Things
 
 asteroidDespawnRange2 :: Float
-asteroidDespawnRange2 = fromIntegral (fst pageSize ^ 2 + snd pageSize ^ 2) * 1.1
+asteroidDespawnRange2 = fromIntegral ((fst pageSize `div` 2) ^ 2 + (snd pageSize `div` 2) ^ 2) * 4
 
 asteroidRadius :: Float
 asteroidRadius = 10
 
 spawnDistance :: Float
-spawnDistance = sqrt (fromIntegral (((fst pageSize `div` 2) ^ 2) + ((snd pageSize `div` 2) ^ 2)))
+spawnDistance = sqrt (fromIntegral (((fst pageSize `div` 2) ^ 2) + ((snd pageSize `div` 2) ^ 2))) * 1.5
 
 asteroidSpawnAverageInterval :: Float
 asteroidSpawnAverageInterval = 3

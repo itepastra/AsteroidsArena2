@@ -33,6 +33,7 @@ import TypeClasses (Pictured (..), V2Math (..))
 import qualified TypeClasses as VectorCalc
 import Types1 (Hud (Invisible, Visible), Selected (..), Time)
 import VectorCalc (Point (Point))
+import Graphics.Gloss.Interface.IO.Game (SpecialKey)
 
 type CamOffset = Point
 
@@ -90,7 +91,7 @@ instance Pictured GameState where
   getPicture gs@(GameState {player = p, hud = Invisible}) = Pictures [viewBackground gs, moveWorldToCenter (getPhysObj p) $ Pictures [viewWalls gs, viewBullets gs, viewAsteroids gs]]
   getPicture gs@(GameState {player = p, hud = Visible}) = Pictures [viewBackground gs, moveWorldToCenter (getPhysObj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs], viewHud gs]
   getPicture gs@(PauseState {}) = Pictures [getPicture (previousState gs), viewDimmed, viewOverlayText "Pause"]
-  getPicture gs@(DeathState {}) = Pictures [getPicture (previousState gs), viewDimmed, viewOverlayText "U Ded"]
+  getPicture gs@(DeathState {}) = Pictures [getPicture (previousState gs), viewDimmed, viewOverlayText "Wrecked", translate 0 (-100) $ scale 0.5 0.5 $ viewOverlayText $ "Score: " ++ show (score $ previousState gs)]
   getPicture gs@(MenuState {}) = Pictures [getPicture (selectedState gs), viewLevelSelect $ levels gs]
 
 instance Pictured a => Pictured (Maybe a) where

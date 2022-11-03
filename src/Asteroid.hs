@@ -54,9 +54,25 @@ genRandomAsteroid t g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAngle, 
       | atype < Constants.spaceMineOdds = SpaceMine
       | otherwise = Asteroid
 
-getChildAsteroids :: (Angle, Float, Float) -> Asteroid -> [Asteroid]
-getChildAsteroids _ (Asteroid {size = 1}) = []
-getChildAsteroids (angle, speed, rSpeed) (Asteroid {size = s, phys = phy, rotateAngle = ra, rotateSpeed = rss}) = ca
+getChildAsteroids :: RandomGen g => g -> Asteroid -> ([Asteroid] -> [Asteroid], g)
+getChildAsteroids g a = ((getChildAsteroids' nums a ++), ng)
+  where
+    (nums, ng) =
+      randomR
+        ( ( 0,
+            Constants.babyAsteroidMinimumSpeed,
+            Constants.babyAsteroidMinimumRotation
+          ),
+          ( 120,
+            Constants.babyAsteroidMaximumSpeed,
+            Constants.babyAsteroidMaximumRotation
+          )
+        )
+        g
+
+getChildAsteroids' :: (Angle, Float, Float) -> Asteroid -> [Asteroid]
+getChildAsteroids' _ (Asteroid {size = 1}) = []
+getChildAsteroids' (angle, speed, rSpeed) (Asteroid {size = s, phys = phy, rotateAngle = ra, rotateSpeed = rss}) = ca
   where
     ca =
       zipWith
@@ -70,7 +86,7 @@ getChildAsteroids (angle, speed, rSpeed) (Asteroid {size = s, phys = phy, rotate
         )
         [-120, 0, 120]
         [0, -rSpeed, rSpeed]
-getChildAsteroids _ (SpaceMine {}) = []
+getChildAsteroids' _ (SpaceMine {}) = []
 
 track :: PhysicsObject -> TimeStep -> Asteroid -> Asteroid
 track p secs a@(Asteroid {}) = a
@@ -82,4 +98,4 @@ track p secs a@(SpaceMine {}) = frictionStep Constants.asteroidFrictionExponent 
 flipField :: PhysicsObject -> Asteroid -> Asteroid
 flipField pp a
   | (position . getPhysObj) a |#| position pp <= Constants.asteroidDespawnRange2 = a
-  | otherwise = updatePhysObj (\pa -> pa {position = position pp |-| ( Constants.spawnDistance |*| normalize (position pa |-| position pp))}) a
+  | otherwise = updatePhysObj (\pa -> pa {position = position pp |-| (Constants.spawnDistance |*| normalize (position pa |-| position pp))}) a
