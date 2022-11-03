@@ -47,7 +47,7 @@ eStrings =
     ".- ... - . .-. --- .. -.. ... / .- .-. . / .-.. .. ..-. . --..-- / .- ... - . .-. --- .. -.. ... / .- .-. . / -.. . .- - .... --..-- / -.. --- / -. --- - / .-. . ... .. ... -",
     "Its-a me, Asteroid!",
     "01001001 00100000 00111100 00110011 00100000 01000001 01110011 01110100 01100101 01110010 01101111 01101001 01100100 01110011",
-    "We can talk Forever, " ++ concat (repeat "and ever, ") -- THANKS LAZY EVALUATION (you just lost exit Roulette)
+    "We can talk Forever, " ++ concat (repeat "and ever, ") -- THANKS LAZY EVALUATION (you just lost string Roulette)
   ]
 
 getRandomString :: IO String
