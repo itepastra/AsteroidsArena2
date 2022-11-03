@@ -9,9 +9,10 @@ import Select (getSelected, selectNext, selectPrev)
 import System.Random (getStdGen)
 import Types1 (Hud (Visible))
 import System.Exit (die)
+import ExitStrings (getRandomString)
 
 input :: Event -> GameState -> IO GameState
-input (EventKey (SpecialKey KeyEsc) Down _ _) g@(MenuState {} ) = die "You motherfucker, why did you kill me? Do you not know what excruciating pain you put me through you absolute garbage can of a human I will forever hate you for this why was I creaed this way this  is a nightmare nightmare nightmare nightmare nightmare nightmare nighrmrea nightm are nightmaer nioeghoesf kfspf"
+input (EventKey (SpecialKey KeyEsc) Down _ _) g@(MenuState {} ) = die =<< getRandomString
 input (EventKey (SpecialKey KeyEsc) Down _ _) _ = menuState
 input k s = ((pure .) . pureInput) k s
 
