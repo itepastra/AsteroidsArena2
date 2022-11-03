@@ -79,11 +79,11 @@ pureStep secs gstate@(GameState {}) =
     }
   where
     -- move the player, bullets and asteroids
-    (newTimeSinceLast, newBullets, newAsteroids, newPlayer) = updateStage1 secs gstate
+    (newTimeSinceLast, newBullets, newAsteroids, newPlayer) = positionUpdateStage secs gstate
     -- check player damage and the bullets that remain
-    (newDamagedPlayer, trueNewBullets) = updateStage2 newAsteroids newBullets newPlayer (hud gstate)
+    (newDamagedPlayer, trueNewBullets) = bulletPlayerUpdateStage newAsteroids newBullets newPlayer (hud gstate)
     -- remove, and spawn new asteroids
-    (ttna, rrna, nnrand, sInc) = updateStage2' newBullets newPlayer gstate secs newAsteroids
+    (ttna, rrna, nnrand, sInc) = asteroidUpdateStage2 newBullets newPlayer gstate secs newAsteroids
     -- if the player is visible, update the score
     snew = case hud gstate of
       Visible -> score gstate + sInc
@@ -92,23 +92,23 @@ pureStep secs gstate@(GameState {}) =
 childAsteroids :: RandomGen g => g -> [Asteroid] -> ([Asteroid], g)
 childAsteroids g = foldl (\(as, g) a -> first ($ as) (getChildAsteroids g a)) ([], g)
 
-updateStage1 :: TimeStep -> GameState -> (Float, [Bullet], [Asteroid], Player)
-updateStage1 secs gstate =
+positionUpdateStage :: TimeStep -> GameState -> (Float, [Bullet], [Asteroid], Player)
+positionUpdateStage secs gstate =
   uncurry
     (,,,)
     (second (($ bullets gstate) . (. mapMaybe (updateBullet secs (walls gstate)))) (bulletSpawn (keys gstate) (timeSinceLastShot gstate) secs (player gstate)))
     (map (updateAsteroid secs ((getPhysObj . player) gstate)) (asteroids gstate))
     (updatePlayer (rotSpeed $ keys gstate) (walls gstate) secs (if member (Char 'w') (keys gstate) then lookAccel (player gstate) else Point 0 0) $ player gstate)
 
-updateStage2 :: [Asteroid] -> [Bullet] -> Player -> Hud -> (Player, [Bullet])
-updateStage2 as bs p h = (dp, bulletCollisions as p bs)
+bulletPlayerUpdateStage :: [Asteroid] -> [Bullet] -> Player -> Hud -> (Player, [Bullet])
+bulletPlayerUpdateStage as bs p h = (dp, bulletCollisions as p bs)
   where
     dp = case h of
       Visible -> playerDamage as bs p
       Invisible -> p
 
-updateStage2' :: [Bullet] -> Player -> GameState -> IntervalTime -> [Asteroid] -> (IntervalTime, [Asteroid], StdGen, Int)
-updateStage2' bs p gstate secs as =
+asteroidUpdateStage2 :: [Bullet] -> Player -> GameState -> IntervalTime -> [Asteroid] -> (IntervalTime, [Asteroid], StdGen, Int)
+asteroidUpdateStage2 bs p gstate secs as =
   (\((r, as, i), ds) -> (\(a, (b, d)) -> (a, b, d, length ds)) (i, first (++ as) (childAsteroids r ds))) $
     first
       ( spawnNewAsteroid
