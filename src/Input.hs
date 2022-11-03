@@ -8,8 +8,10 @@ import Model (GameState (..), gameStateFromLevel, newPlayer)
 import Select (getSelected, selectNext, selectPrev)
 import System.Random (getStdGen)
 import Types1 (Hud (Visible))
+import System.Exit (exitSuccess, exitFailure, die)
 
 input :: Event -> GameState -> IO GameState
+input (EventKey (SpecialKey KeyEsc) Down _ _) g@(MenuState {} ) = die "why you kill game? I hate you for dis, restart it right now and continue playing"
 input (EventKey (SpecialKey KeyEsc) Down _ _) _ = menuState
 input k s = ((pure .) . pureInput) k s
 
