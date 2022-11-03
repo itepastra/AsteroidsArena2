@@ -1,8 +1,8 @@
-module LevelHelperFunctions (wallPoly, wallRMap, flipFlop) where
+module LevelHelperFunctions (wallPoly, wallRMap, wallMMap, flipFlop, createWall, fromOAS, fromOASR) where
 
 import Rotation (Angle)
 import Types1 (Offset, Strength)
-import Wall (Wall (Wall, frameRotation), createWall)
+import Wall (Wall (Wall, frameRotation), createWall, fromOAS, fromOASR)
 
 wallPoly :: Int -> Offset -> Strength -> [Wall]
 wallPoly n o s = map (\x -> createWall o (fromIntegral x * 360 / fromIntegral n) s) [1 .. n]
