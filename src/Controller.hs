@@ -57,39 +57,36 @@ pureStep secs gstate@(MenuState {}) =
         Just gs -> Just $ pureStep secs gs
     }
 pureStep secs gstate@(PauseState {}) = gstate
+pureStep secs gstate@(GameState {player = (Player {hp = 0})}) =
+  DeathState
+    { previousState =
+        updateA (playerHeal 1) $
+          updateA emptyKeys gstate {hud = Invisible},
+      timeSinceDeath = 1
+    }
 pureStep secs gstate@(GameState {}) =
-  case hp (player gstate) of
-    0 ->
-      DeathState
-        { previousState =
-            updateA (playerHeal 1) $
-              updateA emptyKeys gstate {hud = Invisible},
-          timeSinceDeath = 1
-        }
-    _ ->
-      gstate
-        { player = newDamagedPlayer,
-          asteroids = rrna,
-          bullets = trueNewBullets,
-          timeSinceLastShot = newTimeSinceLast,
-          walls = map (selfRotate secs) (walls gstate),
-          timeTillNextAsteroid = ttna,
-          rand = nnrand,
-          score = snew,
-          elapsedTime = elapsedTime gstate + secs,
-          frameTime = secs
-        }
+  gstate
+    { player = newDamagedPlayer,
+      asteroids = rrna,
+      bullets = trueNewBullets,
+      timeSinceLastShot = newTimeSinceLast,
+      walls = map (selfRotate secs) (walls gstate),
+      timeTillNextAsteroid = ttna,
+      rand = nnrand,
+      score = snew,
+      elapsedTime = elapsedTime gstate + secs,
+      frameTime = secs
+    }
   where
     -- move the player, bullets and asteroids
     (newTimeSinceLast, newBullets, newAsteroids, newPlayer) = updateStage1 secs gstate
     -- check player damage and the bullets that remain
     (newDamagedPlayer, trueNewBullets) = updateStage2 newAsteroids newBullets newPlayer (hud gstate)
-
-    (trueNewAsteroids, destroyedAsteroids) = asteroidCollisions newBullets newPlayer newAsteroids
-    (newrand, rna, ttna) = spawnNewAsteroid (levelConfig gstate) (elapsedTime gstate) secs (timeTillNextAsteroid gstate) (rand gstate) (getPhysObj newPlayer) trueNewAsteroids
-    (rrna, nnrand) = first (++ rna) $ childAsteroids newrand destroyedAsteroids
+    -- remove, and spawn new asteroids
+    (ttna, rrna, nnrand, sInc) = updateStage2' newBullets newPlayer gstate secs newAsteroids
+    -- if the player is visible, update the score
     snew = case hud gstate of
-      Visible -> score gstate + length destroyedAsteroids
+      Visible -> score gstate + sInc
       Invisible -> score gstate
 
 childAsteroids :: RandomGen g => g -> [Asteroid] -> ([Asteroid], g)
@@ -110,9 +107,9 @@ updateStage2 as bs p h = (dp, bulletCollisions as p bs)
       Visible -> playerDamage as bs p
       Invisible -> p
 
-updateStage2' :: [Bullet] -> Player -> GameState -> IntervalTime -> [Asteroid] -> (IntervalTime, [Asteroid], StdGen)
+updateStage2' :: [Bullet] -> Player -> GameState -> IntervalTime -> [Asteroid] -> (IntervalTime, [Asteroid], StdGen, Int)
 updateStage2' bs p gstate secs as =
-  (\((r, as, i), ds) -> (\(a, (b, d)) -> (a, b, d)) (i, first (++ as) (childAsteroids r ds))) $
+  (\((r, as, i), ds) -> (\(a, (b, d)) -> (a, b, d, length ds)) (i, first (++ as) (childAsteroids r ds))) $
     first
       ( spawnNewAsteroid
           (levelConfig gstate)
