@@ -1,4 +1,4 @@
-module LevelHelperFunctions (wallPoly, wallRMap , flipFlop) where
+module LevelHelperFunctions (wallPoly, wallRMap, flipFlop) where
 
 import Rotation (Angle)
 import Types1 (Offset, Strength)
@@ -9,6 +9,9 @@ wallPoly n o s = map (\x -> createWall o (fromIntegral x * 360 / fromIntegral n)
 
 wallRMap :: [Angle] -> [Wall] -> [Wall]
 wallRMap = zipWith (\r w -> w {frameRotation = r})
+
+wallMMap :: [Angle] -> [Wall] -> [Wall]
+wallMMap = zipWith (\r w -> w {frameRotation = frameRotation w * r})
 
 flipFlop :: Float -> [Angle]
 flipFlop x = x : flipFlop (-x)
