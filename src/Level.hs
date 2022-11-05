@@ -22,7 +22,7 @@ data Level = Level
   }
 
 instance Show Level where
-  show f = show [name f, (show . length . initWalls . initState) f]
+  show  = show . name 
 
 data GameStateInit = GameStateInit
   { initWalls :: [InitWall],

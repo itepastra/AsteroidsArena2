@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 --   This module defines how the state changes
@@ -96,9 +97,18 @@ positionUpdateStage :: TimeStep -> GameState -> (Float, [Bullet], [Asteroid], Pl
 positionUpdateStage secs gstate =
   uncurry
     (,,,)
-    (second (($ bullets gstate) . (. mapMaybe (updateBullet secs (walls gstate)))) (bulletSpawn (keys gstate) (timeSinceLastShot gstate) secs (player gstate)))
-    (map (updateAsteroid secs ((getPhysObj . player) gstate)) (asteroids gstate))
-    (updatePlayer (rotSpeed $ keys gstate) (walls gstate) secs (if member (Char 'w') (keys gstate) then lookAccel (player gstate) else Point 0 0) $ player gstate)
+    (second bulletsUpdate (bulletSpawn keyset (timeSinceLastShot gstate) secs playr))
+    (map (updateAsteroid secs (getPhysObj playr)) (asteroids gstate))
+    (updatePlayer (rotSpeed keyset) wallarr secs (acc keyset) playr)
+  where
+    bulletsUpdate spawnedBullet = mapMaybe (updateBullet secs wallarr) (spawnedBullet (bullets gstate))
+    playr = player gstate
+    keyset = keys gstate
+    wallarr = walls gstate
+    acc :: Set Key -> Acceleration
+    acc k
+      | member (Char 'w') k = lookAccel playr
+      | otherwise = Point 0 0
 
 bulletPlayerUpdateStage :: [Asteroid] -> [Bullet] -> Player -> Hud -> (Player, [Bullet])
 bulletPlayerUpdateStage as bs p h = (dp, bulletCollisions as p bs)
@@ -133,11 +143,15 @@ spawnNewAsteroid lc et it t rng phy oas
   | otherwise = (rng, oas, t - it)
 
 instance HasA Player GameState where
+  getA :: GameState -> Player
   getA = player
+  setA :: Player -> GameState -> GameState
   setA p g = g {player = p}
 
 instance HasA (Set Key) GameState where
+  getA :: GameState -> Set Key
   getA = keys
+  setA :: Set Key -> GameState -> GameState
   setA k g = g {keys = k}
 
 emptyKeys :: Set Key -> Set Key

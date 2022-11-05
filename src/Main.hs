@@ -21,7 +21,6 @@ main =
   do
     encodeLevels defaultLevels
     randGen <- getStdGen
-    -- let sps = genStarPositions randGen Constants.starAmount
     playIO
       (InWindow "Asteroids Arena 2" Constants.pageSize (0, 0)) -- Or FullScreen
       black -- Background color
