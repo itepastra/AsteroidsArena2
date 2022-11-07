@@ -17,12 +17,18 @@ import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
 import Wall (Wall, createWall)
 import Player ( Player, Player(..) )
-import Types1 (TimeStep, Hud (..), Time, Selected, Point (Point), Score)
-import Physics (PhysicsObject(..))
+import Types1
+    ( Hud(..),
+      Time,
+      Selected,
+      Point(Point),
+      Score,
+      ElapsedTime,
+      PhysicsObject(..) )
 
 data GameState
   = GameState
-      { elapsedTime :: Float,
+      { elapsedTime :: ElapsedTime,
         player :: Player,
         asteroids :: [Asteroid],
         bullets :: [Bullet],
@@ -30,11 +36,10 @@ data GameState
         keys :: Set Key,
         rand :: StdGen,
         starPositions :: [[Gloss.Point]],
-        timeSinceLastShot :: Float,
-        timeTillNextAsteroid :: Float,
+        timeSinceLastShot :: ElapsedTime,
+        timeTillNextAsteroid :: ElapsedTime,
         score :: Score,
         levelConfig :: LevelConfig,
-        frameTime :: TimeStep,
         hud :: Hud
       }
   | DeathState
@@ -68,6 +73,5 @@ gameStateFromLevel r (Level {initState = initState}) =
       walls = map createWall (initWalls initState),
       keys = empty,
       levelConfig = initToReal (initConf initState),
-      frameTime = 0,
       hud = Invisible
     }

@@ -59,6 +59,5 @@ retryState g =
       levelConfig = levelConfig $ previousState g,
       keys = empty,
       starPositions = starPositions $ previousState g,
-      frameTime = 0,
       hud = Visible
     }

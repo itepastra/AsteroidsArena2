@@ -6,7 +6,7 @@ type TimeStep = Time -- a timestep between frames
 
 type UniformTime = Time -- a uniformly distributed time between 0 and 1
 
-type ElapsedTime = Time -- the time since the program started
+type ElapsedTime = Time -- the time since an event started
 
 type IntervalTime = Time -- time till another event should happen
 

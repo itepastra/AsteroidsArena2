@@ -73,8 +73,7 @@ pureStep secs gstate@(GameState {}) =
       timeTillNextAsteroid = ttna,
       rand = nnrand,
       score = snew,
-      elapsedTime = elapsedTime gstate + secs,
-      frameTime = secs
+      elapsedTime = elapsedTime gstate + secs
     }
   where
     -- move the player, bullets and asteroids
