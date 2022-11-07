@@ -5,8 +5,7 @@
 
 module Physics (updatePhysObj, moveStep, accelStep, frictionStep, PhysicsObject (..), checkCollision) where
 
-import Hasa (HasA (..), updateA)
-import TypeClasses (HasPhysics (..), V2Math ((|#|), (|*|), (|+|)))
+import TypeClasses (HasPhysics (..), V2Math (..), HasA(..))
 import Types1 (Acceleration, Collides, PhysicsObject (..), TimeStep)
 import VectorCalc ()
 
