@@ -9,9 +9,6 @@ import VectorCalc ()
 import Hasa (HasA (..))
 
 
-
-
-
 instance HasPhysics a => HasA PhysicsObject a where
   getA = getPhysObj
   setA = setPhysObj

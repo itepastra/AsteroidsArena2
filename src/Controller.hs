@@ -25,7 +25,7 @@ import Hasa (HasA (getA, setA), updateA)
 import Level (Level, LevelConfig (asteroidSpawnFunction))
 import LevelImport (cleanFileLevels)
 import Model (GameState (..), gameStateFromLevel)
-import Physics (HasPhysics (getPhysObj), PhysicsObject (..), accelStep, checkCollision, frictionStep, moveStep, updatePhysObj)
+import Physics (accelStep, checkCollision, frictionStep, moveStep, updatePhysObj)
 import qualified Physics as Asteroid
 import qualified Physics as Player
 import Player (Player (Player, hp, lookAngle, lookDirection), lookAccel, playerDamage, playerHeal, shoot)
@@ -33,8 +33,8 @@ import Rotation (Rotate (rotate))
 import Select (getSelected, sTime, selectFirst)
 import Stars (genStarPositions)
 import System.Random (Random (random, randomRs), RandomGen (split), StdGen, getStdGen, randomR)
-import TypeClasses (V2Math (..))
-import Types1 (Acceleration, ElapsedTime, Hud (..), IntervalTime, Selected (NotSelected, Selected, val), Time, TimeStep, Angle, Point (Point))
+import TypeClasses (V2Math (..), HasPhysics (..))
+import Types1 (Acceleration, ElapsedTime, Hud (..), IntervalTime, Selected (NotSelected, Selected, val), Time, TimeStep, Angle, Point (Point), PhysicsObject)
 import Wall (Wall, selfMove, totalAcceleration)
 
 step :: Float -> GameState -> IO GameState
