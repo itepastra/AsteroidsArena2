@@ -98,8 +98,8 @@ positionUpdateStage secs gstate =
     (updatePlayer (rotSpeed keyset) wallarr secs (acc keyset) playr)
   where
     bulletsUpdate spawnedBullet = mapMaybe (updateBullet secs wallarr) (spawnedBullet (bullets gstate))
-    playr = getA gstate
-    keyset = getA gstate
+    playr = player gstate
+    keyset = keys gstate
     wallarr = walls gstate
     acc :: Set Key -> Acceleration
     acc k
