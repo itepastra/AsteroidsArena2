@@ -1,20 +1,21 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 module Physics where
 
-import TypeClasses ( V2Math((|#|), (|+|), (|*|)) )
-import Types1 (TimeStep, Position, Velocity, Acceleration, Collides)
+import TypeClasses ( V2Math((|#|), (|+|), (|*|)), HasPhysics (..) )
+import Types1 (TimeStep, Position, Velocity, Acceleration, Collides, PhysicsObject (PhysObj, velocity, position, radius))
 import VectorCalc ()
+import Hasa (HasA (..))
 
 
 
-data PhysicsObject = PhysObj
-  { position :: Position,
-    velocity :: Velocity,
-    radius :: Float
-  }
 
-class HasPhysics a where
-  getPhysObj :: a -> PhysicsObject
-  setPhysObj :: PhysicsObject ->a ->  a
+
+instance HasPhysics a => HasA PhysicsObject a where
+  getA = getPhysObj
+  setA = setPhysObj
+  
 
 updatePhysObj :: HasPhysics a => (PhysicsObject -> PhysicsObject) -> a -> a
 updatePhysObj f p = setPhysObj (f $ getPhysObj p) p

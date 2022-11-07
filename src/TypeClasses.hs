@@ -1,5 +1,6 @@
 module TypeClasses where
 import Graphics.Gloss (Picture)
+import Types1 (PhysicsObject)
 
 class V2Math a where
   x :: a -> Float
@@ -19,3 +20,7 @@ class V2Math a where
 class Pictured a where
   getPicture :: a -> Picture
 
+
+class HasPhysics a where
+  getPhysObj :: a -> PhysicsObject
+  setPhysObj :: PhysicsObject ->a ->  a

@@ -57,3 +57,10 @@ instance Eq a => Eq (Selected a) where
 
 instance Ord a => Ord (Selected a) where
   compare s1 s2 = compare (val s1) (val s2)
+
+
+data PhysicsObject = PhysObj
+  { position :: Position,
+    velocity :: Velocity,
+    radius :: Float
+  }

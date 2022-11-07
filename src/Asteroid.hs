@@ -3,13 +3,13 @@ module Asteroid where
 import qualified Constants
 import Data.Fixed (mod')
 import Graphics.Gloss (rotate, scale, translate)
-import Physics (HasPhysics (..), PhysicsObject (..), accelStep, accelerate, frictionStep, move, updatePhysObj)
+import Physics (accelStep, accelerate, frictionStep, move, updatePhysObj)
 import Rotation ( Rotate (..), rot)
 import Sprites (baseAsteroid, baseSpaceMine)
 import System.Random (Random (..), RandomGen, StdGen)
 import System.Random.Stateful (randomM)
-import TypeClasses (Pictured (..), V2Math (..))
-import Types1 (IntervalTime, Size, Time, TimeStep, UniformTime, Angle, Point (Point))
+import TypeClasses (Pictured (..), V2Math (..), HasPhysics (..))
+import Types1 (IntervalTime, Size, Time, TimeStep, UniformTime, Angle, Point (Point), PhysicsObject (PhysObj, position, velocity, radius))
 
 data Asteroid
   = Asteroid

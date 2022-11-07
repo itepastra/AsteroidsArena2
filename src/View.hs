@@ -26,16 +26,15 @@ import Graphics.Gloss
   )
 import Level (Level (name))
 import Model (GameState (..), newPlayer)
-import Physics (HasPhysics (getPhysObj), PhysicsObject (PhysObj, position, velocity))
 import Player (Player (Player, hp, phys))
 import Sprites (baseStar, starrySky)
-import TypeClasses (Pictured (..), V2Math (..))
+import TypeClasses (Pictured (..), V2Math (..), HasPhysics (..))
 import qualified TypeClasses as VectorCalc
 import Types1
   ( Hud (Invisible, Visible),
     Point,
     Selected (..),
-    Time,
+    Time, PhysicsObject (..),
   )
 
 type CamOffset = Point

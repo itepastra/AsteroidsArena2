@@ -4,10 +4,9 @@ import Data.Maybe (mapMaybe)
 import GHC.Read (Read (readPrec))
 import Graphics.Gloss (translate)
 import qualified Graphics.Gloss as Gloss
-import Physics (HasPhysics (getPhysObj), PhysicsObject (position))
 import Rotation (Rotate (..), rot)
 import Sprites (baseWall)
-import TypeClasses (Pictured (..), V2Math (..))
+import TypeClasses (Pictured (..), V2Math (..), HasPhysics (..))
 import Types1
     ( Acceleration,
       ElapsedTime,
@@ -18,7 +17,7 @@ import Types1
       TimeStep,
       Angle,
       Point(Point),
-      Point )
+      Point, PhysicsObject (..) )
 import VectorCalc ()
 import AFunctions (AFunction, createFunc)
 

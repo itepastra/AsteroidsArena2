@@ -7,11 +7,11 @@ import Data.Aeson (FromJSON (parseJSON), ToJSON (toEncoding), object, withObject
 import Data.List (foldl')
 import Graphics.Gloss (Picture (Pictures), translate)
 import qualified Graphics.Gloss as Gloss
-import Physics (HasPhysics (..), PhysicsObject (..), accelerate, checkCollision, move)
+import Physics (accelerate, checkCollision, move)
 import Rotation (Rotate (..), rot)
 import Sprites (baseExhaust, basePlayer)
-import TypeClasses (Pictured (..), V2Math (..))
-import Types1 (Acceleration, Angle, HealthPoints, LookDirection)
+import TypeClasses (Pictured (..), V2Math (..), HasPhysics (..))
+import Types1 (Acceleration, Angle, HealthPoints, LookDirection, PhysicsObject (..))
 
 data Player = Player
   { phys :: PhysicsObject,
