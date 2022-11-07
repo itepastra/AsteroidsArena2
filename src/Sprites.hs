@@ -9,8 +9,8 @@ import Graphics.Gloss (color, green, makeColor)
 import Graphics.Gloss.Data.Picture (Picture (..), arcSolid, circleSolid, lineLoop, polygon, rectangleUpperSolid, scale, translate)
 import System.Random (StdGen)
 import TypeClasses (V2Math ((|.|)))
-import Types1 (Velocity, Point (Point))
 import VectorCalc ()
+import Types1 (Point (Point), Velocity)
 
 basePlayer :: Picture
 basePlayer = Color playerColor $ Polygon [(0, 20), (20, -15), (0, 0), (-20, -15)]

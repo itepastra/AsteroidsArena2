@@ -3,7 +3,7 @@ module VectorCalc where
 
 import Prelude hiding (negate)
 import TypeClasses (V2Math (..))
-import Types1 (Point (Point))
+import Types1 (Point (..))
 
 
 

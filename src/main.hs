@@ -1,21 +1,14 @@
 module Main where
 
-import qualified Constants
-import Controller (step)
-import Data.Aeson (encodeFile)
-import qualified Data.Bifunctor
-import Data.List (iterate')
-import Graphics.Gloss (Display (InWindow), black, play)
-import Graphics.Gloss.Interface.IO.Game (playIO)
-import Input (input)
-import LevelImport (cleanFileLevels, encodeLevels, fileLevels)
-import Model (GameState (MenuState), gameStateFromLevel)
-import System.Directory.Tree (AnchoredDirTree ((:/)), DirTree, flattenDir, readDirectory)
-import System.Random (Random (randomRs), RandomGen (split), StdGen, getStdGen)
-import qualified VectorCalc
-import View (view)
 import DefaultLevels (defaultLevels)
-import AFunctions (fromString, toString, AFunction (..), betweenParens, lastParenSeg, firstParenSeg, fromStringVar)
+import qualified Constants
+import LevelImport (encodeLevels)
+import System.Random (getStdGen)
+import Graphics.Gloss.Interface.IO.Game (playIO, Display (InWindow), black)
+import Model (GameState(MenuState))
+import View (view)
+import Input (input)
+import Controller (step)
 
 main :: IO ()
 main =

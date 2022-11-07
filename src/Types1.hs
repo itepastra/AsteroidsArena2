@@ -52,12 +52,22 @@ data Hud = Visible | Invisible -- if the HUD should be drawn in the screen
 
 data Selected a = NotSelected {val :: a} | Selected {time :: ElapsedTime, val :: a} -- whether options in the menu are selected or not
 
+data OverlayText = OT String | ST String
+
+data AFunction
+  = MulF AFunction AFunction
+  | ExpF AFunction AFunction
+  | AddF AFunction AFunction
+  | C Float
+  | Etime
+  | SinF AFunction
+  | SubF AFunction AFunction
+
 instance Eq a => Eq (Selected a) where
   s1 == s2 = val s1 == val s2
 
 instance Ord a => Ord (Selected a) where
   compare s1 s2 = compare (val s1) (val s2)
-
 
 data PhysicsObject = PhysObj
   { position :: Position,

@@ -13,11 +13,12 @@ import Data.Set (Set, empty)
 import qualified Graphics.Gloss as Gloss
 import Graphics.Gloss.Interface.IO.Game (Key)
 import Level (GameStateInit (..), InitLevelConfig (..), Level (..), LevelConfig (LevelConfig), initToReal)
-import Player (Player (Player))
 import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
-import Types1 (Hud (Invisible, Visible), Offset, Selected, Strength, Time, TimeStep, Point (Point), PhysicsObject (..))
 import Wall (Wall, createWall)
+import Player ( Player, Player(..) )
+import Types1 (TimeStep, Hud (..), Time, Selected, Point (Point))
+import Physics (PhysicsObject(..))
 
 data GameState
   = GameState

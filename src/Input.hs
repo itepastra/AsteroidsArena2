@@ -7,9 +7,9 @@ import Graphics.Gloss.Interface.IO.Game (Event (EventKey), Key (Char, SpecialKey
 import Model (GameState (..), gameStateFromLevel, newPlayer)
 import Select (getSelected, selectNext, selectPrev)
 import System.Random (getStdGen)
-import Types1 (Hud (Visible))
 import System.Exit (die)
 import ExitStrings (getRandomString)
+import Types1 (Hud(..))
 
 input :: Event -> GameState -> IO GameState
 input (EventKey (SpecialKey KeyEsc) Down _ _) g@(MenuState {} ) = die =<< getRandomString

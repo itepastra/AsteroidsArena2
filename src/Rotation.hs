@@ -1,4 +1,4 @@
-module Rotation where
+module Rotation (rot, Angle, Rotate (..)) where
 import TypeClasses (V2Math (..))
 import Types1 (Angle)
 
@@ -17,3 +17,4 @@ rot r v = fromTuple (x * cs - y * sn, x * sn + y * cs)
 
 class Rotate a where 
     rotate :: Angle -> a -> a
+    getAngle :: a -> Angle

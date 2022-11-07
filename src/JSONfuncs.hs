@@ -10,12 +10,16 @@ import Control.Monad (MonadPlus (mzero))
 import Data.Aeson (FromJSON (parseJSON), KeyValue ((.=)), ToJSON (toJSON), object, withObject, (.:))
 import Level (GameStateInit (..), InitLevelConfig (..), Level (..), LevelConfig (..))
 import Model (GameState (GameState))
-import Player (Player (..))
 import TypeClasses (V2Math (..))
 import Wall (InitWall (..), Wall (..))
-import AFunctions (AFunction (..))
-import Types1 (Point (Point), PhysicsObject (..))
+import Types1
+    ( AFunction(..),
+      Point(Point),
+      PhysicsObject,
+      PhysicsObject(..) )
 import qualified Data.Aeson.KeyMap as A
+import qualified Player
+import Player (Player (..))
 
 instance FromJSON Point where
   parseJSON = withObject "Point" $ \v ->

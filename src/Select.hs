@@ -40,3 +40,9 @@ getSelected :: [Selected a] -> Maybe a
 getSelected ((Selected _ d) : cs) = Just d
 getSelected (_ : cs) = getSelected cs
 getSelected [] = Nothing
+
+getSelectedIndex :: [Selected a] -> Maybe Int
+getSelectedIndex = findIndex p
+  where
+    p (Selected _ _) = True
+    p (NotSelected _) = False

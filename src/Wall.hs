@@ -1,25 +1,16 @@
-module Wall where
+module Wall (Wall (..), InitWall (..), selfMove, totalAcceleration, createWall, point, normal) where
 
+import AFunctions (AFunction, createFunc)
 import Data.Maybe (mapMaybe)
 import GHC.Read (Read (readPrec))
 import Graphics.Gloss (translate)
 import qualified Graphics.Gloss as Gloss
-import Rotation (Rotate (..), rot)
+import Physics (PhysicsObject (..))
+import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseWall)
-import TypeClasses (Pictured (..), V2Math (..), HasPhysics (..))
-import Types1
-    ( Acceleration,
-      ElapsedTime,
-      InWall,
-      Normal,
-      Offset,
-      Strength,
-      TimeStep,
-      Angle,
-      Point(Point),
-      Point, PhysicsObject (..) )
+import TypeClasses (HasPhysics (..), Pictured (..), V2Math (..))
+import Types1 (Acceleration, ElapsedTime, InWall, Normal, Offset, Point (Point), Strength)
 import VectorCalc ()
-import AFunctions (AFunction, createFunc)
 
 data Wall = Wall
   { offset :: Offset,
@@ -28,13 +19,14 @@ data Wall = Wall
     rFunc :: ElapsedTime -> Angle,
     oFunc :: ElapsedTime -> Offset,
     sFunc :: ElapsedTime -> Strength
-  } 
+  }
 
 data InitWall = InitWall
   { irFunc :: AFunction,
     ioFunc :: AFunction,
     isFunc :: AFunction
-  } deriving (Show)
+  }
+  deriving (Show)
 
 point :: Wall -> Point
 point w = (-offset w) |*| normal w
@@ -44,12 +36,7 @@ normal w = rot (angle w) (Point 0 1)
 
 instance Rotate Wall where
   rotate a w = w {angle = angle w + a}
-
-instance Pictured Wall where
-  getPicture w = translate (x p) (y p) $ Gloss.Rotate (-a + 180) baseWall
-    where
-      p = point w
-      a = angle w
+  getAngle = angle
 
 isInWall :: HasPhysics a => a -> Wall -> InWall
 isInWall obj w = (pos |-| p) |.| n <= 0

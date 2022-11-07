@@ -1,12 +1,12 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-module Physics where
+module Physics (updatePhysObj, moveStep, accelStep, frictionStep, PhysicsObject(..), checkCollision) where
 
 import TypeClasses ( V2Math((|#|), (|+|), (|*|)), HasPhysics (..) )
-import Types1 (TimeStep, Position, Velocity, Acceleration, Collides, PhysicsObject (PhysObj, velocity, position, radius))
 import VectorCalc ()
 import Hasa (HasA (..))
+import Types1 (PhysicsObject (..), TimeStep, Acceleration, Collides)
 
 
 instance HasPhysics a => HasA PhysicsObject a where

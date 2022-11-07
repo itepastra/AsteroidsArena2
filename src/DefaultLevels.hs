@@ -5,7 +5,6 @@ import qualified Constants
 import Data.Fixed (mod')
 import Level (GameStateInit (..), InitLevelConfig (..), Level (..))
 import LevelHelperFunctions
-import Types1 (Offset, Strength)
 import AFunctions (AFunction (AddF, MulF))
 
 defaultLvlConfig :: InitLevelConfig

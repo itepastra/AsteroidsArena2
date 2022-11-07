@@ -3,13 +3,18 @@ module Asteroid where
 import qualified Constants
 import Data.Fixed (mod')
 import Graphics.Gloss (rotate, scale, translate)
-import Physics (accelStep, accelerate, frictionStep, move, updatePhysObj)
-import Rotation ( Rotate (..), rot)
+import Physics
+  ( PhysicsObject (..),
+    accelStep,
+    frictionStep,
+    updatePhysObj,
+  )
+import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseAsteroid, baseSpaceMine)
 import System.Random (Random (..), RandomGen, StdGen)
 import System.Random.Stateful (randomM)
-import TypeClasses (Pictured (..), V2Math (..), HasPhysics (..))
-import Types1 (IntervalTime, Size, Time, TimeStep, UniformTime, Angle, Point (Point), PhysicsObject (PhysObj, position, velocity, radius))
+import TypeClasses (HasPhysics (..), Pictured (..), V2Math (..))
+import Types1 (IntervalTime, Point (Point), Size, TimeStep, UniformTime)
 
 data Asteroid
   = Asteroid
@@ -27,18 +32,11 @@ data Asteroid
 
 instance HasPhysics Asteroid where
   getPhysObj = phys
-  setPhysObj po a  = a {phys = po}
-
-instance Pictured Asteroid where
-  getPicture (SpaceMine {phys = (PhysObj {position = t}), size = s, rotateAngle = ra}) = translate (x t) (y t) $ Graphics.Gloss.rotate (-ra) $ scale f f baseSpaceMine
-    where
-      f = 2 ^ s
-  getPicture (Asteroid {phys = (PhysObj {position = t}), size = s, rotateAngle = ra}) = translate (x t) (y t) $ Graphics.Gloss.rotate (-ra) $ scale f f baseAsteroid
-    where
-      f = 2 ^ s
+  setPhysObj po a = a {phys = po}
 
 instance Rotate Asteroid where
   rotate a asteroid = asteroid {rotateAngle = (rotateAngle asteroid + a) `mod'` 360}
+  getAngle = rotateAngle 
 
 genRandomAsteroid :: (UniformTime -> IntervalTime) -> StdGen -> PhysicsObject -> (StdGen, Asteroid, IntervalTime)
 genRandomAsteroid t g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAngle, timeTillNext)

@@ -61,4 +61,6 @@ executable aa2
                      , LevelHelperFunctions
                      , ExitStrings
                      , AFunctions
+                     , ParenthesesHelpers
+                     , Pictured
   default-language:    Haskell2010

@@ -1,4 +1,4 @@
-module Player where
+module Player (Player (..), lookAccel, shoot, playerHeal, playerDamage) where
 
 import Asteroid (Asteroid (Asteroid), size)
 import Bullet (Bullet (Bullet))
@@ -7,11 +7,12 @@ import Data.Aeson (FromJSON (parseJSON), ToJSON (toEncoding), object, withObject
 import Data.List (foldl')
 import Graphics.Gloss (Picture (Pictures), translate)
 import qualified Graphics.Gloss as Gloss
-import Physics (accelerate, checkCollision, move)
-import Rotation (Rotate (..), rot)
+import Physics ( checkCollision, PhysicsObject(..) )
+import Rotation (Rotate (..), rot, Angle)
 import Sprites (baseExhaust, basePlayer)
 import TypeClasses (Pictured (..), V2Math (..), HasPhysics (..))
-import Types1 (Acceleration, Angle, HealthPoints, LookDirection, PhysicsObject (..))
+import Types1 (Acceleration, HealthPoints, LookDirection)
+
 
 data Player = Player
   { phys :: PhysicsObject,
@@ -20,15 +21,14 @@ data Player = Player
     lookAngle :: Angle
   }
 
+
 instance HasPhysics Player where
   getPhysObj = phys
   setPhysObj po a = a {phys = po}
 
 instance Rotate Player where
   rotate a p = p {lookDirection = rot a (lookDirection p), lookAngle = lookAngle p - a}
-
-instance Pictured Player where
-  getPicture (Player {phys = (PhysObj {position = t, velocity = v}), lookAngle = a}) = translate (x t) (y t) $ Pictures $ map (Gloss.rotate a) [baseExhaust v, basePlayer]
+  getAngle = lookAngle
 
 lookAccel :: Player -> Acceleration
 lookAccel p = Constants.playerAcceleration |*| lookDirection p
