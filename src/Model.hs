@@ -19,6 +19,7 @@ import System.Random.Stateful (mkStdGen)
 import Types1
   ( ElapsedTime,
     Hud (..),
+    IntervalTime,
     PhysicsObject (..),
     Point (Point),
     Score,
@@ -38,7 +39,7 @@ data GameState
         rand :: StdGen,
         starPositions :: [[Gloss.Point]],
         timeSinceLastShot :: ElapsedTime,
-        timeTillNextAsteroid :: ElapsedTime,
+        timeTillNextAsteroid :: IntervalTime,
         score :: Score,
         levelConfig :: LevelConfig,
         hud :: Hud
