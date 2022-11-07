@@ -3,9 +3,9 @@ module LevelImport where
 import Data.Aeson (decodeFileStrict', encodeFile)
 import Data.Maybe (mapMaybe)
 import JSONfuncs ()
-import System.Directory (createDirectory, createDirectoryIfMissing)
-import System.Directory.Tree (AnchoredDirTree (dirTree, (:/)), DirTree (File, file) , flattenDir, readDirectoryWith)
 import Level (Level (name))
+import System.Directory (createDirectory, createDirectoryIfMissing)
+import System.Directory.Tree (AnchoredDirTree (dirTree, (:/)), DirTree (File, file), flattenDir, readDirectoryWith)
 
 fileLevels :: IO (AnchoredDirTree (Maybe Level))
 fileLevels = readDirectoryWith decodeFileStrict' "levels"

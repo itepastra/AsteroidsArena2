@@ -1,14 +1,14 @@
 module Main where
 
-import DefaultLevels (defaultLevels)
 import qualified Constants
-import LevelImport (encodeLevels)
-import System.Random (getStdGen)
-import Graphics.Gloss.Interface.IO.Game (playIO, Display (InWindow), black)
-import Model (GameState(MenuState))
-import View (view)
-import Input (input)
 import Controller (step)
+import DefaultLevels (defaultLevels)
+import Graphics.Gloss.Interface.IO.Game (Display (InWindow), black, playIO)
+import Input (input)
+import LevelImport (encodeLevels)
+import Model (GameState (MenuState))
+import System.Random (getStdGen)
+import View (view)
 
 main :: IO ()
 main =

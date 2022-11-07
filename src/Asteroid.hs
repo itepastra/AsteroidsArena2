@@ -36,7 +36,7 @@ instance HasPhysics Asteroid where
 
 instance Rotate Asteroid where
   rotate a asteroid = asteroid {rotateAngle = (rotateAngle asteroid + a) `mod'` 360}
-  getAngle = rotateAngle 
+  getAngle = rotateAngle
 
 genRandomAsteroid :: (UniformTime -> IntervalTime) -> StdGen -> PhysicsObject -> (StdGen, Asteroid, IntervalTime)
 genRandomAsteroid t g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAngle, timeTillNext)

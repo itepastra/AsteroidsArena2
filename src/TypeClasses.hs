@@ -1,4 +1,5 @@
 module TypeClasses where
+
 import Graphics.Gloss (Picture)
 import Types1 (PhysicsObject)
 
@@ -16,11 +17,9 @@ class V2Math a where
   normalize :: a -> a
   vmap :: (Float -> Float) -> a -> a
 
-
 class Pictured a where
   getPicture :: a -> Picture
 
-
 class HasPhysics a where
   getPhysObj :: a -> PhysicsObject
-  setPhysObj :: PhysicsObject ->a ->  a
+  setPhysObj :: PhysicsObject -> a -> a

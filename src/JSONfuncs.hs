@@ -1,3 +1,4 @@
+
 {-# LANGUAGE OverloadedStrings #-}
 
 module JSONfuncs where
@@ -8,18 +9,18 @@ import Bullet (Bullet (..))
 import Control.Applicative ((<|>))
 import Control.Monad (MonadPlus (mzero))
 import Data.Aeson (FromJSON (parseJSON), KeyValue ((.=)), ToJSON (toJSON), object, withObject, (.:))
+import qualified Data.Aeson.KeyMap as A
 import Level (GameStateInit (..), InitLevelConfig (..), Level (..), LevelConfig (..))
 import Model (GameState (GameState))
-import TypeClasses (V2Math (..))
-import Wall (InitWall (..), Wall (..))
-import Types1
-    ( AFunction(..),
-      Point(Point),
-      PhysicsObject,
-      PhysicsObject(..) )
-import qualified Data.Aeson.KeyMap as A
-import qualified Player
 import Player (Player (..))
+import qualified Player
+import TypeClasses (V2Math (..))
+import Types1
+  ( AFunction (..),
+    PhysicsObject (..),
+    Point (Point),
+  )
+import Wall (InitWall (..), Wall (..))
 
 instance FromJSON Point where
   parseJSON = withObject "Point" $ \v ->

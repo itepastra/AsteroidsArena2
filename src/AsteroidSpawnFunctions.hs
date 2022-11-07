@@ -10,10 +10,11 @@ module AsteroidSpawnFunctions
     MapFunctions (..),
   )
 where
-import Types1 (TimeAvg, UniformTime, IntervalTime, ElapsedTime, Time)
-import GHC.Generics (Generic)
+
 import Data.Aeson (ToJSON)
 import Data.Aeson.Types (FromJSON)
+import GHC.Generics (Generic)
+import Types1 (ElapsedTime, IntervalTime, Time, TimeAvg, UniformTime)
 
 -- functions to go from a uniform variable to an different distribution
 

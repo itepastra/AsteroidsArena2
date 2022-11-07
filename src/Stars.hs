@@ -1,9 +1,9 @@
 module Stars where
-import System.Random (StdGen, Random (randomRs), RandomGen (split))
-import qualified Data.Bifunctor
-import qualified Constants
-import Data.List (iterate')
 
+import qualified Constants
+import qualified Data.Bifunctor
+import Data.List (iterate')
+import System.Random (Random (randomRs), RandomGen (split), StdGen)
 
 genStarPositions :: StdGen -> [Int] -> [[(Float, Float)]]
 genStarPositions ra amts =

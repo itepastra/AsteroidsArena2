@@ -1,11 +1,10 @@
 {-# LANGUAGE InstanceSigs #-}
+
 module VectorCalc where
 
-import Prelude hiding (negate)
 import TypeClasses (V2Math (..))
 import Types1 (Point (..))
-
-
+import Prelude hiding (negate)
 
 instance V2Math Point where
   x :: Point -> Float

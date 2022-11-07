@@ -1,9 +1,9 @@
 module LevelHelperFunctions where
 
-import Wall (InitWall (..))
 import AFunctions (AFunction (..))
-import Types1 (Offset, Strength)
 import Rotation (Angle)
+import Types1 (Offset, Strength)
+import Wall (InitWall (..))
 
 wallPoly :: Int -> Offset -> Strength -> [InitWall]
 wallPoly n o s = map (\x -> InitWall {irFunc = C (fromIntegral x * 360 / fromIntegral n), ioFunc = C o, isFunc = C s}) [1 .. n]

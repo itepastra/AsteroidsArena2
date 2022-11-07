@@ -1,5 +1,7 @@
 module ParenthesesHelpers where
+
 import Data.Tuple (swap)
+
 -- answer by Stefan Holdermans at
 -- https://stackoverflow.com/questions/10243290/determining-matching-parenthesis-in-haskell
 parenPairs :: String -> [(Int, Int)]

@@ -13,18 +13,19 @@ import Data.Set (Set, empty)
 import qualified Graphics.Gloss as Gloss
 import Graphics.Gloss.Interface.IO.Game (Key)
 import Level (GameStateInit (..), InitLevelConfig (..), Level (..), LevelConfig (LevelConfig), initToReal)
+import Player (Player (..))
 import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
-import Wall (Wall, createWall)
-import Player ( Player, Player(..) )
 import Types1
-    ( Hud(..),
-      Time,
-      Selected,
-      Point(Point),
-      Score,
-      ElapsedTime,
-      PhysicsObject(..) )
+  ( ElapsedTime,
+    Hud (..),
+    PhysicsObject (..),
+    Point (Point),
+    Score,
+    Selected,
+    Time,
+  )
+import Wall (Wall, createWall)
 
 data GameState
   = GameState

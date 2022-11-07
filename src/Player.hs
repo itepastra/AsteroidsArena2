@@ -7,12 +7,11 @@ import Data.Aeson (FromJSON (parseJSON), ToJSON (toEncoding), object, withObject
 import Data.List (foldl')
 import Graphics.Gloss (Picture (Pictures), translate)
 import qualified Graphics.Gloss as Gloss
-import Physics ( checkCollision, PhysicsObject(..) )
-import Rotation (Rotate (..), rot, Angle)
+import Physics (PhysicsObject (..), checkCollision)
+import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseExhaust, basePlayer)
-import TypeClasses (Pictured (..), V2Math (..), HasPhysics (..))
+import TypeClasses (HasPhysics (..), Pictured (..), V2Math (..))
 import Types1 (Acceleration, HealthPoints, LookDirection)
-
 
 data Player = Player
   { phys :: PhysicsObject,
@@ -21,7 +20,6 @@ data Player = Player
     lookAngle :: Angle
   }
 
-
 instance HasPhysics Player where
   getPhysObj = phys
   setPhysObj po a = a {phys = po}
@@ -29,7 +27,6 @@ instance HasPhysics Player where
 instance Rotate Player where
   rotate a p = p {lookDirection = rot a (lookDirection p), lookAngle = lookAngle p - a}
   getAngle = lookAngle
-
 
 lookAccel :: Player -> Acceleration
 lookAccel p = Constants.playerAcceleration |*| lookDirection p

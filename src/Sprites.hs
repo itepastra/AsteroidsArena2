@@ -9,8 +9,8 @@ import Graphics.Gloss (color, green, makeColor)
 import Graphics.Gloss.Data.Picture (Picture (..), arcSolid, circleSolid, lineLoop, polygon, rectangleUpperSolid, scale, translate)
 import System.Random (StdGen)
 import TypeClasses (V2Math ((|.|)))
-import VectorCalc ()
 import Types1 (Point (Point), Velocity)
+import VectorCalc ()
 
 basePlayer :: Picture
 basePlayer = Color playerColor $ Polygon [(0, 20), (20, -15), (0, 0), (-20, -15)]
@@ -20,8 +20,9 @@ baseBullet a = Color (rainbowGradientColor (90 * a)) $ circleSolid (Constants.bu
 
 baseAsteroid :: Picture
 baseAsteroid = scale 3 3 $ Pictures [outline, fill]
--- baseAsteroid = scale 3 3 $ Pictures [outline]
   where
+    -- baseAsteroid = scale 3 3 $ Pictures [outline]
+
     outline = Color asteroidLineColor $ lineLoop poly
     fill = Color asteroidColor $ polygon poly
     poly = [(-2.08, 0.57), (-3.28, 1.95), (-1.72, 3.08), (0.3, 2.43), (1.66, 3.15), (1.06, 0.41), (4.04, 0.11), (2.52, -3.27), (0.26, -2.05), (-2.94, -2.71), (-2.64, -1.29), (-3.27, 0.27)]

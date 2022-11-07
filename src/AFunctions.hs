@@ -1,10 +1,9 @@
-module AFunctions (createFunc, AFunction(..), fromString, toString) where
+module AFunctions (createFunc, AFunction (..), fromString, toString) where
 
 import Data.Char (isNumber)
 import Data.Tuple (swap)
-import Types1 (ElapsedTime, FunctionString, AFunction(..))
-import ParenthesesHelpers (firstParenSeg, betweenParens, lastParenSeg)
-
+import ParenthesesHelpers (betweenParens, firstParenSeg, lastParenSeg)
+import Types1 (AFunction (..), ElapsedTime, FunctionString)
 
 createFunc :: AFunction -> ElapsedTime -> Float
 createFunc (C v) _ = v
