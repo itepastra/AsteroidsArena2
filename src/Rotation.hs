@@ -1,7 +1,7 @@
 module Rotation where
 import TypeClasses (V2Math (..))
+import Types1 (Angle)
 
-type Angle = Float
 
 rot :: (V2Math a) => Angle -> a -> a
 rot 0 v = v

@@ -4,13 +4,12 @@ import qualified Constants
 import Data.Fixed (mod')
 import Graphics.Gloss (rotate, scale, translate)
 import Physics (HasPhysics (..), PhysicsObject (..), accelStep, accelerate, frictionStep, move, updatePhysObj)
-import Rotation (Angle, Rotate (..), rot)
+import Rotation ( Rotate (..), rot)
 import Sprites (baseAsteroid, baseSpaceMine)
 import System.Random (Random (..), RandomGen, StdGen)
 import System.Random.Stateful (randomM)
 import TypeClasses (Pictured (..), V2Math (..))
-import Types1 (IntervalTime, Size, Time, TimeStep, UniformTime)
-import VectorCalc (Point (Point))
+import Types1 (IntervalTime, Size, Time, TimeStep, UniformTime, Angle, Point (Point))
 
 data Asteroid
   = Asteroid
@@ -28,7 +27,7 @@ data Asteroid
 
 instance HasPhysics Asteroid where
   getPhysObj = phys
-  setPhysObj a po = a {phys = po}
+  setPhysObj po a  = a {phys = po}
 
 instance Pictured Asteroid where
   getPicture (SpaceMine {phys = (PhysObj {position = t}), size = s, rotateAngle = ra}) = translate (x t) (y t) $ Graphics.Gloss.rotate (-ra) $ scale f f baseSpaceMine

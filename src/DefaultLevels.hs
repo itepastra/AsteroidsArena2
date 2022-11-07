@@ -6,7 +6,7 @@ import Data.Fixed (mod')
 import Level (GameStateInit (..), InitLevelConfig (..), Level (..))
 import LevelHelperFunctions
 import Types1 (Offset, Strength)
-import WallFunctions (WallFunction (AddF, LinF))
+import AFunctions (AFunction (AddF, MulF))
 
 defaultLvlConfig :: InitLevelConfig
 defaultLvlConfig =
@@ -52,8 +52,8 @@ defaultLevels =
         initState =
           GameStateInit
             { initWalls =
-                  addRots (flipFlop [1 ..]) $
-                    wallPoly 11 400 450,
+                addRots (flipFlop [1 ..]) $
+                  wallPoly 11 400 450,
               initConf = defaultLvlConfig
             }
       },

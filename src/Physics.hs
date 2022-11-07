@@ -2,7 +2,7 @@ module Physics where
 
 import TypeClasses ( V2Math((|#|), (|+|), (|*|)) )
 import Types1 (TimeStep, Position, Velocity, Acceleration, Collides)
-
+import VectorCalc ()
 
 
 
@@ -14,10 +14,10 @@ data PhysicsObject = PhysObj
 
 class HasPhysics a where
   getPhysObj :: a -> PhysicsObject
-  setPhysObj :: a -> PhysicsObject -> a
+  setPhysObj :: PhysicsObject ->a ->  a
 
 updatePhysObj :: HasPhysics a => (PhysicsObject -> PhysicsObject) -> a -> a
-updatePhysObj f p = setPhysObj p $ f $ getPhysObj p
+updatePhysObj f p = setPhysObj (f $ getPhysObj p) p
 
 move :: TimeStep -> PhysicsObject -> PhysicsObject
 move dt (PhysObj p v r) = PhysObj (p |+| (dt |*| v)) v r

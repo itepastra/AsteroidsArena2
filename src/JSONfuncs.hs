@@ -5,18 +5,18 @@ module JSONfuncs where
 import Asteroid (Asteroid (..))
 import AsteroidSpawnFunctions (RandomFunctions (..))
 import Bullet (Bullet (..))
+import Control.Applicative ((<|>))
+import Control.Monad (MonadPlus (mzero))
 import Data.Aeson (FromJSON (parseJSON), KeyValue ((.=)), ToJSON (toJSON), object, withObject, (.:))
 import Level (GameStateInit (..), InitLevelConfig (..), Level (..), LevelConfig (..))
 import Model (GameState (GameState))
 import Physics (PhysicsObject (PhysObj, position, radius, velocity))
 import Player (Player (..))
 import TypeClasses (V2Math (..))
-import VectorCalc (Point (Point))
 import Wall (InitWall (..), Wall (..))
-import WallFunctions (WallFunction (..))
-import Control.Monad (MonadPlus(mzero))
-import Control.Applicative ((<|>))
-import qualified Data.Aeson.KeyMap as H
+import AFunctions (AFunction (..))
+import Types1 (Point (Point))
+import qualified Data.Aeson.KeyMap as A
 
 instance FromJSON Point where
   parseJSON = withObject "Point" $ \v ->
@@ -173,22 +173,24 @@ instance ToJSON Level where
         "initState" .= initState l
       ]
 
-instance ToJSON WallFunction where
+instance ToJSON AFunction where
   toJSON (C v) = object ["type" .= ("c" :: String), "v" .= v]
   toJSON Etime = object ["type" .= ("etime" :: String)]
   toJSON (SinF f1) = object ["type" .= ("sin" :: String), "f1" .= f1]
-  toJSON (LinF f1 f2) = object ["type" .= ("lin" :: String), "f1" .= f1, "f2" .= f2]
+  toJSON (MulF f1 f2) = object ["type" .= ("lin" :: String), "f1" .= f1, "f2" .= f2]
   toJSON (ExpF f1 f2) = object ["type" .= ("exp" :: String), "f1" .= f1, "f2" .= f2]
   toJSON (AddF f1 f2) = object ["type" .= ("add" :: String), "f1" .= f1, "f2" .= f2]
+  toJSON (SubF f1 f2) = object ["type" .= ("sub" :: String), "f1" .= f1, "f2" .= f2]
 
-instance FromJSON WallFunction where
-  parseJSON  = withObject "WallFunction" $ \v ->
-    case H.lookup "type" v of
+instance FromJSON AFunction where
+  parseJSON = withObject "AFunction" $ \v ->
+    case A.lookup "type" v of
       Nothing -> mzero
       Just "c" -> C <$> v .: "v"
       Just "etime" -> return Etime
-      Just "lin" -> LinF <$> v.: "f1" <*> v.: "f2"
-      Just "exp" -> ExpF <$> v.: "f1" <*> v.: "f2"
-      Just "add" -> AddF <$> v.: "f1" <*> v.: "f2"
-      Just "sin" -> SinF <$> v.: "f1"
+      Just "lin" -> MulF <$> v .: "f1" <*> v .: "f2"
+      Just "exp" -> ExpF <$> v .: "f1" <*> v .: "f2"
+      Just "add" -> AddF <$> v .: "f1" <*> v .: "f2"
+      Just "sub" -> SubF <$> v .: "f1" <*> v .: "f2"
+      Just "sin" -> SinF <$> v .: "f1"
       _ -> mzero

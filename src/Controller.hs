@@ -29,13 +29,12 @@ import Physics (HasPhysics (getPhysObj), PhysicsObject (..), accelStep, checkCol
 import qualified Physics as Asteroid
 import qualified Physics as Player
 import Player (Player (Player, hp, lookAngle, lookDirection), lookAccel, playerDamage, playerHeal, shoot)
-import Rotation (Angle, Rotate (rotate))
+import Rotation (Rotate (rotate))
 import Select (getSelected, sTime, selectFirst)
 import Stars (genStarPositions)
 import System.Random (Random (random, randomRs), RandomGen (split), StdGen, getStdGen, randomR)
 import TypeClasses (V2Math (..))
-import Types1 (Acceleration, ElapsedTime, Hud (..), IntervalTime, Selected (NotSelected, Selected, val), Time, TimeStep)
-import VectorCalc (Point (Point))
+import Types1 (Acceleration, ElapsedTime, Hud (..), IntervalTime, Selected (NotSelected, Selected, val), Time, TimeStep, Angle, Point (Point))
 import Wall (Wall, selfMove, totalAcceleration)
 
 step :: Float -> GameState -> IO GameState

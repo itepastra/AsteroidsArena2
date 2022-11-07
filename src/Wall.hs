@@ -5,12 +5,22 @@ import GHC.Read (Read (readPrec))
 import Graphics.Gloss (translate)
 import qualified Graphics.Gloss as Gloss
 import Physics (HasPhysics (getPhysObj), PhysicsObject (position))
-import Rotation (Angle, Rotate (..), rot)
+import Rotation (Rotate (..), rot)
 import Sprites (baseWall)
 import TypeClasses (Pictured (..), V2Math (..))
-import Types1 (Acceleration, ElapsedTime, InWall, Normal, Offset, Strength, TimeStep)
-import VectorCalc (Point (Point))
-import WallFunctions (WallFunction, createFunc)
+import Types1
+    ( Acceleration,
+      ElapsedTime,
+      InWall,
+      Normal,
+      Offset,
+      Strength,
+      TimeStep,
+      Angle,
+      Point(Point),
+      Point )
+import VectorCalc ()
+import AFunctions (AFunction, createFunc)
 
 data Wall = Wall
   { offset :: Offset,
@@ -19,13 +29,13 @@ data Wall = Wall
     rFunc :: ElapsedTime -> Angle,
     oFunc :: ElapsedTime -> Offset,
     sFunc :: ElapsedTime -> Strength
-  }
+  } 
 
 data InitWall = InitWall
-  { irFunc :: WallFunction,
-    ioFunc :: WallFunction,
-    isFunc :: WallFunction
-  }
+  { irFunc :: AFunction,
+    ioFunc :: AFunction,
+    isFunc :: AFunction
+  } deriving (Show)
 
 point :: Wall -> Point
 point w = (-offset w) |*| normal w

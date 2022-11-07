@@ -9,7 +9,7 @@ data Bullet = Bullet {phys :: PhysicsObject, lifeTime :: Lifetime}
 
 instance HasPhysics Bullet where
   getPhysObj (Bullet p _) = p
-  setPhysObj a po = a {phys = po}
+  setPhysObj po a  = a {phys = po}
 
 instance Pictured Bullet where
   getPicture (Bullet {phys = (PhysObj {position=t}), lifeTime = lt } ) = translate (x t) (y t) (baseBullet lt)

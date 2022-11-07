@@ -17,8 +17,7 @@ import Physics (PhysicsObject (..))
 import Player (Player (Player))
 import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
-import Types1 (Hud (Invisible, Visible), Offset, Selected, Strength, Time, TimeStep)
-import VectorCalc (Point (Point))
+import Types1 (Hud (Invisible, Visible), Offset, Selected, Strength, Time, TimeStep, Point (Point))
 import Wall (Wall, createWall)
 
 data GameState

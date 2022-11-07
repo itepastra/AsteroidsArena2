@@ -1,7 +1,8 @@
 module Types1 where
 
-import Rotation (Angle)
-import VectorCalc (Point)
+data Point = Point Float Float
+
+type Angle = Float
 
 type Vector = Point
 

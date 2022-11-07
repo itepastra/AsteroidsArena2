@@ -1,7 +1,6 @@
 module Colors where
 
 import Graphics.Gloss (Color, addColors, black, blue, cyan, green, magenta, makeColor, mixColors, orange, red, yellow)
-import Rotation (Angle)
 
 playerColor :: Color
 playerColor = magenta

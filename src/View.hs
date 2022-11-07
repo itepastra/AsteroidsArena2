@@ -31,9 +31,12 @@ import Player (Player (Player, hp, phys))
 import Sprites (baseStar, starrySky)
 import TypeClasses (Pictured (..), V2Math (..))
 import qualified TypeClasses as VectorCalc
-import Types1 (Hud (Invisible, Visible), Selected (..), Time)
-import VectorCalc (Point (Point))
-import Graphics.Gloss.Interface.IO.Game (SpecialKey)
+import Types1
+  ( Hud (Invisible, Visible),
+    Point,
+    Selected (..),
+    Time,
+  )
 
 type CamOffset = Point
 

@@ -8,22 +8,21 @@ import Data.List (foldl')
 import Graphics.Gloss (Picture (Pictures), translate)
 import qualified Graphics.Gloss as Gloss
 import Physics (HasPhysics (..), PhysicsObject (..), accelerate, checkCollision, move)
-import Rotation (Angle, Rotate (..), rot)
+import Rotation (Rotate (..), rot)
 import Sprites (baseExhaust, basePlayer)
 import TypeClasses (Pictured (..), V2Math (..))
-import Types1 (Acceleration, HealthPoints, LookDirection)
+import Types1 (Acceleration, Angle, HealthPoints, LookDirection)
 
-data Player
-  = Player
-      { phys :: PhysicsObject,
-        hp :: HealthPoints,
-        lookDirection :: LookDirection,
-        lookAngle :: Angle
-      }
+data Player = Player
+  { phys :: PhysicsObject,
+    hp :: HealthPoints,
+    lookDirection :: LookDirection,
+    lookAngle :: Angle
+  }
 
 instance HasPhysics Player where
   getPhysObj = phys
-  setPhysObj a po = a {phys = po}
+  setPhysObj po a = a {phys = po}
 
 instance Rotate Player where
   rotate a p = p {lookDirection = rot a (lookDirection p), lookAngle = lookAngle p - a}
@@ -40,7 +39,7 @@ shoot p = Bullet (PhysObj (position phy |+| pv) (velocity phy |+| bv) Constants.
     phy = getPhysObj p
     ld = lookDirection p
     bv = Constants.bulletSpeed |*| ld
-    pv = 0.1 |*| (velocity phy |+| bv) 
+    pv = 0.1 |*| (velocity phy |+| bv)
 
 playerHeal :: HealthPoints -> Player -> Player
 playerHeal h p@(Player {}) = p {hp = h}

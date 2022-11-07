@@ -47,13 +47,13 @@ sin2 :: Float -> ElapsedTime -> Float
 sin2 f e = sin (f * e) ^ 2
 
 data RandomFunctions = ExpRandom | UniRandom
-  deriving (Generic, ToJSON, FromJSON)
+  deriving (Generic, ToJSON, FromJSON, Show)
 
 data DecayFunctions = ExpDecay | DivDecay
-  deriving (Generic, ToJSON, FromJSON)
+  deriving (Generic, ToJSON, FromJSON, Show)
 
 data MapFunctions = ESigmoid | LSigmoid | Pow | Sin2
-  deriving (Generic, ToJSON, FromJSON)
+  deriving (Generic, ToJSON, FromJSON, Show)
 
 getRandomFunc :: RandomFunctions -> (TimeAvg -> UniformTime -> IntervalTime)
 getRandomFunc ExpRandom = expRandom

@@ -1,33 +1,31 @@
 module Level where
 
-import AsteroidSpawnFunctions (DecayFunctions, MapFunctions, RandomFunctions, getRandomFunc, getDecayFunc, getSpaceMineOddFunc)
+import AsteroidSpawnFunctions (DecayFunctions, MapFunctions, RandomFunctions, getDecayFunc, getRandomFunc, getSpaceMineOddFunc)
 import Types1 (ElapsedTime, IntervalTime, Time, TimeAvg, UniformTime)
 import Wall (InitWall)
+
+data Level = Level
+  { name :: String,
+    initState :: GameStateInit
+  } deriving (Show)
+
+data GameStateInit = GameStateInit
+  { initWalls :: [InitWall],
+    initConf :: InitLevelConfig
+  } deriving (Show)
 
 data InitLevelConfig = InitLevelConfig
   { iasteroidSpawnFunction :: RandomFunctions,
     iasteroidDecayFunction :: DecayFunctions,
     ispaceMineOddsFunction :: MapFunctions,
     iasteroidSpawnStart :: Time
-  }
+  } deriving (Show)
 
 data LevelConfig = LevelConfig
   { asteroidSpawnFunction :: ElapsedTime -> UniformTime -> IntervalTime,
     spaceMineOddsFunction :: Float -> ElapsedTime -> Float
-  }
+  } 
 
-data Level = Level
-  { name :: String,
-    initState :: GameStateInit
-  }
-
-instance Show Level where
-  show  = show . name 
-
-data GameStateInit = GameStateInit
-  { initWalls :: [InitWall],
-    initConf :: InitLevelConfig
-  }
 
 initToReal :: InitLevelConfig -> LevelConfig
 initToReal ic = LevelConfig (getRandomFunc (iasteroidSpawnFunction ic) . getDecayFunc (iasteroidDecayFunction ic) (iasteroidSpawnStart ic)) (getSpaceMineOddFunc (ispaceMineOddsFunction ic))
