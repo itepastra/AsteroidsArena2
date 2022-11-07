@@ -44,6 +44,8 @@ type Offset = Float -- how far from the origin a wall is
 
 type AngleSpeed = Angle -- the change in angle per second
 
+type Score = Int
+
 type FunctionString = String -- a representation for a function
 
 data Point = Point Float Float -- a 2D point, on which vector math is possible

@@ -10,3 +10,9 @@ class HasA a b where
 
 updateA :: HasA a b => (a -> a) -> b -> b
 updateA f a = setA (f (getA a)) a
+
+
+(#) :: HasA a b => (a -> a) -> b -> b
+(#) = updateA
+
+infixr #

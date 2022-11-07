@@ -57,8 +57,8 @@ viewWalls = Pictures . map getPicture . walls
 moveWorldToCenter :: PhysicsObject -> Picture -> Picture
 moveWorldToCenter (PhysObj {position = t}) = translate (-x t) (-y t)
 
-viewDimmed :: Picture
-viewDimmed = color Colors.overlayColor $ uncurry rectangleSolid $ bimap fromIntegral fromIntegral Constants.pageSize
+dimmedScreen :: Picture
+dimmedScreen = color Colors.overlayColor $ uncurry rectangleSolid $ bimap fromIntegral fromIntegral Constants.pageSize
 
 viewOverlayText :: String -> Picture
 viewOverlayText = getPicture . OT
@@ -77,6 +77,6 @@ formatLevel n = translate (-100) (fromIntegral (50 * n)) . getPicture
 instance Pictured GameState where
   getPicture gs@(GameState {player = p, hud = Invisible}) = Pictures [viewBackground gs, moveWorldToCenter (getPhysObj p) $ Pictures [viewWalls gs, viewBullets gs, viewAsteroids gs]]
   getPicture gs@(GameState {player = p, hud = Visible}) = Pictures [viewBackground gs, moveWorldToCenter (getPhysObj p) $ Pictures [viewWalls gs, viewPlayer gs, viewBullets gs, viewAsteroids gs], viewHud gs]
-  getPicture gs@(PauseState {}) = Pictures [getPicture (previousState gs), viewDimmed, viewOverlayText "Pause"]
-  getPicture gs@(DeathState {}) = Pictures [getPicture (previousState gs), viewDimmed, viewOverlayText "Wrecked", getPicture . ST $ "Score: " ++ show (score $ previousState gs)]
+  getPicture gs@(PauseState {}) = Pictures [getPicture (previousState gs), dimmedScreen, viewOverlayText "Pause"]
+  getPicture gs@(DeathState {}) = Pictures [getPicture (previousState gs), dimmedScreen, viewOverlayText "Wrecked", getPicture . ST $ "Score: " ++ show (score $ previousState gs)]
   getPicture gs@(MenuState {}) = Pictures [getPicture (selectedState gs), viewLevelSelect $ levels gs]

@@ -17,7 +17,7 @@ import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
 import Wall (Wall, createWall)
 import Player ( Player, Player(..) )
-import Types1 (TimeStep, Hud (..), Time, Selected, Point (Point))
+import Types1 (TimeStep, Hud (..), Time, Selected, Point (Point), Score)
 import Physics (PhysicsObject(..))
 
 data GameState
@@ -32,7 +32,7 @@ data GameState
         starPositions :: [[Gloss.Point]],
         timeSinceLastShot :: Float,
         timeTillNextAsteroid :: Float,
-        score :: Int,
+        score :: Score,
         levelConfig :: LevelConfig,
         frameTime :: TimeStep,
         hud :: Hud

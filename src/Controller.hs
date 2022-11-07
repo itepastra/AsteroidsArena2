@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -21,21 +22,21 @@ import Data.List (sort)
 import Data.Maybe (mapMaybe)
 import Data.Set (Set, empty, member)
 import Graphics.Gloss.Interface.IO.Game (Key (Char, SpecialKey), SpecialKey (KeySpace))
-import Hasa (HasA (getA, setA), updateA)
+import Hasa (HasA (getA, setA), updateA, (#))
 import Level (Level, LevelConfig (asteroidSpawnFunction))
 import LevelImport (cleanFileLevels)
 import Model (GameState (..), gameStateFromLevel)
-import Physics (accelStep, checkCollision, frictionStep, moveStep, updatePhysObj, PhysicsObject)
+import Physics (PhysicsObject, accelStep, checkCollision, frictionStep, moveStep, updatePhysObj)
 import qualified Physics as Asteroid
 import qualified Physics as Player
 import Player (Player (Player, hp, lookAngle, lookDirection), lookAccel, playerDamage, playerHeal, shoot)
-import Rotation ( Rotate(rotate), Angle )
+import Rotation (Angle, Rotate (rotate))
 import Select (getSelected, sTime, selectFirst)
 import Stars (genStarPositions)
 import System.Random (Random (random, randomRs), RandomGen (split), StdGen, getStdGen, randomR)
-import TypeClasses (V2Math (..), HasPhysics (..))
+import TypeClasses (HasPhysics, V2Math (..))
+import Types1 (Acceleration, ElapsedTime, Hud (..), IntervalTime, Point (Point), Score, Selected (..), Time, TimeStep)
 import Wall (Wall, selfMove, totalAcceleration)
-import Types1 (Hud(..), TimeStep, Acceleration, IntervalTime, ElapsedTime, Time, Selected (..), Point (Point))
 
 step :: Float -> GameState -> IO GameState
 step secs gstate@(MenuState {levels = []}) = do
@@ -59,9 +60,7 @@ pureStep secs gstate@(MenuState {}) =
 pureStep secs gstate@(PauseState {}) = gstate
 pureStep secs gstate@(GameState {player = (Player {hp = 0})}) =
   DeathState
-    { previousState =
-        updateA (playerHeal 1) $
-          updateA emptyKeys gstate {hud = Invisible},
+    { previousState = playerHeal 1 # const (empty :: Set Key) # const Invisible # gstate,
       timeSinceDeath = 1
     }
 pureStep secs gstate@(GameState {}) =
@@ -97,12 +96,12 @@ positionUpdateStage secs gstate =
   uncurry
     (,,,)
     (second bulletsUpdate (bulletSpawn keyset (timeSinceLastShot gstate) secs playr))
-    (map (updateAsteroid secs (getPhysObj playr)) (asteroids gstate))
+    (map (updateAsteroid secs (getA playr)) (asteroids gstate))
     (updatePlayer (rotSpeed keyset) wallarr secs (acc keyset) playr)
   where
     bulletsUpdate spawnedBullet = mapMaybe (updateBullet secs wallarr) (spawnedBullet (bullets gstate))
-    playr = player gstate
-    keyset = keys gstate
+    playr = getA gstate
+    keyset = getA gstate
     wallarr = walls gstate
     acc :: Set Key -> Acceleration
     acc k
@@ -126,7 +125,7 @@ asteroidUpdateStage2 bs p gstate secs as =
           secs
           (timeTillNextAsteroid gstate)
           (rand gstate)
-          (getPhysObj p)
+          (getA p)
       )
       (asteroidCollisions bs p as)
 
@@ -153,8 +152,11 @@ instance HasA (Set Key) GameState where
   setA :: Set Key -> GameState -> GameState
   setA k g = g {keys = k}
 
-emptyKeys :: Set Key -> Set Key
-emptyKeys = const empty
+instance HasA Hud GameState where
+  getA :: GameState -> Hud
+  getA = hud
+  setA :: Hud -> GameState -> GameState
+  setA h g = g {hud = h}
 
 updateBullet :: TimeStep -> [Wall] -> Bullet -> Maybe Bullet
 updateBullet secs walls b
