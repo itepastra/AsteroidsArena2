@@ -46,7 +46,7 @@ data GameState
       }
   | DeathState
       { previousState :: GameState,
-        timeSinceDeath :: Time
+        timeSinceDeath :: ElapsedTime
       }
   | MenuState
       { levels :: [Selected Level],
