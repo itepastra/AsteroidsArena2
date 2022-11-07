@@ -47,13 +47,9 @@ starrySky f = translate (-xw / 2) (-yh / 2) . Pictures . map (\(Point a b) -> tr
 baseExhaust :: Velocity -> Picture
 baseExhaust a = Color (exhaustGradientColor b) $ arcSolid 216.87 323.13 c
   where
-    b = mysqrt (a |.| a) 300
+    b = sqrt (a |.| a)
     c
       | b <= 25 = 5
       | b >= 400 = 20
-      | otherwise = mysqrt b 15
+      | otherwise = sqrt b
 
-mysqrt :: Fractional a => a -> a -> a
-mysqrt x y =
-  let z = x + y ^ 2
-   in z / (4 * y) + x * y / z

@@ -2,6 +2,7 @@
 
 module VectorCalc where
 
+import FISQ (fisqrt)
 import TypeClasses (V2Math (..))
 import Types1 (Point (..))
 import Prelude hiding (negate)
@@ -38,7 +39,7 @@ instance V2Math Point where
   a |#| b = c |.| c where c = a |-| b
 
   normalize :: Point -> Point
-  normalize a = (1 / sqrt (a |.| a)) |*| a
+  normalize a = fisqrt (a |.| a) |*| a
 
   vmap :: (Float -> Float) -> Point -> Point
   vmap f (Point x y) = Point (f x) (f y)

@@ -18,8 +18,6 @@ import View (view)
 main :: IO ()
 main =
   do
-    timeIt waa
-    timeIt waa2
     encodeLevels defaultLevels
     randGen <- getStdGen
     playIO
@@ -30,13 +28,3 @@ main =
       view -- View function
       input -- Event function
       step -- Step function
-
-waa :: IO Float
-waa = do
-  let !a = foldl' (\b a -> fisqrt a) 0 [1 .. 100000000]
-  return a
-
-waa2 :: IO Float
-waa2 = do
-  let !a = foldl' (\b a -> sqrt a) 0 [1 .. 100000000]
-  return a

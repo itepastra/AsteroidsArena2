@@ -1,9 +1,6 @@
-{-# LANGUAGE CApiFFI #-}
 {-# LANGUAGE CPP #-}
-{-# LANGUAGE GHCForeignImportPrim #-}
 {-# LANGUAGE MagicHash #-}
 {-# LANGUAGE Trustworthy #-}
-{-# LANGUAGE UnliftedFFITypes #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
 {-          ______
@@ -13,10 +10,10 @@
  .$$ 4$L*$$.     .$$Pd$  '$b
  $F   *$. "$$e.e$$" 4$F   ^$b
 d$     $$   z$$$e   $$     '$.
-$P     `$L$$P` `"$$d$"      $$
-$$     e$$F       4$$b.     $$
-$b  .$$" $$      .$$ "4$b.  $$
-$$e$P"    $b     d$`    "$$c$F
+\$P     `$L$$P` `"$$d$"      $$
+\$$     e$$F       4$$b.     $$
+\$b  .$$" $$      .$$ "4$b.  $$
+\$$e$P"    $b     d$`    "$$c$F
 '$P$$$$$$$$$$$$$$$$$$$$$$$$$$
  "$c.      4$.  $$       .$$
   ^$$.      $$ d$"      d$P
@@ -24,15 +21,12 @@ $$e$P"    $b     d$`    "$$c$F
       `4$$$c.$$$..e$$P"
           `^^^^^^^`          -}
 
-module FISQ where
+module FISQ (fisqrt) where
 
-import Data.Bits (shiftR)
+import GHC.Exts (Float (F#), Int (I#), minusWord#, uncheckedShiftRL#)
 import GHC.Float (stgFloatToWord32, stgWord32ToFloat)
-import Prelude (Num (..))
-import GHC.Exts (Float (F#), shiftRL#)
-import GHC.Word (Word32(W32#))
-import GHC.Prim
-import GHC.Int (Int(I#))
+import GHC.Num (Num ((*), (-)))
+import GHC.Word (Word32 (W32#))
 
 fisqrt :: Float -> Float
 fisqrt z@(F# f#) = y * (1.5 - (x2 * y * y))
@@ -41,6 +35,6 @@ fisqrt z@(F# f#) = y * (1.5 - (x2 * y * y))
     (W32# o#) = 0x5f3759df
     (I# i#) = 1
     a# = stgFloatToWord32 f#
-    b# = shiftRL# a# i#
-    c# =  minusWord# o# b#
+    b# = uncheckedShiftRL# a# i#
+    c# = minusWord# o# b#
     y = F# (stgWord32ToFloat c#)
