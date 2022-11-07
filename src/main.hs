@@ -21,7 +21,6 @@ main :: IO ()
 main =
   do
     encodeLevels defaultLevels
-    print defaultLevels
     randGen <- getStdGen
     playIO
       (InWindow "Asteroids Arena 2" Constants.pageSize (0, 0)) -- Or FullScreen
