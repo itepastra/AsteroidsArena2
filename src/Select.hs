@@ -3,6 +3,16 @@ module Select where
 import Data.List (findIndex)
 import Types1 (Selected (..), TimeStep)
 
+instance Functor Selected where
+  fmap f s = s {val = f (val s)}
+
+instance Eq a => Eq (Selected a) where
+  s1 == s2 = val s1 == val s2
+
+instance Ord a => Ord (Selected a) where
+  compare s1 s2 = compare (val s1) (val s2)
+
+
 selectNext :: [Selected a] -> [Selected a]
 selectNext ((Selected _ a) : c : cs) = NotSelected a : select c : cs
 selectNext [Selected b a] = [Selected b a]

@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeSynonymInstances #-}
+
 module Types1 where
 
 type Time = Float
@@ -65,14 +67,15 @@ data AFunction
   | SinF AFunction
   | SubF AFunction AFunction
 
-instance Eq a => Eq (Selected a) where
-  s1 == s2 = val s1 == val s2
-
-instance Ord a => Ord (Selected a) where
-  compare s1 s2 = compare (val s1) (val s2)
-
 data PhysicsObject = PhysObj
   { position :: Position,
     velocity :: Velocity,
     radius :: Float
   }
+
+instance Eq Point where
+  (Point x1 y1) == (Point x2 y2) = x1 == x2 && y1 == y2
+
+instance Bounded UniformTime where
+  minBound = 0
+  maxBound = 1
