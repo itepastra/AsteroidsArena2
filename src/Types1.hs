@@ -1,22 +1,22 @@
 module Types1 where
 
-data Point = Point Float Float
-
-type Angle = Float
-
-type Vector = Point
-
 type Time = Float
 
-type TimeStep = Time
+type TimeStep = Time -- a timestep between frames
 
-type UniformTime = Time
+type UniformTime = Time -- a uniformly distributed time between 0 and 1
 
-type ElapsedTime = Time
+type ElapsedTime = Time -- the time since the program started
 
-type IntervalTime = Time
+type IntervalTime = Time -- time till another event should happen
 
-type TimeAvg = Time
+type TimeAvg = Time -- an average timeinterval a function returns when a uniform time is given
+
+type Lifetime = Time -- how much longer a bullet should exist
+
+type Angle = Float -- an angle in degrees (0 degrees is in the positive y direction, rotating clockwise)
+
+type Vector = Point
 
 type Position = Point
 
@@ -24,33 +24,33 @@ type Acceleration = Vector
 
 type Velocity = Vector
 
-type Dist = Float
+type Dist = Float -- a distance between two points
 
-type Collides = Bool
+type Collides = Bool -- wether two hitboxes overlap
 
-type HealthPoints = Float
+type HealthPoints = Float -- the health of the player
 
-type LookDirection = Vector
+type LookDirection = Vector -- a normalized vector in the direction the player is looking
 
-type Normal = Vector
+type Normal = Vector -- a normalized vector normal to a wall
 
-type Strength = Float
+type Strength = Float -- how strongly a wall pushes the player and bullets
 
-type InWall = Bool
+type InWall = Bool -- wether an object should get forces from the wall
 
-type Size = Int
+type Size = Int -- how large an asteroid is
 
-type Lifetime = Float
+type Offset = Float -- how far from the origin a wall is
 
-type Offset = Float
+type AngleSpeed = Angle -- the change in angle per second
 
-type AngleSpeed = Angle
+type FunctionString = String -- a representation for a function
 
-type Decay = Float
+data Point = Point Float Float -- a 2D point, on which vector math is possible
 
-data Selected a = NotSelected {val :: a} | Selected {time :: ElapsedTime, val :: a}
+data Hud = Visible | Invisible -- if the HUD should be drawn in the screen
 
-data Hud = Visible | Invisible
+data Selected a = NotSelected {val :: a} | Selected {time :: ElapsedTime, val :: a} -- whether options in the menu are selected or not
 
 instance Eq a => Eq (Selected a) where
   s1 == s2 = val s1 == val s2

@@ -6,7 +6,7 @@ import Data.List (elemIndices)
 import Data.Tuple (swap)
 import GHC.Generics (Generic)
 import GHC.Read (Read (readPrec))
-import Types1 (Decay, ElapsedTime)
+import Types1 (ElapsedTime, FunctionString)
 
 data AFunction = MulF AFunction AFunction | ExpF AFunction AFunction | AddF AFunction AFunction | C Float | Etime | SinF AFunction | SubF AFunction AFunction
 
@@ -25,7 +25,7 @@ test a f = createFunc (a f)
 instance Show AFunction where
   show = toString
 
-toString :: AFunction -> String
+toString :: AFunction -> FunctionString
 toString (C v) = show v
 toString Etime = "E"
 toString (MulF fa fb) = "(" ++ toString fa ++ ")*(" ++ toString fb ++ ")"
@@ -34,7 +34,7 @@ toString (SubF fa fb) = "(" ++ toString fa ++ ")-(" ++ toString fb ++ ")"
 toString (ExpF fa fb) = "(" ++ toString fa ++ ")**(" ++ toString fb ++ ")"
 toString (SinF fa) = "sin(" ++ toString fa ++ ")"
 
-fromStringVar :: String -> Float -> AFunction
+fromStringVar :: FunctionString -> Float -> AFunction
 fromStringVar t n = fromString $ concat (m t)
   where
     p = (== 'x')
@@ -44,7 +44,7 @@ fromStringVar t n = fromString $ concat (m t)
         where
           (w, s'') = break p s'
 
-fromString :: String -> AFunction
+fromString :: FunctionString -> AFunction
 fromString "E" = Etime
 fromString ('s' : 'i' : 'n' : '(' : cs) = SinF (fromString $ init cs)
 fromString s
