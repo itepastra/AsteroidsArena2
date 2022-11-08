@@ -19,7 +19,7 @@ instance Show AFunction where
 
 toString :: AFunction -> FunctionString
 toString (C v) = show v
-toString Etime = "E"
+toString Etime = "e"
 toString (MulF fa fb) = "(" ++ toString fa ++ ")*(" ++ toString fb ++ ")"
 toString (AddF fa fb) = "(" ++ toString fa ++ ")+(" ++ toString fb ++ ")"
 toString (SubF fa fb) = "(" ++ toString fa ++ ")-(" ++ toString fb ++ ")"
@@ -37,7 +37,7 @@ fromStringVar t n = fromString $ concat (m t)
           (w, s'') = break p s'
 
 fromString :: FunctionString -> AFunction
-fromString "E" = Etime
+fromString "e" = Etime
 fromString ('s' : 'i' : 'n' : '(' : cs) = SinF (fromString $ init cs)
 fromString s
   | all (\p -> isNumber p || p == '.' || p == 'e') s = C (read s)

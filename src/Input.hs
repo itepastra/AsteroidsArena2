@@ -16,11 +16,6 @@ input (EventKey (SpecialKey KeyEsc) Down _ _) g@(MenuState {}) = die =<< getRand
 input (EventKey (SpecialKey KeyEsc) Down _ _) _ = menuState
 input k s = ((pure .) . pureInput) k s
 
-menuState :: IO GameState
-menuState = do
-  randGen <- getStdGen
-  pure $ MenuState [] randGen Nothing
-
 pureInput :: Event -> GameState -> GameState
 -- level select (previous / next)
 pureInput (EventKey (Char 's') Down _ _) g@(MenuState {levels = lvls}) = g {levels = selectNext lvls, selectedState = stateSelect (selectNext lvls) (rand g)}
@@ -38,6 +33,11 @@ pureInput (EventKey k Down _ _) g@(GameState {}) = g {keys = insert k (keys g)}
 pureInput (EventKey k Up _ _) g@(GameState {}) = g {keys = delete k (keys g)}
 -- pattern match for completeness
 pureInput _ g = g
+
+menuState :: IO GameState
+menuState = do
+  randGen <- getStdGen
+  pure $ MenuState [] randGen Nothing
 
 retryState :: GameState -> GameState
 retryState g =

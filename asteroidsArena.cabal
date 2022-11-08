@@ -21,7 +21,31 @@ executable editor
   other-modules:       AFunctions
                      , Types1
                      , ParenthesesHelpers
+                     , Asteroid
+                     , AsteroidSpawnFunctions
+                     , Bullet
+                     , Colors
+                     , Constants
+                     , Controller
+                     , FISQ
+                     , JSONfuncs
+                     , Level
+                     , LevelHelperFunctions
+                     , LevelImport
+                     , Model
+                     , Physics
+                     , Pictured
+                     , Player
+                     , Rotation
+                     , Select
+                     , Sprites
+                     , Stars
+                     , TypeClasses
+                     , VectorCalc
+                     , View
+                     , Wall
 
+                     
 executable aa2
   ghc-options:         -threaded
   main-is:             main.hs
@@ -33,8 +57,7 @@ executable aa2
                        directory-tree,
                        text,
                        directory,
-                       ghc-prim,
-                       timeit
+                       ghc-prim
   hs-source-dirs:      src
   other-modules:       AFunctions
                      , Asteroid

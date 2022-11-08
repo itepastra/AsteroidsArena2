@@ -25,3 +25,4 @@ filterLevels = mapMaybe levelCheck . flattenDir
 levelCheck :: DirTree (Maybe Level) -> Maybe Level
 levelCheck (File {file = x}) = x
 levelCheck _ = Nothing
+

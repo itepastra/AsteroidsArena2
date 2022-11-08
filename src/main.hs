@@ -6,14 +6,13 @@ import qualified Constants
 import Controller (step)
 import Data.Foldable (Foldable (foldl'))
 import DefaultLevels (defaultLevels)
-import FISQ (fisqrt)
 import Graphics.Gloss.Interface.IO.Game (Display (InWindow), black, playIO)
 import Input (input)
 import LevelImport (encodeLevels)
 import Model (GameState (MenuState))
 import System.Random (getStdGen)
-import System.TimeIt (timeIt, timeItShow, timeItT)
 import View (view)
+import AFunctions (fromString)
 
 main :: IO ()
 main =

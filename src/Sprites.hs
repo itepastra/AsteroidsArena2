@@ -1,6 +1,6 @@
 module Sprites where
 
-import Colors (asteroidColor, asteroidLineColor, bulletColor, exhaustGradientColor, playerColor, rainbowGradientColor, spaceMineColor, starColor, wallColor)
+import Colors (asteroidColor, asteroidLineColor, bulletColor, exhaustGradientColor, playerColor, rainbowGradientColor, spaceMineColor, starColor, wallColor, selectedWallColor)
 import qualified Constants
 import Data.Bifunctor (Bifunctor (bimap))
 import Data.Fixed (mod')
@@ -37,6 +37,9 @@ baseStar = Color starColor $ scale 60 60 $ polygon [(0.190983, -6.20541e-2), (0.
 
 baseWall :: Picture
 baseWall = Color wallColor $ rectangleUpperSolid 10000 10000
+
+selectedWall :: Picture
+selectedWall = Color selectedWallColor $ rectangleUpperSolid 10000 10000
 
 starrySky :: Float -> [Point] -> Picture
 starrySky f = translate (-xw / 2) (-yh / 2) . Pictures . map (\(Point a b) -> translate (a `mod'` xw) (b `mod'` yh) $ scale f f baseStar)

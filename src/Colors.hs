@@ -23,6 +23,9 @@ starColor = yellow
 wallColor :: Color
 wallColor = makeColor 1 0 0 0.2
 
+selectedWallColor :: Color
+selectedWallColor = makeColor 0 0 1 0.2
+
 overlayColor :: Color
 overlayColor = makeColor 0 0 0 0.4
 

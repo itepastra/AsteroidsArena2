@@ -7,14 +7,6 @@ import Data.Fixed (mod')
 import Level (GameStateInit (..), InitLevelConfig (..), Level (..))
 import LevelHelperFunctions
 
-defaultLvlConfig :: InitLevelConfig
-defaultLvlConfig =
-  InitLevelConfig
-    { iasteroidSpawnFunction = ExpRandom,
-      iasteroidDecayFunction = ExpDecay,
-      ispaceMineOddsFunction = Pow,
-      iasteroidSpawnStart = Constants.asteroidSpawnAverageInterval
-    }
 
 defaultLevels :: [Level]
 defaultLevels =

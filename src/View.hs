@@ -5,16 +5,19 @@ module View where
 import qualified Colors
 import qualified Constants
 import Data.Bifunctor (Bifunctor (bimap))
-import Graphics.Gloss (Picture (..), blank, color, rectangleSolid, scale, translate)
+import Graphics.Gloss (Picture (..), blank, blue, color, rectangleSolid, rotate, scale, translate)
 import Level (Level (..))
-import Model (GameState (..))
+import Model (GameState (..), gameStateFromLevel, levelFromCreatorState)
 import Physics (PhysicsObject (..))
 import Pictured ()
 import Player (Player (hp))
+import Rotation (Rotate (getAngle))
 import Select (getSelected, getSelectedIndex)
-import Sprites (starrySky)
+import Sprites (selectedWall, starrySky)
+import System.Random (mkStdGen)
 import TypeClasses (HasPhysics (getPhysObj), Pictured (..), V2Math (..))
-import Types1 (Hud (..), OverlayText (..), Selected (..))
+import Types1 (ElapsedTime, Hud (..), OverlayText (..), Selected (..))
+import Wall (InitWall, Wall, createWall, point, selfMove)
 
 view :: GameState -> IO Picture
 view = pure . getPicture
@@ -71,6 +74,17 @@ viewLevelSelect lvls = Pictures $ zipWith formatLevel [n, (n - 1) ..] lvls
       Nothing -> 3
       Just i -> 3 + i
 
+viewWallSelect :: ElapsedTime -> [Selected InitWall] -> Picture
+viewWallSelect et = Pictures . map (viewSelectedWall et)
+
+viewSelectedWall :: ElapsedTime -> Selected InitWall -> Picture
+viewSelectedWall et (Selected _ iw) = translate (x p) (y p) $ rotate (-a + 180) selectedWall
+  where
+    p = point w
+    a = getAngle w
+    w = selfMove et $ createWall iw
+viewSelectedWall et (NotSelected iw) = getPicture . selfMove et . createWall $ iw
+
 formatLevel :: Int -> Selected Level -> Picture
 formatLevel n = translate (-100) (fromIntegral (50 * n)) . getPicture
 
@@ -80,3 +94,4 @@ instance Pictured GameState where
   getPicture gs@(PauseState {}) = Pictures [getPicture (previousState gs), dimmedScreen, viewOverlayText "Pause"]
   getPicture gs@(DeathState {}) = Pictures [getPicture (previousState gs), dimmedScreen, viewOverlayText "Wrecked", getPicture . ST $ "Score: " ++ show (score $ previousState gs)]
   getPicture gs@(MenuState {}) = Pictures [getPicture (selectedState gs), viewLevelSelect $ levels gs]
+  getPicture gs@(CreatorState {}) = viewWallSelect (elapsedTime gs) (iwalls gs)

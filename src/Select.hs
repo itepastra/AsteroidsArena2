@@ -12,6 +12,9 @@ instance Eq a => Eq (Selected a) where
 instance Ord a => Ord (Selected a) where
   compare s1 s2 = compare (val s1) (val s2)
 
+instance Show a => Show (Selected a) where
+  show (Selected t v) = "Selected: time " ++ show t ++ " item " ++ show v
+  show (NotSelected v) = "Not Selected: " ++ show v
 
 selectNext :: [Selected a] -> [Selected a]
 selectNext ((Selected _ a) : c : cs) = NotSelected a : select c : cs
@@ -36,7 +39,7 @@ select (NotSelected a) = Selected 0 a
 
 selectFirst :: [Selected a] -> [Selected a]
 selectFirst [] = []
-selectFirst (c : cs) = select c : cs
+selectFirst (c : cs) = select c : map deSelect cs
 
 selectLast :: [Selected a] -> [Selected a]
 selectLast = reverse . selectFirst . reverse
@@ -56,3 +59,13 @@ getSelectedIndex = findIndex p
   where
     p (Selected _ _) = True
     p (NotSelected _) = False
+
+smap :: (a -> a) -> [Selected a] -> [Selected a]
+smap f [] = []
+smap f ((Selected t d) : cs) = Selected t (f d) : smap f cs
+smap f (c : cs) = c : smap f cs
+
+popSelected :: [Selected a] -> [Selected a]
+popSelected [] = []
+popSelected ((Selected t d) : cs) = popSelected cs
+popSelected (c : cs) = c : popSelected cs

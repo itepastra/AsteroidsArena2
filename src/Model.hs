@@ -23,10 +23,10 @@ import Types1
     PhysicsObject (..),
     Point (Point),
     Score,
-    Selected,
+    Selected (val),
     Time,
   )
-import Wall (Wall, createWall)
+import Wall (InitWall (InitWall), Wall, createWall)
 
 data GameState
   = GameState
@@ -56,6 +56,13 @@ data GameState
   | PauseState
       { previousState :: GameState
       }
+  | CreatorState
+      { elapsedTime :: ElapsedTime,
+        iwalls :: [Selected InitWall],
+        keys :: Set Key,
+        ilevelConfig :: InitLevelConfig,
+        lname :: String
+      }
 
 newPlayer :: Player
 newPlayer = Player (PhysObj (Point 0 0) (Point 0 0) playerRadius) Constants.playerMaxHp (Point 0 1) 0
@@ -77,3 +84,7 @@ gameStateFromLevel r (Level {initState = initState}) =
       levelConfig = initToReal (initConf initState),
       hud = Invisible
     }
+
+levelFromCreatorState :: GameState -> Maybe Level
+levelFromCreatorState gs@(CreatorState {}) = Just $ Level (lname gs) GameStateInit {initWalls = map val $ iwalls gs, initConf = ilevelConfig gs}
+levelFromCreatorState _ = Nothing

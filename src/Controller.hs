@@ -33,7 +33,7 @@ import Rotation (Angle, Rotate (rotate))
 import Select (getSelected, sTime, selectFirst)
 import Stars (genStarPositions)
 import System.Random (Random (random, randomRs), RandomGen (split), StdGen, getStdGen, randomR)
-import TypeClasses (HasPhysics, V2Math (..), HasA (..))
+import TypeClasses (HasA (..), HasPhysics, V2Math (..))
 import Types1 (Acceleration, ElapsedTime, Hud (..), IntervalTime, Point (Point), Score, Selected (..), Time, TimeStep)
 import Wall (Wall, selfMove, totalAcceleration)
 
@@ -49,6 +49,7 @@ pureStep :: Float -> GameState -> GameState
 pureStep secs gstate@(GameState {starPositions = []}) = pureStep secs gstate {starPositions = genStarPositions (rand gstate) Constants.starAmount}
 pureStep secs gstate@(DeathState {previousState = g@(DeathState {})}) = gstate {previousState = pureStep (secs / timeSinceDeath gstate) (previousState g)}
 pureStep secs gstate@(DeathState {}) = gstate {previousState = pureStep (secs / timeSinceDeath gstate) (previousState gstate), timeSinceDeath = timeSinceDeath gstate + secs}
+pureStep secs gstate@(CreatorState {}) = gstate {elapsedTime = elapsedTime gstate + secs}
 pureStep secs gstate@(MenuState {}) =
   gstate
     { levels = sTime (secs * 90) (levels gstate),

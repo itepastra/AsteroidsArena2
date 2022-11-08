@@ -18,7 +18,7 @@ import Sprites
   )
 import TypeClasses (HasPhysics (getPhysObj), Pictured (..), V2Math (..))
 import Types1 (OverlayText (..), PhysicsObject (position, velocity), Point (Point), Selected (..))
-import Wall (Wall (sFunc), point)
+import Wall (Wall (sFunc), point, InitWall)
 
 instance Pictured a => Pictured (Maybe a) where
   getPicture Nothing = blank
@@ -40,6 +40,7 @@ instance Pictured Wall where
     where
       p = point w
       a = getAngle w
+
 
 instance Pictured Bullet where
   getPicture o@(Bullet {}) = mvWithPhys o (baseBullet (lifeTime o))
