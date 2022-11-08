@@ -1,11 +1,10 @@
 module LevelHelperFunctions where
 
-import AFunctions (AFunction (..))
-import AsteroidSpawnFunctions (DecayFunctions (..), RandomFunctions (..), MapFunctions (..))
+import AFunctions (AFunction (..), collapse)
+import AsteroidSpawnFunctions (DecayFunctions (..), MapFunctions (..), RandomFunctions (..))
 import qualified Constants
 import Level (InitLevelConfig (..))
-import Rotation (Angle)
-import Types1 (Offset, Strength)
+import Types1 ( Angle, Offset, Strength )
 import Wall (InitWall (..))
 
 wallPoly :: Int -> Offset -> Strength -> [InitWall]
@@ -14,9 +13,9 @@ wallPoly n o s = map (\x -> InitWall {irFunc = C (fromIntegral x * 360 / fromInt
 data Part = Str | Rot | Off
 
 modPart :: Part -> (AFunction -> AFunction) -> InitWall -> InitWall
-modPart Str wf iw = iw {isFunc = wf (isFunc iw)}
-modPart Rot wf iw = iw {irFunc = wf (irFunc iw)}
-modPart Off wf iw = iw {ioFunc = wf (ioFunc iw)}
+modPart Str wf iw = iw {isFunc = collapse $ wf (isFunc iw)}
+modPart Rot wf iw = iw {irFunc = collapse $ wf (irFunc iw)}
+modPart Off wf iw = iw {ioFunc = collapse $ wf (ioFunc iw)}
 
 setPart :: Part -> AFunction -> InitWall -> InitWall
 setPart Str wf iw = iw {isFunc = wf}
