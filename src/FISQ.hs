@@ -27,7 +27,9 @@ import GHC.Exts (Float (F#), Int (I#), minusWord#, uncheckedShiftRL#)
 import GHC.Float (stgFloatToWord32, stgWord32ToFloat)
 import GHC.Num (Num ((*), (-)))
 import GHC.Word (Word32 (W32#))
+import Numeric (Floating (..))
 
+-- uses the quake fast inverse square root algorithm
 fisqrt :: Float -> Float
 fisqrt z@(F# f#) = y * (1.5 - (x2 * y * y))
   where
@@ -38,3 +40,8 @@ fisqrt z@(F# f#) = y * (1.5 - (x2 * y * y))
     b# = uncheckedShiftRL# a# i#
     c# = minusWord# o# b#
     y = F# (stgWord32ToFloat c#)
+
+
+-- uses the same algorithm as haskell itself for the sqrt, but negative
+f2isqrt :: Float -> Float
+f2isqrt z = exp (log (z * (-0.5)))

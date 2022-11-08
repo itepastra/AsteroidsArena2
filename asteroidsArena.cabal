@@ -20,6 +20,7 @@ executable editor
   default-language:    Haskell2010
   other-modules:       AFunctions
                      , Types1
+                     , ParenthesesHelpers
 
 executable aa2
   ghc-options:         -threaded
@@ -35,34 +36,33 @@ executable aa2
                        ghc-prim,
                        timeit
   hs-source-dirs:      src
-  other-modules:       Controller
-                     , Model
-                     , View
-                     , Physics
-                     , VectorCalc
-                     , Player
+  other-modules:       AFunctions
                      , Asteroid
-                     , Bullet
-                     , Wall
-                     , Rotation
-                     , Constants
-                     , Sprites
-                     , TypeClasses
-                     , Colors
-                     , CoordCalc
                      , AsteroidSpawnFunctions
-                     , LevelImport
-                     , Level
+                     , Bullet
+                     , Colors
+                     , Constants
+                     , Controller
+                     , DefaultLevels
+                     , ExitStrings
+                     , FISQ
                      , Input
                      , JSONfuncs
-                     , Types1
-                     , Stars
-                     , Select
-                     , DefaultLevels
+                     , Level
                      , LevelHelperFunctions
-                     , ExitStrings
-                     , AFunctions
+                     , LevelImport
+                     , Model
                      , ParenthesesHelpers
+                     , Physics
                      , Pictured
-                     , FISQ
+                     , Player
+                     , Rotation
+                     , Select
+                     , Sprites
+                     , Stars
+                     , TypeClasses
+                     , Types1
+                     , VectorCalc
+                     , View
+                     , Wall
   default-language:    Haskell2010
