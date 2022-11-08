@@ -26,7 +26,7 @@ toString (SubF fa fb) = "(" ++ toString fa ++ ")-(" ++ toString fb ++ ")"
 toString (ExpF fa fb) = "(" ++ toString fa ++ ")**(" ++ toString fb ++ ")"
 toString (SinF fa) = "sin(" ++ toString fa ++ ")"
 
-fromStringVar :: FunctionString -> Float -> AFunction
+fromStringVar :: FunctionString -> Float -> Maybe AFunction
 fromStringVar t n = fromString $ concat (m t)
   where
     p = (== 'x')
@@ -36,17 +36,18 @@ fromStringVar t n = fromString $ concat (m t)
         where
           (w, s'') = break p s'
 
-fromString :: FunctionString -> AFunction
-fromString "e" = Etime
-fromString ('s' : 'i' : 'n' : '(' : cs) = SinF (fromString $ init cs)
+fromString :: FunctionString -> Maybe AFunction
+fromString "e" = Just Etime
+fromString ('s' : 'i' : 'n' : '(' : cs) = case fromString $ init cs of
+  Just aaa -> Just $ SinF aaa
+  Nothing -> Nothing
 fromString s
-  | all (\p -> isNumber p || p == '.' || p == 'e') s = C (read s)
-  | otherwise = case betweenParens s of
-      "*" -> MulF fps sps
-      "**" -> ExpF fps sps
-      "+" -> AddF fps sps
-      "-" -> SubF fps sps
-      a -> error ("Could not match: " ++ a ++ " are you missing brackets?")
-  where
-    fps = fromString (firstParenSeg s)
-    sps = fromString (lastParenSeg s)
+  | all (\p -> isNumber p || p == '.' || p == 'e') s = Just $ C (read s)
+  | otherwise = case (betweenParens s, fromString (firstParenSeg s), fromString (lastParenSeg s)) of
+      ("*", Just fps, Just sps) -> Just $ MulF fps sps
+      ("**", Just fps, Just sps) -> Just $ ExpF fps sps
+      ("+", Just fps, Just sps) -> Just $ AddF fps sps
+      ("-", Just fps, Just sps) -> Just $ SubF fps sps
+      (_, Nothing, _) -> Nothing
+      (_, _, Nothing) -> Nothing
+      (_, _, _) -> Nothing

@@ -17,7 +17,10 @@ encodeLevels :: [Level] -> IO ()
 encodeLevels lvls =
   do
     createDirectoryIfMissing True "levels/default"
-    mapM_ (\x -> encodeFile ("levels/default/" ++ name x ++ ".json") x) lvls
+    mapM_ (encodeLevel "levels/default") lvls
+
+encodeLevel :: String -> Level -> IO ()
+encodeLevel p lvl = do encodeFile (p ++ name lvl ++ ".json") lvl
 
 filterLevels :: DirTree (Maybe Level) -> [Level]
 filterLevels = mapMaybe levelCheck . flattenDir
@@ -25,4 +28,3 @@ filterLevels = mapMaybe levelCheck . flattenDir
 levelCheck :: DirTree (Maybe Level) -> Maybe Level
 levelCheck (File {file = x}) = x
 levelCheck _ = Nothing
-

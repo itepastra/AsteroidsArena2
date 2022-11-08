@@ -30,7 +30,7 @@ import qualified Physics as Asteroid
 import qualified Physics as Player
 import Player (Player (Player, hp, lookAngle, lookDirection), lookAccel, playerDamage, playerHeal, shoot)
 import Rotation (Angle, Rotate (rotate))
-import Select (getSelected, sTime, selectFirst)
+import Select (getSingleSelected, sTime, selectFirst)
 import Stars (genStarPositions)
 import System.Random (Random (random, randomRs), RandomGen (split), StdGen, getStdGen, randomR)
 import TypeClasses (HasA (..), HasPhysics, V2Math (..))
@@ -184,7 +184,7 @@ bulletSpawn ks ts secs p
   | otherwise = (ts + secs, id)
 
 stateSelect :: [Selected Level] -> StdGen -> Maybe GameState
-stateSelect x d = case getSelected x of
+stateSelect x d = case getSingleSelected x of
   Nothing -> Nothing
   Just le -> Just $ gameStateFromLevel d le
 

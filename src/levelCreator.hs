@@ -1,20 +1,22 @@
 module Main where
 
-import AFunctions (AFunction (..), fromString)
+import AFunctions (AFunction (..), fromString, toString)
 import qualified Constants
 import Controller (step)
 import Data.Set (delete, empty, insert)
 import Graphics.Gloss (Display (InWindow))
-import Graphics.Gloss.Interface.IO.Game (Event (..), KeyState (..), Picture, SpecialKey (..), black, playIO)
+import Graphics.Gloss.Interface.IO.Game (Event (..), KeyState (..), Modifiers (Modifiers), Picture, SpecialKey (..), black, playIO)
 import Graphics.Gloss.Interface.Pure.Game (Key (..))
+import Level (Level (name))
 import LevelHelperFunctions (Part (..), defaultLvlConfig, setPart)
-import Model (GameState (..))
-import Select (popSelected, selectFirst, selectNext, selectPrev, smap)
-import System.Exit (die)
+import LevelImport (encodeLevel)
+import Model (GameState (..), levelFromCreatorState)
+import Select (getAllSelected, popSelected, selectFirst, selectNext, selectPrev, smap)
+import System.Exit (exitSuccess)
 import System.IO (hFlush, stdout)
 import Types1 (Selected (NotSelected, Selected, time))
 import View (view)
-import Wall (InitWall (InitWall))
+import Wall (InitWall (..))
 
 main :: IO ()
 main = do
@@ -29,22 +31,29 @@ main = do
     step -- Step function
 
 inputCreator :: Event -> GameState -> IO GameState
-inputCreator (EventKey (SpecialKey KeyEsc) Down _ _) g = die "lol"
-
+inputCreator (EventKey (SpecialKey KeyEsc) Down _ _) g = exitSuccess
 inputCreator (EventKey (Char 'i') Down _ _) g = do
-  weh <- askFor "Enter an Afunction String for strength: "
-  let f = setPart Str (fromString weh)
-  pure $ g {iwalls = smap f $ iwalls g}
+  weh <- askFor ("Enter an Afunction String for strength (current functions " ++ concatMap (\x -> "(" ++ (toString . isFunc) x ++ "), ") (getAllSelected $ iwalls g) ++ ") : ")
+  let f = fromString weh
+  pure $ updateWall f Str g
 inputCreator (EventKey (Char 'o') Down _ _) g = do
-  weh <- askFor "Enter an Afunction String for Offset: "
-  let f = setPart Off (fromString weh)
-  pure $ g {iwalls = smap f $ iwalls g}
+  weh <- askFor ("Enter an Afunction String for Offset (current functions " ++ concatMap (\x -> "(" ++ (toString . ioFunc) x ++ "), ") (getAllSelected $ iwalls g) ++ ") : ")
+  let f = fromString weh
+  pure $ updateWall f Off g
 inputCreator (EventKey (Char 'p') Down _ _) g = do
-  weh <- askFor "Enter an Afunction String for Rotation: "
-  let f = setPart Rot (fromString weh)
-  pure $ g {iwalls = smap f $ iwalls g}
-
-inputCreator k s = ((pure .) . pureInput) k s
+  weh <- askFor ("Enter an Afunction String for Rotation (current functions " ++ concatMap (\x -> "(" ++ (toString . irFunc) x ++ "), ") (getAllSelected $ iwalls g) ++ ") : ")
+  let f = fromString weh
+  pure $ updateWall f Rot g
+inputCreator (EventKey (Char '\DC3') Down (Modifiers _ Down _) _) g =
+  case levelFromCreatorState g of
+    Nothing -> pure g
+    Just le -> do
+      encodeLevel "levels/" le
+      putStrLn ("saved level at: levels/" ++ name le)
+      pure g
+inputCreator k s = do
+  --   print k
+  ((pure .) . pureInput) k s
 
 pureInput :: Event -> GameState -> GameState
 -- wall select (previous / next)
@@ -67,3 +76,7 @@ askFor s = do
   putStr s
   hFlush stdout
   getLine
+
+updateWall :: Maybe AFunction -> Part -> GameState -> GameState
+updateWall (Just f) p g = g {iwalls = smap (setPart p f) $ iwalls g}
+updateWall Nothing _ g = g

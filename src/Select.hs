@@ -49,10 +49,15 @@ sTime s ((Selected t d) : cs) = Selected (t + s) d : sTime s cs
 sTime s ((NotSelected d) : cs) = NotSelected d : sTime s cs
 sTime _ [] = []
 
-getSelected :: [Selected a] -> Maybe a
-getSelected ((Selected _ d) : cs) = Just d
-getSelected (_ : cs) = getSelected cs
-getSelected [] = Nothing
+getSingleSelected :: [Selected a] -> Maybe a
+getSingleSelected ((Selected _ d) : cs) = Just d
+getSingleSelected (_ : cs) = getSingleSelected cs
+getSingleSelected [] = Nothing
+
+getAllSelected :: [Selected a] -> [a]
+getAllSelected ((Selected _ d) : cs) = d : getAllSelected cs
+getAllSelected (_ : cs) = getAllSelected cs
+getAllSelected [] = []
 
 getSelectedIndex :: [Selected a] -> Maybe Int
 getSelectedIndex = findIndex p
