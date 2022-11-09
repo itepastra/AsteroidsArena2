@@ -1,6 +1,7 @@
 module ParenthesesHelpers where
 
 import Data.Tuple (swap)
+import Safe.Foldable (maximumMay, minimumMay)
 
 -- answer by Stefan Holdermans at
 -- https://stackoverflow.com/questions/10243290/determining-matching-parenthesis-in-haskell
@@ -16,19 +17,25 @@ parenPairs = go 0 []
 
 -- answer by Stefan Holdermans at
 -- https://stackoverflow.com/questions/10243290/determining-matching-parenthesis-in-haskell
-firstParenSeg :: String -> String
-firstParenSeg s = f s (minimum (parenPairs s))
+firstParenSeg :: String -> Maybe String
+firstParenSeg s = case minimumMay (parenPairs s) of
+  Just m -> Just $ f s m
+  Nothing -> Nothing
   where
     f s (i, j) = take (j - i - 1) (drop (i + 1) s)
 
 -- derived from the above
-lastParenSeg :: String -> String
-lastParenSeg s = f s (maximum (map swap $ parenPairs s))
+lastParenSeg :: String -> Maybe String
+lastParenSeg s = case maximumMay (map swap $ parenPairs s) of
+  Just m -> Just $ f s m
+  Nothing -> Nothing
   where
     f s (j, i) = take (j - i - 1) (drop (i + 1) s)
 
 -- derived from the above 2
-betweenParens :: String -> String
-betweenParens s = f s (snd $ minimum (parenPairs s)) (snd $ maximum (map swap $ parenPairs s))
+betweenParens :: String -> Maybe String
+betweenParens s = case (minimumMay (parenPairs s), maximumMay (map swap $ parenPairs s)) of
+  (Just (_, min), Just (_, max)) -> Just $ f s min max
+  (_, _) -> Nothing
   where
     f s i j = take (j - i - 1) (drop (i + 1) s)

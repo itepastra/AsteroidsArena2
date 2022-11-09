@@ -3,6 +3,7 @@ module Pictured where
 import Asteroid (Asteroid (Asteroid, SpaceMine), size)
 import Bullet (Bullet (Bullet, lifeTime))
 import qualified Colors
+import EditorModel (EditorState (elapsedTime, iwalls))
 import Graphics.Gloss (Picture (Text), blank, color, rotate, scale, translate)
 import Graphics.Gloss.Data.Picture (Picture (Pictures))
 import Level (Level (name))
@@ -15,10 +16,11 @@ import Sprites
     basePlayer,
     baseSpaceMine,
     baseWall,
+    selectedWall,
   )
 import TypeClasses (HasPhysics (getPhysObj), Pictured (..), V2Math (..))
-import Types1 (OverlayText (..), PhysicsObject (position, velocity), Point (Point), Selected (..))
-import Wall (Wall (sFunc), point, InitWall)
+import Types1 (ElapsedTime, OverlayText (..), PhysicsObject (position, velocity), Point (Point), Selected (..))
+import Wall (InitWall, Wall (sFunc), createWall, point, selfMove)
 
 instance Pictured a => Pictured (Maybe a) where
   getPicture Nothing = blank
@@ -41,6 +43,20 @@ instance Pictured Wall where
       p = point w
       a = getAngle w
 
+instance Pictured EditorState where
+  getPicture gs = viewWallsSelect (elapsedTime gs) (iwalls gs)
+
+viewWallsSelect :: ElapsedTime -> [Selected InitWall] -> Picture
+viewWallsSelect et = Pictures . map (viewSelectedWall et)
+
+viewSelectedWall :: ElapsedTime -> Selected InitWall -> Picture
+viewSelectedWall et iw = case iw of
+  NotSelected iw' -> translate (x (p iw')) (y (p iw')) $ rotate (-(a iw') + 180) baseWall
+  Selected _ iw' -> translate (x (p iw')) (y (p iw')) $ rotate (-(a iw') + 180) selectedWall
+  where
+    p i = point (w i)
+    a i = getAngle (w i)
+    w iw'' = selfMove et $ createWall iw''
 
 instance Pictured Bullet where
   getPicture o@(Bullet {}) = mvWithPhys o (baseBullet (lifeTime o))

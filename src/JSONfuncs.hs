@@ -1,4 +1,3 @@
-
 {-# LANGUAGE OverloadedStrings #-}
 
 module JSONfuncs where
@@ -182,9 +181,9 @@ instance ToJSON AFunction where
   toJSON Etime = object ["type" .= ("etime" :: String)]
   toJSON (SinF f1) = object ["type" .= ("sin" :: String), "f1" .= f1]
   toJSON (MulF f1 f2) = object ["type" .= ("lin" :: String), "f1" .= f1, "f2" .= f2]
-  toJSON (ExpF f1 f2) = object ["type" .= ("exp" :: String), "f1" .= f1, "f2" .= f2]
   toJSON (AddF f1 f2) = object ["type" .= ("add" :: String), "f1" .= f1, "f2" .= f2]
   toJSON (SubF f1 f2) = object ["type" .= ("sub" :: String), "f1" .= f1, "f2" .= f2]
+  toJSON (ExpF f1 b) = object ["type" .= ("exp" :: String), "f1" .= f1, "b" .= b]
 
 instance FromJSON AFunction where
   parseJSON = withObject "AFunction" $ \v ->
@@ -193,8 +192,8 @@ instance FromJSON AFunction where
       Just "c" -> C <$> v .: "v"
       Just "etime" -> return Etime
       Just "lin" -> MulF <$> v .: "f1" <*> v .: "f2"
-      Just "exp" -> ExpF <$> v .: "f1" <*> v .: "f2"
       Just "add" -> AddF <$> v .: "f1" <*> v .: "f2"
       Just "sub" -> SubF <$> v .: "f1" <*> v .: "f2"
+      Just "exp" -> ExpF <$> v .: "f1" <*> v .: "b"
       Just "sin" -> SinF <$> v .: "f1"
       _ -> mzero

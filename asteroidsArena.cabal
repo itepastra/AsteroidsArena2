@@ -6,16 +6,29 @@ category:            Game
 build-type:          Simple
 cabal-version:       >=1.10
 
+
+Test-Suite projectname-testsuite
+  Type:                     exitcode-stdio-1.0
+  Main-is:                  testSuite.hs
+  hs-source-dirs:           tests,
+                            src
+  Build-depends:            base >= 4,
+                            QuickCheck,
+                            safe
+  other-modules:            AFunctions
+                          , ParenthesesHelpers 
+                          , Types1
+
 executable editor
   main-is:            levelCreator.hs
   build-depends:       base >= 4,
                        gloss,
+                       safe,
+                       aeson,
                        random,
                        containers,
-                       aeson,
-                       directory-tree,
-                       text,
-                       directory
+                       directory,
+                       directory-tree
   hs-source-dirs:      src
   default-language:    Haskell2010
   other-modules:       AFunctions
@@ -26,7 +39,7 @@ executable editor
                      , Bullet
                      , Colors
                      , Constants
-                     , Controller
+                     , EditorModel
                      , FISQ
                      , JSONfuncs
                      , Level
@@ -34,17 +47,14 @@ executable editor
                      , LevelImport
                      , Model
                      , Physics
-                     , Pictured
                      , Player
                      , Rotation
                      , Select
                      , Sprites
-                     , Stars
                      , TypeClasses
                      , VectorCalc
-                     , View
                      , Wall
-
+                     , Pictured
                      
 executable aa2
   ghc-options:         -threaded
@@ -57,7 +67,8 @@ executable aa2
                        directory-tree,
                        text,
                        directory,
-                       ghc-prim
+                       ghc-prim,
+                       safe
   hs-source-dirs:      src
   other-modules:       AFunctions
                      , Asteroid
@@ -88,4 +99,5 @@ executable aa2
                      , VectorCalc
                      , View
                      , Wall
+                     , EditorModel
   default-language:    Haskell2010

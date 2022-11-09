@@ -49,7 +49,6 @@ pureStep :: Float -> GameState -> GameState
 pureStep secs gstate@(GameState {starPositions = []}) = pureStep secs gstate {starPositions = genStarPositions (rand gstate) Constants.starAmount}
 pureStep secs gstate@(DeathState {previousState = g@(DeathState {})}) = gstate {previousState = pureStep (secs / timeSinceDeath gstate) (previousState g)}
 pureStep secs gstate@(DeathState {}) = gstate {previousState = pureStep (secs / timeSinceDeath gstate) (previousState gstate), timeSinceDeath = timeSinceDeath gstate + secs}
-pureStep secs gstate@(CreatorState {}) = gstate {elapsedTime = elapsedTime gstate + secs}
 pureStep secs gstate@(MenuState {}) =
   gstate
     { levels = sTime (secs * 90) (levels gstate),

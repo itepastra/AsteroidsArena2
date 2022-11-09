@@ -1,6 +1,7 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 
 module Types1 where
+import GHC.Natural (Natural)
 
 type Time = Float
 
@@ -60,7 +61,7 @@ data OverlayText = OT String | ST String
 
 data AFunction
   = MulF AFunction AFunction
-  | ExpF AFunction AFunction
+  | ExpF AFunction Int
   | AddF AFunction AFunction
   | C Float
   | Etime
