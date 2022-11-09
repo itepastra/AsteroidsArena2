@@ -4,11 +4,11 @@ import AFunctions (AFunction (..), collapse)
 import AsteroidSpawnFunctions (DecayFunctions (..), MapFunctions (..), RandomFunctions (..))
 import qualified Constants
 import Level (InitLevelConfig (..))
-import Types1 ( Angle, Offset, Strength )
+import Types1 (Angle, Offset, Strength)
 import Wall (InitWall (..))
 
 wallPoly :: Int -> Offset -> Strength -> [InitWall]
-wallPoly n o s = map (\x -> InitWall {irFunc = C (fromIntegral x * 360 / fromIntegral n), ioFunc = C o, isFunc = C s}) [1 .. n]
+wallPoly n o s = map (\x -> InitWall {irFunc = C (fromIntegral x * 360 / fromIntegral n), ioFunc = C $ realToFrac o, isFunc = C $ realToFrac s}) [1 .. n]
 
 data Part = Str | Rot | Off
 
@@ -22,8 +22,8 @@ setPart Str wf iw = iw {isFunc = wf}
 setPart Rot wf iw = iw {irFunc = wf}
 setPart Off wf iw = iw {ioFunc = wf}
 
-lin :: (AFunction -> AFunction -> AFunction) -> Float -> AFunction -> AFunction
-lin w f = w (MulF (C f) Etime)
+lin :: Real a => (AFunction -> AFunction -> AFunction) -> a -> AFunction -> AFunction
+lin w f = w (MulF (C $ realToFrac f) Etime)
 
 wallPartMap :: Part -> [AFunction -> AFunction] -> [InitWall] -> [InitWall]
 wallPartMap = zipWith . modPart
@@ -34,8 +34,8 @@ wallPartSetMap = zipWith . setPart
 flipFlop :: [Float] -> [Float]
 flipFlop = zipWith (*) (concat $ repeat [1, -1])
 
-makeConstants :: [Float] -> [AFunction]
-makeConstants = map C
+makeConstants :: Real a => [a] -> [AFunction]
+makeConstants = map (C . realToFrac)
 
 addRots :: [Angle] -> [InitWall] -> [InitWall]
 addRots as = wallPartMap Rot (map (lin AddF) as)

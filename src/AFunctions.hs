@@ -1,4 +1,4 @@
-module AFunctions (AFunction (..), createFunc, simplify, collapse, toString, fromStringVar, fromString) where
+module AFunctions (AFunction (..), createFunc, simplify, collapse, toString, fromStringVar, fromString, getCarr) where
 
 import Data.Char (isNumber)
 import Data.Tuple (swap)
@@ -21,8 +21,17 @@ instance Semigroup AFunction where
 instance Monoid AFunction where
   mempty = C 0
 
+getCarr :: AFunction -> [Float]
+getCarr Etime = [1]
+getCarr (C v) = [realToFrac v]
+getCarr (MulF fa fb) = getCarr fa ++ getCarr fb
+getCarr (AddF fa fb) = getCarr fa ++ getCarr fb
+getCarr (SubF fa fb) = getCarr fa ++ getCarr fb
+getCarr (ExpF fa b) = map (** realToFrac b) (getCarr fa)
+getCarr (SinF fa) = getCarr fa
+
 createFunc :: AFunction -> ElapsedTime -> Float
-createFunc (C v) _ = v
+createFunc (C v) _ = realToFrac v
 createFunc Etime et = et
 createFunc (MulF fa fb) et = createFunc fa et * createFunc fb et
 createFunc (AddF fa fb) et = createFunc fa et + createFunc fb et
@@ -35,8 +44,10 @@ simplify :: AFunction -> AFunction
 simplify (AddF (C x) (C y)) = C (x + y)
 simplify (MulF (C x) (C y)) = C (x * y)
 simplify (SubF (C x) (C y)) = C (x - y)
+simplify (ExpF (C x) b) = C (x ** realToFrac b)
 simplify (SinF (C x)) = C (sin x)
 -- cases where 1 side is simple
+simplify (ExpF (ExpF f2 b) c) = ExpF f2 (b * c)
 simplify (AddF (C x) (AddF (C y) f2)) = AddF (C (x + y)) f2
 simplify (MulF (C x) (MulF (C y) f2)) = MulF (C (x * y)) f2
 simplify (SubF (C x) (SubF (C y) f2)) = AddF (C (x - y)) f2
