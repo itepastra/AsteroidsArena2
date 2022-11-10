@@ -17,7 +17,7 @@ encodeLevels :: [Level] -> IO ()
 encodeLevels lvls =
   do
     createDirectoryIfMissing True "levels/default"
-    mapM_ (encodeLevel "levels/default") lvls
+    mapM_ (encodeLevel "levels/default/") lvls
 
 encodeLevel :: String -> Level -> IO ()
 encodeLevel p lvl = do encodeFile (p ++ name lvl ++ ".json") lvl

@@ -2,13 +2,16 @@ module Pictured where
 
 import Asteroid (Asteroid (Asteroid, SpaceMine), size)
 import Bullet (Bullet (Bullet, lifeTime))
+import Colors (textColor)
 import qualified Colors
+import Data.List (intercalate)
 import EditorModel (EditorState (elapsedTime, iwalls))
 import Graphics.Gloss (Picture (Text), blank, color, rotate, scale, translate)
 import Graphics.Gloss.Data.Picture (Picture (Pictures))
 import Level (Level (name))
 import Player (Player (Player))
 import Rotation (Rotate, getAngle)
+import Select (getAllSelected)
 import Sprites
   ( baseAsteroid,
     baseBullet,
@@ -44,7 +47,7 @@ instance Pictured Wall where
       a = getAngle w
 
 instance Pictured EditorState where
-  getPicture gs = viewWallsSelect (elapsedTime gs) (iwalls gs)
+  getPicture gs = Pictures [viewWallsSelect (elapsedTime gs) (iwalls gs), translate (-800) 400 $ color textColor $ scale 0.2 0.2 $ Text (intercalate "\n" $ map show $ getAllSelected $ iwalls gs)]
 
 viewWallsSelect :: ElapsedTime -> [Selected InitWall] -> Picture
 viewWallsSelect et = Pictures . map (viewSelectedWall et)

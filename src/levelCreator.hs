@@ -1,6 +1,7 @@
 module Main where
 
-import AFunctions (AFunction (..), fromString, toString)
+import AFunctions (AFunction (..), collapse, fromString, toString)
+import Arbitrary ()
 import qualified Constants
 import Data.Set (delete, empty, insert)
 import EditorModel (EditorState (..), levelFromCreatorState)
@@ -16,9 +17,14 @@ import Select (getAllSelected, popSelected, selectFirst, selectNext, selectPrev,
 import Sprites (baseWall, selectedWall)
 import System.Exit (exitSuccess)
 import System.IO (hFlush, stdout)
-import TypeClasses (Pictured (..), V2Math (..))
+import Test.QuickCheck (Arbitrary (arbitrary), generate)
+import TypeClasses (HasA ((#)), Pictured (..), V2Math (..))
 import Types1 (ElapsedTime, Selected (NotSelected, Selected, time))
 import Wall (InitWall (..), createWall, point, selfMove)
+
+{-
+The code here is shitty I know, but it's also not direclty for the project and just a side so I dont really care
+-}
 
 main :: IO ()
 main = do
@@ -47,8 +53,11 @@ inputCreator (EventKey (Char '\DC3') Down (Modifiers _ Down _) _) g = do
   encodeLevel "levels/" $ levelFromCreatorState g
   putStrLn ("saved level at: levels/" ++ name (levelFromCreatorState g))
   pure g
+inputCreator (EventKey (Char 'z') Down _ _) g = do
+  w <- generate arbitrary
+  pure g {iwalls = selectFirst (Selected 120 ((\(a, b, c) -> (collapse a, collapse b, collapse c)) # w) : iwalls g)}
 inputCreator k s = do
-  print k
+  -- print k
   ((pure .) . pureInput) k s
 
 pureInput :: Event -> EditorState -> EditorState

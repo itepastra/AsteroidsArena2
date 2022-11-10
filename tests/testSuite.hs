@@ -1,45 +1,12 @@
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE InstanceSigs #-}
 
 module Main where
 
-import AFunctions (AFunction (..), collapse, createFunc, fromString, getCarr, simplify, toString)
-import Control.Monad (liftM2)
-import Data.Foldable (maximumBy)
-import Data.Maybe (fromJust)
-import Test.QuickCheck (Arbitrary (..), CoArbitrary, Discard (Discard), Fun, Property, Result, Testable (property), chooseInt, coarbitrary, counterexample, elements, generate, oneof, quickCheck, quickCheckAll, quickCheckResult, quickCheckWith, suchThat, variant, (===))
-import Test.QuickCheck.Gen (Gen, sized)
-import Test.QuickCheck.Property (withMaxSuccess)
+import Arbitrary ()
 import Types1 (AFunction, ElapsedTime)
-
-instance Arbitrary AFunction where
-  arbitrary :: Gen AFunction
-  arbitrary =
-    flip suchThat (\c -> c == c) $
-      sized f'
-    where
-      f' 0 = oneof [fmap C arbitrary, elements [Etime]]
-      f' n
-        | n > 0 =
-            oneof
-              [ liftM2 AddF sf sf,
-                liftM2 MulF sf sf,
-                liftM2 SubF sf sf,
-                liftM2 ExpF sf (chooseInt (-5, 5)),
-                fmap SinF (f' (min 1 (n `div` 2)))
-              ]
-        | otherwise = undefined
-        where
-          sf = f' (n `div` 2)
-
-instance CoArbitrary AFunction where
-  coarbitrary (C x) = coarbitrary x
-  coarbitrary Etime = id
-  coarbitrary (AddF f1 f2) = coarbitrary f1 . coarbitrary f2
-  coarbitrary (MulF f1 f2) = coarbitrary f1 . coarbitrary f2
-  coarbitrary (ExpF f1 b) = coarbitrary f1 . coarbitrary b
-  coarbitrary (SubF f1 f2) = coarbitrary f1 . coarbitrary f2
-  coarbitrary (SinF f1) = coarbitrary f1
+import Test.QuickCheck (Property, (===), Testable (property), Discard (..), quickCheck, withMaxSuccess, counterexample)
+import AFunctions (fromString, toString, createFunc, simplify, collapse, getCarr)
+import Data.Foldable (maximumBy)
 
 prop_stringConversion :: AFunction -> Property
 prop_stringConversion f = fromString (toString f) === Just f

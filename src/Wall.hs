@@ -1,3 +1,6 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+
 module Wall (Wall (..), InitWall (..), selfMove, totalAcceleration, createWall, point, normal) where
 
 import AFunctions (AFunction, createFunc)
@@ -8,7 +11,7 @@ import qualified Graphics.Gloss as Gloss
 import Physics (PhysicsObject (..))
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseWall)
-import TypeClasses (HasPhysics (..), Pictured (..), V2Math (..))
+import TypeClasses (HasA (..), HasPhysics (..), Pictured (..), V2Math (..))
 import Types1 (Acceleration, ElapsedTime, InWall, Normal, Offset, Point (Point), Strength)
 import VectorCalc ()
 
@@ -26,7 +29,13 @@ data InitWall = InitWall
     ioFunc :: AFunction,
     isFunc :: AFunction
   }
-  deriving (Show)
+
+instance Show InitWall where
+  show w = "Rotation: " ++ show (irFunc w) ++ " Offset: " ++ show (ioFunc w) ++ " Strength: " ++ show (isFunc w) ++ "\n"
+
+instance HasA (AFunction, AFunction, AFunction) InitWall where
+  getA w = (irFunc w, ioFunc w, isFunc w)
+  setA (irf, iof, isf) iw = iw {irFunc = irf, ioFunc = iof, isFunc = isf}
 
 point :: Wall -> Point
 point w = (-offset w) |*| normal w
