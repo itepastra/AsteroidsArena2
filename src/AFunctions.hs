@@ -4,9 +4,10 @@ import Control.Monad ((<=<))
 import Data.Char (isNumber)
 import Data.Monoid (Sum (Sum))
 import Data.Tuple (swap)
-import ParenthesesHelpers (betweenParens, firstParenSeg, lastParenSeg)
+import ParenthesesHelpers (betweenParens, firstParenSeg, lastParenSeg, beforeParens)
 import Safe (readMay)
 import Types1 (AFunction (..), ElapsedTime, FunctionString)
+import Control.Applicative ((<|>), Alternative)
 
 instance Eq a => Eq (AFunction a) where
   (C x) == (C y) = x == y
@@ -219,24 +220,20 @@ fromString :: (Read a, RealFrac a, Floating a) => FunctionString -> Maybe (AFunc
 fromString = fs
 
 fs :: (Read a, RealFrac a, Floating a) => String -> Maybe (AFunction a)
-fs s = parseInfix s -<< parsePrefix s -<< parseExact s
+fs s = parseInfix s <|> parsePrefix s <|> parseExact s
 
-(-<<) :: Maybe b -> Maybe b -> Maybe b
-(-<<) b a = case a of
-  Nothing -> b
-  c -> c
 
 parseExact :: String -> Maybe (AFunction a)
 parseExact "e" = Just Var
 parseExact s = Nothing
 
 parsePrefix :: (Floating a, Read a, RealFrac a) => String -> Maybe (AFunction a)
-parsePrefix str = case (take 3 str, fromString $ init $ drop 4 str) of
-  ("sin", Just fa) -> Just $ SinF fa
-  ("abs", Just fa) -> Just $ abs fa
-  ("sig", Just fa) -> Just $ signum fa
-  ("exp", Just fa) -> Just $ exp fa
-  ("log", Just fa) -> Just $ log fa
+parsePrefix str = case (beforeParens str, fromString $ init $ drop 4 str) of
+  (Just "sin", Just fa) -> Just $ SinF fa
+  (Just "abs", Just fa) -> Just $ abs fa
+  (Just "sig", Just fa) -> Just $ signum fa
+  (Just "exp", Just fa) -> Just $ exp fa
+  (Just "log", Just fa) -> Just $ log fa
   _ -> fmap C (readMay str)
 
 parseInfix :: (Read a, RealFrac a, Floating a) => String -> Maybe (AFunction a)

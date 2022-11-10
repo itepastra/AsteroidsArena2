@@ -4,11 +4,11 @@ module Main where
 
 import AFunctions (collapse, createFunc, fromString, getCarr, simplify, toString)
 import Arbitrary ()
+import Data.Aeson (Value (String), decode, encode)
 import Data.Foldable (maximumBy)
+import JSONfuncs ()
 import Test.QuickCheck (Arbitrary, Discard (..), Property, Testable (property), counterexample, quickCheck, withMaxSuccess, within, (===))
 import Types1 (AFunction, ElapsedTime)
-import JSONfuncs ()
-import Data.Aeson (decode, encode)
 
 prop_stringConversion :: AFunction Float -> Property
 prop_stringConversion f = fromString (toString f) === Just f
@@ -24,13 +24,8 @@ prop_simplify f et = case createFunc f et of
     where
       co = simplify f
 
-prop_collapse :: AFunction Float -> ElapsedTime -> Property
-prop_collapse f et = case createFunc f et of
-  c
-    | c /= c -> property Discard
-    | otherwise -> approxEEE f co c $ createFunc co et
-    where
-      co = collapse f
+prop_funcEQ :: (Eq a, Show a) => AFunction a -> Property
+prop_funcEQ f = (===) f f
 
 main :: IO ()
 main = do
@@ -39,8 +34,8 @@ main = do
   quickCheck prop_jsonConversion
   putStrLn "simplify"
   quickCheck prop_simplify
-  putStrLn "collapse"
-  quickCheck . (within 1000000 . withMaxSuccess 1000) $ prop_collapse
+  putStrLn "check if it stays equal"
+  quickCheck (prop_funcEQ :: AFunction String -> Property)
   putStrLn "Done"
 
 approxEEE :: (Arbitrary a, Show a, Fractional a, Real a, Floating a) => AFunction a -> AFunction a -> a -> a -> Property

@@ -22,18 +22,19 @@ instance (Eq a, Arbitrary a) => Arbitrary (AFunction a) where
                 fmap LogF sf,
                 fmap AbsF sf,
                 fmap SigF sf,
-                fmap SinF (f' (min 1 (n `div` 2))),
-                fmap CosF (f' (min 1 (n `div` 2))),
-                fmap AsinF (f' (min 1 (n `div` 2))),
-                fmap AcosF (f' (min 1 (n `div` 2))),
-                fmap AtanF (f' (min 1 (n `div` 2))),
-                fmap AsinhF (f' (min 1 (n `div` 2))),
-                fmap AcoshF (f' (min 1 (n `div` 2))),
-                fmap AtanhF (f' (min 1 (n `div` 2)))
+                fmap SinF ssf,
+                fmap CosF ssf,
+                fmap AsinF ssf,
+                fmap AcosF ssf,
+                fmap AtanF ssf,
+                fmap AsinhF ssf,
+                fmap AcoshF ssf,
+                fmap AtanhF ssf
               ]
         | otherwise = undefined
         where
           sf = f' (n `div` 2)
+          ssf = f' (min 5 (n `div` 3))
 
 instance Arbitrary InitWall where
   arbitrary = liftM3 InitWall arbitrary arbitrary arbitrary
