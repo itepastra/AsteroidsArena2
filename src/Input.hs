@@ -21,7 +21,7 @@ pureInput :: Event -> GameState -> GameState
 pureInput (EventKey (Char 's') Down _ _) g@(MenuState {levels = lvls}) = g {levels = selectNext lvls, selectedState = stateSelect (selectNext lvls) (rand g)}
 pureInput (EventKey (Char 'w') Down _ _) g@(MenuState {levels = lvls}) = g {levels = selectPrev lvls, selectedState = stateSelect (selectPrev lvls) (rand g)}
 -- start playing the level
-pureInput (EventKey (SpecialKey KeyEnter) Down _ _) g@(MenuState {levels = lvls}) = (Data.Maybe.fromMaybe g (selectedState g)) {hud = Visible}
+pureInput (EventKey (SpecialKey KeyEnter) Down _ _) g@(MenuState {levels = lvls}) = (Data.Maybe.fromMaybe g (selectedState g)) {hud = Visible, elapsedTime = 0}
 -- toggle pause
 pureInput (EventKey (SpecialKey KeyTab) Down _ _) g@(PauseState {}) = (previousState g) {keys = empty}
 pureInput (EventKey (SpecialKey KeyTab) Down _ _) g@(GameState {}) = PauseState {previousState = g}
