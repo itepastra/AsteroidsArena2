@@ -1,25 +1,31 @@
 module AFunctions (AFunction (..), createFunc, simplify, collapse, toString, fromStringVar, fromString, getCarr) where
 
+import Control.Monad ((<=<))
 import Data.Char (isNumber)
+import Data.Monoid (Sum (Sum))
 import Data.Tuple (swap)
 import ParenthesesHelpers (betweenParens, firstParenSeg, lastParenSeg)
+import Safe (readMay)
 import Types1 (AFunction (..), ElapsedTime, FunctionString)
 
 instance Eq a => Eq (AFunction a) where
   (C x) == (C y) = x == y
-  Etime == Etime = True
-  (MulF f1 f2) == (MulF f3 f4) = f1 == f3 && f2 == f4 || f1 == f4 && f2 == f3
-  (AddF f1 f2) == (AddF f3 f4) = f1 == f3 && f2 == f4 || f1 == f4 && f2 == f3
-  (ExpF f1 b) == (ExpF f2 c) = f1 == f2 && b == c
+  Var == Var = True
+  (MulF f1 f2) == (MulF f3 f4) = f1 == f3 && f2 == f4
+  (AddF f1 f2) == (AddF f3 f4) = f1 == f3 && f2 == f4
   (SubF f1 f2) == (SubF f3 f4) = f1 == f3 && f2 == f4
+  (DivF f1 f2) == (DivF f3 f4) = f1 == f2 && f3 == f4
+  (ExpF f1) == (ExpF f2) = f1 == f2
+  (AbsF f1) == (AbsF f2) = f1 == f2
+  (SigF f1) == (SigF f2) = f1 == f2
   (SinF f1) == (SinF f2) = f1 == f2
   _ == _ = False
 
-instance Semigroup (AFunction a) where
-  (<>) = AddF
+instance Monoid a => Semigroup (AFunction a) where
+  f1 <> f2 = AddF f1 f2
 
-instance Num a => Monoid (AFunction a) where
-  mempty = C 0
+instance Monoid a => Monoid (AFunction a) where
+  mempty = C mempty
 
 instance Num a => Num (AFunction a) where
   (+) = AddF
@@ -29,60 +35,145 @@ instance Num a => Num (AFunction a) where
   fromInteger = C . fromInteger
   (-) = SubF
 
-getCarr :: (Real a, Fractional a, Floating a) => AFunction a -> [a]
-getCarr Etime = [0]
-getCarr (C v) = [realToFrac v]
-getCarr (MulF fa fb) = getCarr fa ++ getCarr fb
-getCarr (AddF fa fb) = getCarr fa ++ getCarr fb
-getCarr (SubF fa fb) = getCarr fa ++ getCarr fb
-getCarr (ExpF fa b) = map (** realToFrac b) (getCarr fa)
-getCarr (SigF fa) = getCarr fa
-getCarr (AbsF fa) = getCarr fa
-getCarr (SinF fa) = getCarr fa
+instance Fractional a => Fractional (AFunction a) where
+  fromRational = C . fromRational
+  (/) = DivF
 
-createFunc :: (Real a) => AFunction a -> ElapsedTime -> Float
-createFunc (C v) _ = realToFrac v
-createFunc Etime et = et
+instance (Ord a, Real a, Floating a) => Ord (AFunction a) where
+  f1 <= f2 = createFunc f1 0 <= createFunc f2 0
+
+instance (Real a, Floating a) => Real (AFunction a) where
+  toRational = toRational . flip createFunc 0
+
+instance Functor AFunction where
+  fmap f (AddF x y) = AddF (fmap f x) (fmap f y)
+  fmap f (SubF x y) = SubF (fmap f x) (fmap f y)
+  fmap f (MulF x y) = MulF (fmap f x) (fmap f y)
+  fmap f (DivF x y) = DivF (fmap f x) (fmap f y)
+  fmap f (AbsF fa) = AbsF (fmap f fa)
+  fmap f (SigF fa) = SigF (fmap f fa)
+  fmap f (ExpF fa) = ExpF (fmap f fa)
+  fmap f (SinF fa) = SinF (fmap f fa)
+  fmap f (LogF fa) = LogF (fmap f fa)
+  fmap f (CosF fa) = CosF (fmap f fa)
+  fmap f (AsinF fa) = AsinF (fmap f fa)
+  fmap f (AcosF fa) = AsinF (fmap f fa)
+  fmap f (AtanF fa) = AsinF (fmap f fa)
+  fmap f (AsinhF fa) = AsinhF (fmap f fa)
+  fmap f (AcoshF fa) = AsinhF (fmap f fa)
+  fmap f (AtanhF fa) = AsinhF (fmap f fa)
+  fmap f (C fa) = C (f fa)
+  fmap f Var = Var
+
+instance Foldable AFunction where
+  foldMap f Var = mempty
+  foldMap f (C x) = f x
+  foldMap f (MulF fa fb) = foldMap f fa <> foldMap f fb
+  foldMap f (AddF fa fb) = foldMap f fa <> foldMap f fb
+  foldMap f (SubF fa fb) = foldMap f fa <> foldMap f fb
+  foldMap f (DivF fa fb) = foldMap f fa <> foldMap f fb
+  foldMap f (ExpF fa) = foldMap f fa
+  foldMap f (LogF fa) = foldMap f fa
+  foldMap f (SigF fa) = foldMap f fa
+  foldMap f (AbsF fa) = foldMap f fa
+  foldMap f (SinF fa) = foldMap f fa
+  foldMap f (CosF fa) = foldMap f fa
+  foldMap f (AsinF fa) = foldMap f fa
+  foldMap f (AcosF fa) = foldMap f fa
+  foldMap f (AtanF fa) = foldMap f fa
+  foldMap f (AsinhF fa) = foldMap f fa
+  foldMap f (AcoshF fa) = foldMap f fa
+  foldMap f (AtanhF fa) = foldMap f fa
+
+instance Floating a => Floating (AFunction a) where
+  pi = C pi
+  exp = ExpF
+  log = LogF
+  sin = SinF
+  cos = CosF
+  asin = AsinF
+  acos = AcosF
+  atan = AtanF
+  sinh = AsinhF
+  cosh = AcoshF
+  asinh = AsinhF
+  acosh = AcoshF
+  atanh = AtanhF
+
+getCarr :: AFunction a -> [a]
+getCarr = foldMap (: [])
+
+createFunc :: Floating a => AFunction a -> a -> a
+createFunc (C v) _ = v
+createFunc Var x = x
 createFunc (MulF fa fb) et = createFunc fa et * createFunc fb et
+createFunc (DivF fa fb) et = createFunc fa et / createFunc fb et
 createFunc (AddF fa fb) et = createFunc fa et + createFunc fb et
 createFunc (SubF fa fb) et = createFunc fa et - createFunc fb et
-createFunc (ExpF fa b) et = createFunc fa et ** fromIntegral b
+createFunc (ExpF fa) et = exp (createFunc fa et)
 createFunc (SinF fa) et = sin (createFunc fa et)
 createFunc (AbsF fa) et = abs (createFunc fa et)
 createFunc (SigF fa) et = signum (createFunc fa et)
+createFunc (LogF fa) et = log (createFunc fa et)
+createFunc (CosF fa) et = cos (createFunc fa et)
+createFunc (AsinF fa) et = asin (createFunc fa et)
+createFunc (AcosF fa) et = acos (createFunc fa et)
+createFunc (AtanF fa) et = atan (createFunc fa et)
+createFunc (AsinhF fa) et = sinh (createFunc fa et)
+createFunc (AcoshF fa) et = cosh (createFunc fa et)
+createFunc (AtanhF fa) et = tanh (createFunc fa et)
 
 simplify :: (Floating a, Eq a) => AFunction a -> AFunction a
 -- simple cases
 simplify (AddF (C x) (C y)) = C (x + y)
 simplify (MulF (C x) (C y)) = C (x * y)
 simplify (SubF (C x) (C y)) = C (x - y)
-simplify (ExpF (C x) b) = C (x ** realToFrac b)
+simplify (ExpF (C x)) = C (exp x)
 simplify (SinF (C x)) = C (sin x)
+simplify (AbsF (C x)) = C (abs x)
+simplify (SigF (C x)) = C (signum x)
 -- cases where 1 side is simple
-simplify (ExpF (ExpF f2 b) c) = ExpF f2 (b * c)
-simplify (AddF (C x) (AddF (C y) f2)) = AddF (C (x + y)) f2
-simplify (MulF (C x) (MulF (C y) f2)) = MulF (C (x * y)) f2
-simplify (SubF (C x) (SubF (C y) f2)) = AddF (C (x - y)) f2
-simplify (AddF (AddF (C y) f2) (C x)) = AddF (C (x + y)) f2
-simplify (MulF (MulF (C y) f2) (C x)) = MulF (C (x * y)) f2
-simplify (SubF (SubF (C y) f2) (C x)) = SubF (C (y - x)) f2
+simplify (ExpF (LogF f2)) = f2
+simplify (LogF (ExpF f2)) = f2
+simplify (AddF (C x) (AddF (C y) f2)) = C (x + y) + f2
+simplify (MulF (C x) (MulF (C y) f2)) = C (x * y) * f2
+simplify (SubF (C x) (SubF (C y) f2)) = C (x - y) - f2
+simplify (AddF (AddF (C y) f2) (C x)) = C (x + y) + f2
+simplify (MulF (MulF (C y) f2) (C x)) = C (x * y) * f2
+simplify (SubF (SubF (C y) f2) (C x)) = C (y - x) - f2
+simplify (AbsF (AbsF f1)) = abs f1
+simplify (SigF (SigF f1)) = signum f1
 -- not directly simplifyable
 simplify (AddF f1 f2)
-  | f1 == f2 = MulF (C 2) f1
-  | otherwise = AddF (simplify f1) (simplify f2)
+  | f2 == C 0 = f1
+  | f1 == f2 = 2 * f1
+  | otherwise = simplify f1 + simplify f2
 simplify (MulF f1 f2)
-  | f1 == f2 = ExpF f1 2
-  | otherwise = MulF (simplify f1) (simplify f2)
+  | f1 == 0 || f2 == 0 = 0
+  | f1 == 1 = f1
+  | otherwise = simplify f1 * simplify f2
 simplify (SubF f1 f2)
-  | f1 == f2 = C 0
-  | otherwise = SubF (simplify f1) (simplify f2)
-simplify (SinF f1) = SinF (simplify f1)
-simplify (ExpF f1 b) = ExpF (simplify f1) b
-simplify (AbsF f1) = AbsF (simplify f1)
-simplify (SigF f1) = SigF (simplify f1)
+  | f1 == f2 = 0
+  | f2 == 0 = f1
+  | otherwise = simplify f1 - simplify f2
+simplify (DivF f1 f2)
+  | f1 == f2 = 1
+  | otherwise = simplify f1 / simplify f2
+simplify (ExpF f1) = exp (simplify f1)
+simplify (SinF f1) = sin (simplify f1)
+simplify (AbsF f1) = abs (simplify f1)
+simplify (SigF f1) = signum (simplify f1)
+simplify (LogF f1) = log (simplify f1)
 -- base units
 simplify (C x) = C x
-simplify Etime = Etime
+simplify Var = Var
+simplify (CosF fa) = CosF fa
+simplify (AsinF fa) = AsinF fa
+simplify (AcosF fa) = AcosF fa
+simplify (AtanF fa) = AtanF fa
+simplify (AsinhF fa) = AsinhF fa
+simplify (AcoshF fa) = AcoshF fa
+simplify (AtanhF fa) = AtanhF fa
 
 collapse :: (Eq a, Floating a) => AFunction a -> AFunction a
 collapse f
@@ -96,16 +187,25 @@ instance Show a => Show (AFunction a) where
 
 toString :: Show a => AFunction a -> FunctionString
 toString (C v) = show v
-toString Etime = "e"
+toString Var = "e"
 toString (MulF fa fb) = "(" ++ toString fa ++ ")*(" ++ toString fb ++ ")"
+toString (DivF fa fb) = "(" ++ toString fa ++ ")/(" ++ toString fb ++ ")"
 toString (AddF fa fb) = "(" ++ toString fa ++ ")+(" ++ toString fb ++ ")"
 toString (SubF fa fb) = "(" ++ toString fa ++ ")-(" ++ toString fb ++ ")"
-toString (ExpF fa b) = "(" ++ toString fa ++ ")^(" ++ show b ++ ")"
+toString (ExpF fa) = "exp(" ++ toString fa ++ ")"
 toString (SinF fa) = "sin(" ++ toString fa ++ ")"
 toString (AbsF fa) = "abs(" ++ toString fa ++ ")"
 toString (SigF fa) = "sig(" ++ toString fa ++ ")"
+toString (LogF fa) = "log(" ++ toString fa ++ ")"
+toString (CosF fa) = "cos(" ++ toString fa ++ ")"
+toString (AsinF fa) = "asin(" ++ toString fa ++ ")"
+toString (AcosF fa) = "acos(" ++ toString fa ++ ")"
+toString (AtanF fa) = "atan(" ++ toString fa ++ ")"
+toString (AsinhF fa) = "asinh(" ++ toString fa ++ ")"
+toString (AcoshF fa) = "acosh(" ++ toString fa ++ ")"
+toString (AtanhF fa) = "atanh(" ++ toString fa ++ ")"
 
-fromStringVar :: (Show a, Read a, RealFrac a) => FunctionString -> a -> Maybe (AFunction a)
+fromStringVar :: (Read a, RealFrac a, Floating a, Show a) => FunctionString -> a -> Maybe (AFunction a)
 fromStringVar t n = fromString $ concat (m t)
   where
     p = (== 'x')
@@ -115,23 +215,37 @@ fromStringVar t n = fromString $ concat (m t)
         where
           (w, s'') = break p s'
 
-fromString :: (Read a, RealFrac a) => FunctionString -> Maybe (AFunction a)
-fromString [] = Nothing
-fromString "e" = Just Etime
-fromString (('s' : 'i' : 'n' : '(' : cs)) = case fromString $ init cs of
-  Just aaa -> Just $ SinF aaa
-  Nothing -> Nothing
-fromString (('a' : 'b' : 's' : '(' : cs)) = case fromString $ init cs of
-  Just aaa -> Just $ AbsF aaa
-  Nothing -> Nothing
-fromString (('s' : 'i' : 'g' : '(' : cs)) = case fromString $ init cs of
-  Just aaa -> Just $ SigF aaa
-  Nothing -> Nothing
-fromString s
-  | all (\p -> isNumber p || p == '.' || p == 'e' || p == '-') s = Just $ C (read s)
-  | otherwise = case (betweenParens s, fromString =<< firstParenSeg s, fromString =<< lastParenSeg s) of
-      (Just "*", Just fps, Just sps) -> Just $ MulF fps sps
-      (Just "+", Just fps, Just sps) -> Just $ AddF fps sps
-      (Just "-", Just fps, Just sps) -> Just $ SubF fps sps
-      (Just "^", Just fps, Just (C sps)) -> Just $ ExpF fps (round sps)
-      (_, _, _) -> Nothing
+fromString :: (Read a, RealFrac a, Floating a) => FunctionString -> Maybe (AFunction a)
+fromString = fs
+
+fs :: (Read a, RealFrac a, Floating a) => String -> Maybe (AFunction a)
+fs s = parseInfix s -<< parsePrefix s -<< parseExact s
+
+(-<<) :: Maybe b -> Maybe b -> Maybe b
+(-<<) b a = case a of
+  Nothing -> b
+  c -> c
+
+parseExact :: String -> Maybe (AFunction a)
+parseExact "e" = Just Var
+parseExact s = Nothing
+
+parsePrefix :: (Floating a, Read a, RealFrac a) => String -> Maybe (AFunction a)
+parsePrefix str = case (take 3 str, fromString $ init $ drop 4 str) of
+  ("sin", Just fa) -> Just $ SinF fa
+  ("abs", Just fa) -> Just $ abs fa
+  ("sig", Just fa) -> Just $ signum fa
+  ("exp", Just fa) -> Just $ exp fa
+  ("log", Just fa) -> Just $ log fa
+  _ -> fmap C (readMay str)
+
+parseInfix :: (Read a, RealFrac a, Floating a) => String -> Maybe (AFunction a)
+parseInfix s
+  | any (\p -> p == '*' || p == '+' || p == '-' || p == '^' || p == '/') s =
+      case (betweenParens s, fromString =<< firstParenSeg s, fromString =<< lastParenSeg s) of
+        (Just "*", Just fps, Just sps) -> Just $ fps * sps
+        (Just "+", Just fps, Just sps) -> Just $ fps + sps
+        (Just "-", Just fps, Just sps) -> Just $ SubF fps sps
+        (Just "/", Just fps, Just sps) -> Just $ fps / sps
+        (_, _, _) -> Nothing
+  | otherwise = Nothing

@@ -1,6 +1,8 @@
+{-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
 module Types1 where
+
 import GHC.Natural (Natural)
 
 type Time = Float
@@ -59,16 +61,25 @@ data Selected a = NotSelected {val :: a} | Selected {time :: ElapsedTime, val ::
 
 data OverlayText = OT String | ST String
 
-data AFunction a
-  = MulF (AFunction a) (AFunction a)
-  | ExpF (AFunction a) Int
-  | AddF (AFunction a) (AFunction a)
-  | C a
-  | Etime
-  | SinF (AFunction a)
-  | SubF (AFunction a) (AFunction a)
-  | AbsF (AFunction a)
-  | SigF (AFunction a)
+data AFunction a where
+  AddF :: AFunction a -> AFunction a -> AFunction a
+  SubF :: AFunction a -> AFunction a -> AFunction a
+  AbsF :: AFunction a -> AFunction a
+  SigF :: AFunction a -> AFunction a
+  MulF :: AFunction a -> AFunction a -> AFunction a
+  DivF :: AFunction a -> AFunction a -> AFunction a
+  ExpF :: AFunction a -> AFunction a
+  LogF :: AFunction a -> AFunction a
+  SinF :: AFunction a -> AFunction a
+  CosF :: AFunction a -> AFunction a
+  AsinF :: AFunction a -> AFunction a
+  AcosF :: AFunction a -> AFunction a
+  AtanF :: AFunction a -> AFunction a
+  AsinhF :: AFunction a -> AFunction a
+  AcoshF :: AFunction a -> AFunction a
+  AtanhF :: AFunction a -> AFunction a
+  C :: a -> AFunction a
+  Var :: AFunction a
 
 data PhysicsObject = PhysObj
   { position :: Position,

@@ -39,3 +39,8 @@ betweenParens s = case (minimumMay (parenPairs s), maximumMay (map swap $ parenP
   (_, _) -> Nothing
   where
     f s i j = take (j - i - 1) (drop (i + 1) s)
+
+beforeParens :: String -> Maybe String
+beforeParens s = case minimumMay (parenPairs s) of
+  Nothing -> Nothing
+  Just (a, _) -> Just $ take a s

@@ -16,7 +16,9 @@ Test-Suite projectname-testsuite
                             QuickCheck,
                             safe,
                             gloss,
-                            random
+                            random,
+                            aeson,
+                            containers
   other-modules:            AFunctions
                           , ParenthesesHelpers 
                           , Types1

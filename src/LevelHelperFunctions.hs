@@ -23,7 +23,7 @@ setPart Rot wf iw = iw {irFunc = wf}
 setPart Off wf iw = iw {ioFunc = wf}
 
 lin :: (Real a, Fractional a) => (AFunction a -> AFunction a -> AFunction a) -> a -> AFunction a -> AFunction a
-lin w f = w (MulF (C $ realToFrac f) Etime)
+lin w f = w (MulF (C $ realToFrac f) Var)
 
 wallPartMap :: Part -> [AFunction Float -> AFunction Float] -> [InitWall] -> [InitWall]
 wallPartMap = zipWith . modPart

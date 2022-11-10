@@ -178,26 +178,44 @@ instance ToJSON Level where
 
 instance (ToJSON a) => ToJSON (AFunction a) where
   toJSON (C v) = object ["type" .= ("c" :: String), "v" .= v]
-  toJSON Etime = object ["type" .= ("etime" :: String)]
+  toJSON Var = object ["type" .= ("etime" :: String)]
   toJSON (SinF f1) = object ["type" .= ("sin" :: String), "f1" .= f1]
   toJSON (MulF f1 f2) = object ["type" .= ("lin" :: String), "f1" .= f1, "f2" .= f2]
   toJSON (AddF f1 f2) = object ["type" .= ("add" :: String), "f1" .= f1, "f2" .= f2]
   toJSON (SubF f1 f2) = object ["type" .= ("sub" :: String), "f1" .= f1, "f2" .= f2]
-  toJSON (ExpF f1 b) = object ["type" .= ("exp" :: String), "f1" .= f1, "b" .= b]
-  toJSON (SigF f1) = object ["type" .= ("sig" :: String), "f1" .= f1]
+  toJSON (DivF f1 f2) = object ["type" .= ("div" :: String), "f1" .= f1, "f2" .= f2]
   toJSON (AbsF f1) = object ["type" .= ("abs" :: String), "f1" .= f1]
+  toJSON (SigF f1) = object ["type" .= ("sig" :: String), "f1" .= f1]
+  toJSON (ExpF f1) = object ["type" .= ("exp" :: String), "f1" .= f1]
+  toJSON (LogF f1) = object ["type" .= ("log" :: String), "f1" .= f1]
+  toJSON (CosF f1) = object ["type" .= ("cos" :: String), "f1" .= f1]
+  toJSON (AsinF f1) = object ["type" .= ("asin" :: String), "f1" .= f1]
+  toJSON (AcosF f1) = object ["type" .= ("acos" :: String), "f1" .= f1]
+  toJSON (AtanF f1) = object ["type" .= ("atan" :: String), "f1" .= f1]
+  toJSON (AsinhF f1) = object ["type" .= ("asinh" :: String), "f1" .= f1]
+  toJSON (AcoshF f1) = object ["type" .= ("acosh" :: String), "f1" .= f1]
+  toJSON (AtanhF f1) = object ["type" .= ("atanh" :: String), "f1" .= f1]
 
 instance (FromJSON a) => FromJSON (AFunction a) where
   parseJSON = withObject "AFunction" $ \v ->
     case A.lookup "type" v of
       Nothing -> mzero
       Just "c" -> C <$> v .: "v"
-      Just "etime" -> return Etime
+      Just "etime" -> return Var
       Just "lin" -> MulF <$> v .: "f1" <*> v .: "f2"
       Just "add" -> AddF <$> v .: "f1" <*> v .: "f2"
       Just "sub" -> SubF <$> v .: "f1" <*> v .: "f2"
-      Just "exp" -> ExpF <$> v .: "f1" <*> v .: "b"
-      Just "sin" -> SinF <$> v .: "f1"
+      Just "div" -> DivF <$> v .: "f1" <*> v .: "f2"
       Just "abs" -> AbsF <$> v .: "f1"
       Just "sig" -> SigF <$> v .: "f1"
+      Just "exp" -> ExpF <$> v .: "f1"
+      Just "log" -> LogF <$> v .: "f1"
+      Just "sin" -> SinF <$> v .: "f1"
+      Just "cos" -> CosF <$> v .: "f1"
+      Just "asin" -> AsinF <$> v .: "f1"
+      Just "acos" -> AcosF <$> v .: "f1"
+      Just "atan" -> AtanF <$> v .: "f1"
+      Just "asinh" -> AsinhF <$> v .: "f1"
+      Just "acosh" -> AcoshF <$> v .: "f1"
+      Just "atanh" -> AtanhF <$> v .: "f1"
       _ -> mzero
