@@ -12,30 +12,30 @@ wallPoly n o s = map (\x -> InitWall {irFunc = C (fromIntegral x * 360 / fromInt
 
 data Part = Str | Rot | Off
 
-modPart :: Part -> (AFunction -> AFunction) -> InitWall -> InitWall
+modPart :: Part -> (AFunction Float -> AFunction Float) -> InitWall -> InitWall
 modPart Str wf iw = iw {isFunc = collapse $ wf (isFunc iw)}
 modPart Rot wf iw = iw {irFunc = collapse $ wf (irFunc iw)}
 modPart Off wf iw = iw {ioFunc = collapse $ wf (ioFunc iw)}
 
-setPart :: Part -> AFunction -> InitWall -> InitWall
+setPart :: Part -> AFunction Float -> InitWall -> InitWall
 setPart Str wf iw = iw {isFunc = wf}
 setPart Rot wf iw = iw {irFunc = wf}
 setPart Off wf iw = iw {ioFunc = wf}
 
-lin :: Real a => (AFunction -> AFunction -> AFunction) -> a -> AFunction -> AFunction
+lin :: (Real a, Fractional a) => (AFunction a -> AFunction a -> AFunction a) -> a -> AFunction a -> AFunction a
 lin w f = w (MulF (C $ realToFrac f) Etime)
 
-wallPartMap :: Part -> [AFunction -> AFunction] -> [InitWall] -> [InitWall]
+wallPartMap :: Part -> [AFunction Float -> AFunction Float] -> [InitWall] -> [InitWall]
 wallPartMap = zipWith . modPart
 
-wallPartSetMap :: Part -> [AFunction] -> [InitWall] -> [InitWall]
+wallPartSetMap :: Part -> [AFunction Float] -> [InitWall] -> [InitWall]
 wallPartSetMap = zipWith . setPart
 
 flipFlop :: [Float] -> [Float]
 flipFlop = zipWith (*) (concat $ repeat [1, -1])
 
-makeConstants :: Real a => [a] -> [AFunction]
-makeConstants = map (C . realToFrac)
+makeConstants :: Real a => [a] -> [AFunction a]
+makeConstants = map C
 
 addRots :: [Angle] -> [InitWall] -> [InitWall]
 addRots as = wallPartMap Rot (map (lin AddF) as)

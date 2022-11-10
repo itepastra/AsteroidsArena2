@@ -55,10 +55,13 @@ inputCreator (EventKey (Char '\DC3') Down (Modifiers _ Down _) _) g = do
   pure g
 inputCreator (EventKey (Char 'z') Down _ _) g = do
   w <- generate arbitrary
-  pure g {iwalls = selectFirst (Selected 120 ((\(a, b, c) -> (collapse a, collapse b, collapse c)) # w) : iwalls g)}
+  pure g {iwalls = selectFirst (Selected 120 (tupleCollapse # w) : iwalls g)}
 inputCreator k s = do
   -- print k
   ((pure .) . pureInput) k s
+
+tupleCollapse :: (AFunction Float, AFunction Float, AFunction Float) -> (AFunction Float, AFunction Float, AFunction Float)
+tupleCollapse (a, b, c) = (collapse a, collapse b, collapse c)
 
 pureInput :: Event -> EditorState -> EditorState
 -- wall select (previous / next)
@@ -71,6 +74,7 @@ pureInput (EventKey (Char 'w') Down _ _) g = g {iwalls = smap (modPart Off (AddF
 pureInput (EventKey (Char 's') Down _ _) g = g {iwalls = smap (modPart Off (AddF (C 15))) $ iwalls g}
 -- create a new wall
 pureInput (EventKey (Char 'n') Down _ _) g = g {iwalls = selectFirst (Selected 120 newWall : iwalls g)}
+pureInput (EventKey (Char 'c') Down _ _) g = g {iwalls = selectFirst (head (iwalls g) : iwalls g)}
 -- remove the selected wall
 pureInput (EventKey (Char '\b') Down _ _) g = g {iwalls = selectFirst $ popSelected $ iwalls g}
 -- time controls
@@ -96,6 +100,6 @@ askFor s = do
   hFlush stdout
   getLine
 
-updateWall :: Maybe AFunction -> Part -> EditorState -> EditorState
+updateWall :: Maybe (AFunction Float) -> Part -> EditorState -> EditorState
 updateWall (Just f) p g = g {iwalls = smap (setPart p f) $ iwalls g}
 updateWall Nothing _ g = g

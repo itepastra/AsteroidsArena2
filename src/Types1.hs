@@ -59,14 +59,16 @@ data Selected a = NotSelected {val :: a} | Selected {time :: ElapsedTime, val ::
 
 data OverlayText = OT String | ST String
 
-data AFunction
-  = MulF AFunction AFunction
-  | ExpF AFunction Int
-  | AddF AFunction AFunction
-  | C Float
+data AFunction a
+  = MulF (AFunction a) (AFunction a)
+  | ExpF (AFunction a) Int
+  | AddF (AFunction a) (AFunction a)
+  | C a
   | Etime
-  | SinF AFunction
-  | SubF AFunction AFunction
+  | SinF (AFunction a)
+  | SubF (AFunction a) (AFunction a)
+  | AbsF (AFunction a)
+  | SigF (AFunction a)
 
 data PhysicsObject = PhysObj
   { position :: Position,

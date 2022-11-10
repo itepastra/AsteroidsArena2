@@ -14,10 +14,22 @@ Test-Suite projectname-testsuite
                             src
   Build-depends:            base >= 4,
                             QuickCheck,
-                            safe
+                            safe,
+                            gloss,
+                            random
   other-modules:            AFunctions
                           , ParenthesesHelpers 
                           , Types1
+                          , Arbitrary
+                          , Colors
+                          , Constants
+                          , FISQ
+                          , Physics
+                          , Rotation
+                          , Sprites
+                          , TypeClasses
+                          , VectorCalc
+                          , Wall
 
 executable editor
   main-is:            levelCreator.hs

@@ -2,16 +2,16 @@
 
 module Main where
 
+import AFunctions (collapse, createFunc, fromString, getCarr, simplify, toString)
 import Arbitrary ()
-import Types1 (AFunction, ElapsedTime)
-import Test.QuickCheck (Property, (===), Testable (property), Discard (..), quickCheck, withMaxSuccess, counterexample)
-import AFunctions (fromString, toString, createFunc, simplify, collapse, getCarr)
 import Data.Foldable (maximumBy)
+import Test.QuickCheck (Arbitrary, Discard (..), Property, Testable (property), counterexample, quickCheck, withMaxSuccess, within, (===))
+import Types1 (AFunction, ElapsedTime)
 
-prop_stringConversion :: AFunction -> Property
+prop_stringConversion :: AFunction Float -> Property
 prop_stringConversion f = fromString (toString f) === Just f
 
-prop_simplify :: AFunction -> ElapsedTime -> Property
+prop_simplify :: AFunction Float -> ElapsedTime -> Property
 prop_simplify f et = case createFunc f et of
   c
     | c /= c -> property Discard
@@ -19,7 +19,7 @@ prop_simplify f et = case createFunc f et of
     where
       co = simplify f
 
-prop_collapse :: AFunction -> ElapsedTime -> Property
+prop_collapse :: AFunction Float -> ElapsedTime -> Property
 prop_collapse f et = case createFunc f et of
   c
     | c /= c -> property Discard
@@ -34,10 +34,10 @@ main = do
   putStrLn "simplify"
   quickCheck prop_simplify
   putStrLn "collapse"
-  quickCheck (withMaxSuccess 10000 prop_collapse)
+  quickCheck . (within 1000000 . withMaxSuccess 10000) $ prop_collapse
   putStrLn "Done"
 
-approxEEE :: AFunction -> AFunction -> Float -> Float -> Property
+approxEEE :: (Arbitrary a, Show a, Fractional a, Real a, Floating a) => AFunction a -> AFunction a -> a -> a -> Property
 approxEEE f1 f2 x y = counterexample (show f1 ++ interpret res ++ show f2 ++ "\n\n" ++ show x ++ interpret res ++ show y) res
   where
     res = x == y || abs (x - y) <= max (abs x * 0.0005) (max (0.0005 * absMaximum (getCarr f1)) (0.0005 * absMaximum (getCarr f2)))

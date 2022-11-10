@@ -30,8 +30,7 @@ selectPrev (c : cs) = c : selectPrev cs
 selectPrev [] = []
 
 deSelect :: Selected a -> Selected a
-deSelect (Selected _ a) = NotSelected a
-deSelect (NotSelected a) = NotSelected a
+deSelect c = NotSelected (val c)
 
 select :: Selected a -> Selected a
 select (Selected b a) = Selected b a

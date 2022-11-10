@@ -176,7 +176,7 @@ instance ToJSON Level where
         "initState" .= initState l
       ]
 
-instance ToJSON AFunction where
+instance (ToJSON a) => ToJSON (AFunction a) where
   toJSON (C v) = object ["type" .= ("c" :: String), "v" .= v]
   toJSON Etime = object ["type" .= ("etime" :: String)]
   toJSON (SinF f1) = object ["type" .= ("sin" :: String), "f1" .= f1]
@@ -184,8 +184,10 @@ instance ToJSON AFunction where
   toJSON (AddF f1 f2) = object ["type" .= ("add" :: String), "f1" .= f1, "f2" .= f2]
   toJSON (SubF f1 f2) = object ["type" .= ("sub" :: String), "f1" .= f1, "f2" .= f2]
   toJSON (ExpF f1 b) = object ["type" .= ("exp" :: String), "f1" .= f1, "b" .= b]
+  toJSON (SigF f1) = object ["type" .= ("sig" :: String), "f1" .= f1]
+  toJSON (AbsF f1) = object ["type" .= ("abs" :: String), "f1" .= f1]
 
-instance FromJSON AFunction where
+instance (FromJSON a) => FromJSON (AFunction a) where
   parseJSON = withObject "AFunction" $ \v ->
     case A.lookup "type" v of
       Nothing -> mzero
@@ -196,4 +198,6 @@ instance FromJSON AFunction where
       Just "sub" -> SubF <$> v .: "f1" <*> v .: "f2"
       Just "exp" -> ExpF <$> v .: "f1" <*> v .: "b"
       Just "sin" -> SinF <$> v .: "f1"
+      Just "abs" -> AbsF <$> v .: "f1"
+      Just "sig" -> SigF <$> v .: "f1"
       _ -> mzero

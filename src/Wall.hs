@@ -25,15 +25,15 @@ data Wall = Wall
   }
 
 data InitWall = InitWall
-  { irFunc :: AFunction,
-    ioFunc :: AFunction,
-    isFunc :: AFunction
+  { irFunc :: AFunction Float,
+    ioFunc :: AFunction Float,
+    isFunc :: AFunction Float
   }
 
 instance Show InitWall where
   show w = "Rotation: " ++ show (irFunc w) ++ " Offset: " ++ show (ioFunc w) ++ " Strength: " ++ show (isFunc w) ++ "\n"
 
-instance HasA (AFunction, AFunction, AFunction) InitWall where
+instance HasA (AFunction Float, AFunction Float, AFunction Float) InitWall where
   getA w = (irFunc w, ioFunc w, isFunc w)
   setA (irf, iof, isf) iw = iw {irFunc = irf, ioFunc = iof, isFunc = isf}
 
