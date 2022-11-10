@@ -6,7 +6,7 @@ import Colors (textColor)
 import qualified Colors
 import Data.List (intercalate)
 import EditorModel (EditorState (elapsedTime, iwalls))
-import Graphics.Gloss (Picture (Text), blank, color, rotate, scale, translate)
+import Graphics.Gloss (Picture (Text), blank, circleSolid, color, green, rotate, scale, translate)
 import Graphics.Gloss.Data.Picture (Picture (Pictures))
 import Level (Level (name))
 import Player (Player (Player))
@@ -47,7 +47,12 @@ instance Pictured Wall where
       a = getAngle w
 
 instance Pictured EditorState where
-  getPicture gs = Pictures [viewWallsSelect (elapsedTime gs) (iwalls gs), translate (-800) 400 $ color textColor $ scale 0.2 0.2 $ Text (intercalate "\n" $ map show $ getAllSelected $ iwalls gs)]
+  getPicture gs =
+    Pictures
+      [ viewWallsSelect (elapsedTime gs) (iwalls gs), -- display the walls
+        color green $ circleSolid 20, -- display where the player is
+        translate (-800) 400 $ color textColor $ scale 0.2 0.2 $ Text (intercalate "\n" $ map show $ getAllSelected $ iwalls gs) -- display the wall stats
+      ]
 
 viewWallsSelect :: ElapsedTime -> [Selected InitWall] -> Picture
 viewWallsSelect et = Pictures . map (viewSelectedWall et)
