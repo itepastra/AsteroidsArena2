@@ -2,8 +2,8 @@ module Arbitrary where
 
 import Control.Monad (liftM2, liftM3)
 import Test.QuickCheck (Arbitrary (..), CoArbitrary (..), Gen, chooseInt, elements, oneof, sized, suchThat)
-import Types1 (AFunction (..))
 import Wall (InitWall (..))
+import AFunctions (AFunction (..))
 
 instance (Eq a, Arbitrary a) => Arbitrary (AFunction a) where
   arbitrary =

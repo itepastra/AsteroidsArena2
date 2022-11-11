@@ -1,0 +1,33 @@
+{
+    "initState": {
+        "initConf": {
+            "asteroidDecayFunction": "ExpDecay",
+            "asteroidSpawnFunction": "ExpRandom",
+            "asteroidSpawnStart": 3,
+            "spaceMineOddsFunction": "Pow"
+        },
+        "initWalls": [
+            {
+                "ioFunc": {
+                    "type": "c",
+                    "v": 0
+                },
+                "irFunc": {
+                    "f1": {
+                        "type": "etime"
+                    },
+                    "f2": {
+                        "type": "c",
+                        "v": 4
+                    },
+                    "type": "lin"
+                },
+                "isFunc": {
+                    "type": "c",
+                    "v": 0
+                }
+            }
+        ]
+    },
+    "name": "nee"
+}

@@ -37,6 +37,15 @@ instance HasA (AFunction Float, AFunction Float, AFunction Float) InitWall where
   getA w = (irFunc w, ioFunc w, isFunc w)
   setA (irf, iof, isf) iw = iw {irFunc = irf, ioFunc = iof, isFunc = isf}
 
+instance HasA (ElapsedTime -> Angle, ElapsedTime -> Offset, ElapsedTime -> Strength) Wall where
+  getA w = (rFunc w, oFunc w, sFunc w)
+  setA (irf, iof, isf) iw = iw {rFunc = irf, oFunc = iof, sFunc = isf}
+
+instance HasA (Angle, Offset, Strength) Wall where
+  getA w = (angle w, offset w, strength w)
+  setA (a, o, s) w = w {angle = a, offset = o, strength = s}
+
+
 point :: Wall -> Point
 point w = (-offset w) |*| normal w
 

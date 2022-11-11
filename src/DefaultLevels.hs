@@ -6,6 +6,7 @@ import qualified Constants
 import Data.Fixed (mod')
 import Level (GameStateInit (..), InitLevelConfig (..), Level (..))
 import LevelHelperFunctions
+import NoPrereqs (flipFlop)
 
 
 defaultLevels :: [Level]

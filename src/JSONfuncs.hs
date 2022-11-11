@@ -15,11 +15,12 @@ import Player (Player (..))
 import qualified Player
 import TypeClasses (V2Math (..))
 import Types1
-  ( AFunction (..),
+  (
     PhysicsObject (..),
     Point (Point),
   )
 import Wall (InitWall (..), Wall (..))
+import AFunctions (AFunction(..))
 
 instance FromJSON Point where
   parseJSON = withObject "Point" $ \v ->

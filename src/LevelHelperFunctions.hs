@@ -4,13 +4,11 @@ import AFunctions (AFunction (..), collapse)
 import AsteroidSpawnFunctions (DecayFunctions (..), MapFunctions (..), RandomFunctions (..))
 import qualified Constants
 import Level (InitLevelConfig (..))
-import Types1 (Angle, Offset, Strength)
+import Types1 (Angle, Offset, Strength, Part (..))
 import Wall (InitWall (..))
 
 wallPoly :: Int -> Offset -> Strength -> [InitWall]
 wallPoly n o s = map (\x -> InitWall {irFunc = C (fromIntegral x * 360 / fromIntegral n), ioFunc = C $ realToFrac o, isFunc = C $ realToFrac s}) [1 .. n]
-
-data Part = Str | Rot | Off
 
 modPart :: Part -> (AFunction Float -> AFunction Float) -> InitWall -> InitWall
 modPart Str wf iw = iw {isFunc = collapse $ wf (isFunc iw)}
@@ -30,12 +28,6 @@ wallPartMap = zipWith . modPart
 
 wallPartSetMap :: Part -> [AFunction Float] -> [InitWall] -> [InitWall]
 wallPartSetMap = zipWith . setPart
-
-flipFlop :: [Float] -> [Float]
-flipFlop = zipWith (*) (concat $ repeat [1, -1])
-
-makeConstants :: Real a => [a] -> [AFunction a]
-makeConstants = map C
 
 addRots :: [Angle] -> [InitWall] -> [InitWall]
 addRots as = wallPartMap Rot (map (lin AddF) as)

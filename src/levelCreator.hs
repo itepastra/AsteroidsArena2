@@ -9,7 +9,7 @@ import Graphics.Gloss (Display (InWindow), Picture (Pictures), rotate, translate
 import Graphics.Gloss.Interface.IO.Game (Event (..), KeyState (..), Modifiers (Modifiers), Picture, SpecialKey (..), black, playIO)
 import Graphics.Gloss.Interface.Pure.Game (Key (..))
 import Level (Level (name))
-import LevelHelperFunctions (Part (..), defaultLvlConfig, modPart, setPart)
+import LevelHelperFunctions ( defaultLvlConfig, modPart, setPart)
 import LevelImport (encodeLevel)
 import Pictured ()
 import Rotation (Rotate (getAngle))
@@ -19,7 +19,7 @@ import System.Exit (exitSuccess)
 import System.IO (hFlush, stdout)
 import Test.QuickCheck (Arbitrary (arbitrary), generate)
 import TypeClasses (HasA ((#)), Pictured (..), V2Math (..))
-import Types1 (ElapsedTime, Selected (NotSelected, Selected, time))
+import Types1 (ElapsedTime, Selected (NotSelected, Selected, time), Part (..))
 import Wall (InitWall (..), createWall, point, selfMove)
 
 {-

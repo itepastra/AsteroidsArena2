@@ -1,13 +1,35 @@
+{-# LANGUAGE GADTs #-}
 module AFunctions (AFunction (..), createFunc, simplify, collapse, toString, fromStringVar, fromString, getCarr) where
 
+import Control.Applicative (Alternative, (<|>))
 import Control.Monad ((<=<))
 import Data.Char (isNumber)
 import Data.Monoid (Sum (Sum))
 import Data.Tuple (swap)
-import ParenthesesHelpers (betweenParens, firstParenSeg, lastParenSeg, beforeParens)
+import ParenthesesHelpers (beforeParens, betweenParens, firstParenSeg, lastParenSeg)
 import Safe (readMay)
-import Types1 (AFunction (..), ElapsedTime, FunctionString)
-import Control.Applicative ((<|>), Alternative)
+import Types1 (ElapsedTime, FunctionString)
+import Data.Functor.Classes (Eq1 (..))
+
+data AFunction a where
+  AddF :: AFunction a -> AFunction a -> AFunction a
+  SubF :: AFunction a -> AFunction a -> AFunction a
+  AbsF :: AFunction a -> AFunction a
+  SigF :: AFunction a -> AFunction a
+  MulF :: AFunction a -> AFunction a -> AFunction a
+  DivF :: AFunction a -> AFunction a -> AFunction a
+  ExpF :: AFunction a -> AFunction a
+  LogF :: AFunction a -> AFunction a
+  SinF :: AFunction a -> AFunction a
+  CosF :: AFunction a -> AFunction a
+  AsinF :: AFunction a -> AFunction a
+  AcosF :: AFunction a -> AFunction a
+  AtanF :: AFunction a -> AFunction a
+  AsinhF :: AFunction a -> AFunction a
+  AcoshF :: AFunction a -> AFunction a
+  AtanhF :: AFunction a -> AFunction a
+  C :: a -> AFunction a
+  Var :: AFunction a
 
 instance Eq a => Eq (AFunction a) where
   (C x) == (C y) = x == y
@@ -20,13 +42,16 @@ instance Eq a => Eq (AFunction a) where
   (AbsF f1) == (AbsF f2) = f1 == f2
   (SigF f1) == (SigF f2) = f1 == f2
   (SinF f1) == (SinF f2) = f1 == f2
+  (LogF f1) == (LogF f2) = f1 == f2
+  (CosF f1) == (CosF f2) = f1 == f2
+  (AsinF f1) == (AsinF f2) = f1 == f2
+  (AcosF f1) == (AcosF f2) = f1 == f2
+  (AtanF f1) == (AtanF f2) = f1 == f2
+  (AtanhF f1) == (AtanhF f2) = f1 == f2
+  (AcoshF f1) == (AcoshF f2) = f1 == f2
+  (AsinhF f1) == (AsinhF f2) = f1 == f2
   _ == _ = False
 
-instance Monoid a => Semigroup (AFunction a) where
-  f1 <> f2 = AddF f1 f2
-
-instance Monoid a => Monoid (AFunction a) where
-  mempty = C mempty
 
 instance Num a => Num (AFunction a) where
   (+) = AddF
@@ -105,17 +130,21 @@ getCarr :: AFunction a -> [a]
 getCarr = foldMap (: [])
 
 createFunc :: Floating a => AFunction a -> a -> a
+-- for all a
 createFunc (C v) _ = v
 createFunc Var x = x
+-- for Num a
 createFunc (MulF fa fb) et = createFunc fa et * createFunc fb et
-createFunc (DivF fa fb) et = createFunc fa et / createFunc fb et
 createFunc (AddF fa fb) et = createFunc fa et + createFunc fb et
 createFunc (SubF fa fb) et = createFunc fa et - createFunc fb et
-createFunc (ExpF fa) et = exp (createFunc fa et)
-createFunc (SinF fa) et = sin (createFunc fa et)
-createFunc (AbsF fa) et = abs (createFunc fa et)
 createFunc (SigF fa) et = signum (createFunc fa et)
+createFunc (AbsF fa) et = abs (createFunc fa et)
+-- for Fractional a
+createFunc (DivF fa fb) et = createFunc fa et / createFunc fb et
+-- for Floating a
+createFunc (ExpF fa) et = exp (createFunc fa et)
 createFunc (LogF fa) et = log (createFunc fa et)
+createFunc (SinF fa) et = sin (createFunc fa et)
 createFunc (CosF fa) et = cos (createFunc fa et)
 createFunc (AsinF fa) et = asin (createFunc fa et)
 createFunc (AcosF fa) et = acos (createFunc fa et)
@@ -146,12 +175,14 @@ simplify (AbsF (AbsF f1)) = abs f1
 simplify (SigF (SigF f1)) = signum f1
 -- not directly simplifyable
 simplify (AddF f1 f2)
-  | f2 == C 0 = f1
+  | f2 == 0 = f1
+  | f1 == 0 = f2
   | f1 == f2 = 2 * f1
   | otherwise = simplify f1 + simplify f2
 simplify (MulF f1 f2)
   | f1 == 0 || f2 == 0 = 0
-  | f1 == 1 = f1
+  | f1 == 1 = f2
+  | f2 == 1 = f1
   | otherwise = simplify f1 * simplify f2
 simplify (SubF f1 f2)
   | f1 == f2 = 0
@@ -221,7 +252,6 @@ fromString = fs
 
 fs :: (Read a, RealFrac a, Floating a) => String -> Maybe (AFunction a)
 fs s = parseInfix s <|> parsePrefix s <|> parseExact s
-
 
 parseExact :: String -> Maybe (AFunction a)
 parseExact "e" = Just Var

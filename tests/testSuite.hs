@@ -2,13 +2,13 @@
 
 module Main where
 
-import AFunctions (collapse, createFunc, fromString, getCarr, simplify, toString)
+import AFunctions (collapse, createFunc, fromString, getCarr, simplify, toString, AFunction)
 import Arbitrary ()
 import Data.Aeson (Value (String), decode, encode)
 import Data.Foldable (maximumBy)
 import JSONfuncs ()
 import Test.QuickCheck (Arbitrary, Discard (..), Property, Testable (property), counterexample, quickCheck, withMaxSuccess, within, (===))
-import Types1 (AFunction, ElapsedTime)
+import Types1 (ElapsedTime)
 
 prop_stringConversion :: AFunction Float -> Property
 prop_stringConversion f = fromString (toString f) === Just f

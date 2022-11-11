@@ -33,8 +33,8 @@ divDecay :: IntervalTime -> ElapsedTime -> TimeAvg
 divDecay i = (i /) . (1 +)
 
 -- functions that map an elapsed time to a range between 0 and 1
-
-eSigmoid :: Float -> ElapsedTime -> Float
+-- //TODO remake these as Afunctions
+eSigmoid :: Float -> ElapsedTime -> Float -- Practically an AFunction 
 eSigmoid b e = recip (1 + b ** e)
 
 lSigmoid :: Float -> ElapsedTime -> Float

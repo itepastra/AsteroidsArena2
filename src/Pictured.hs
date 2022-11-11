@@ -46,6 +46,9 @@ instance Pictured Wall where
       p = point w
       a = getAngle w
 
+instance Pictured a => Pictured [a] where
+  getPicture = Pictures . map getPicture
+
 instance Pictured EditorState where
   getPicture gs =
     Pictures

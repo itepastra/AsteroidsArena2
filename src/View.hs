@@ -8,15 +8,19 @@ import Data.Bifunctor (Bifunctor (bimap))
 import Graphics.Gloss (Picture (..), blank, blue, color, rectangleSolid, rotate, scale, translate)
 import Level (Level (..))
 import Model (GameState (..), gameStateFromLevel)
-import Physics (PhysicsObject (..))
+import Types1
+    ( PhysicsObject(..),
+      ElapsedTime,
+      Hud(..),
+      OverlayText(..),
+      Selected(..) )
 import Pictured ()
 import Player (Player (hp))
 import Rotation (Rotate (getAngle))
-import Select (getSingleSelected, getSelectedIndex)
+import Select (getSelectedIndex, getSingleSelected)
 import Sprites (selectedWall, starrySky)
 import System.Random (mkStdGen)
 import TypeClasses (HasPhysics (getPhysObj), Pictured (..), V2Math (..))
-import Types1 (ElapsedTime, Hud (..), OverlayText (..), Selected (..))
 import Wall (InitWall, Wall, createWall, point, selfMove)
 
 view :: GameState -> IO Picture
@@ -49,13 +53,13 @@ viewPlayer :: GameState -> Picture
 viewPlayer = getPicture . player
 
 viewAsteroids :: GameState -> Picture
-viewAsteroids = Pictures . map getPicture . asteroids
+viewAsteroids = getPicture . asteroids
 
 viewBullets :: GameState -> Picture
-viewBullets = Pictures . map getPicture . bullets
+viewBullets = getPicture  . bullets
 
 viewWalls :: GameState -> Picture
-viewWalls = Pictures . map getPicture . walls
+viewWalls = getPicture  . walls
 
 moveWorldToCenter :: PhysicsObject -> Picture -> Picture
 moveWorldToCenter (PhysObj {position = t}) = translate (-x t) (-y t)
