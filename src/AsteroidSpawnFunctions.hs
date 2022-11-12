@@ -32,15 +32,3 @@ pow = 1 - Variable X ** (-Variable Y)
 
 sin2 :: Floating a => VFunction a Var
 sin2 = sin (Variable X * Variable Y) ^ 2
-
--- eSigmoid :: Float -> ElapsedTime -> Float -- Practically an AFunction
--- eSigmoid b e = recip (1 + b ** e)
-
--- lSigmoid :: Float -> ElapsedTime -> Float
--- lSigmoid b e = recip (1 + b * e)
-
--- pow :: Float -> ElapsedTime -> Float
--- pow b e = 1 - b ** (-e)
-
--- sin2 :: Float -> ElapsedTime -> Float
--- sin2 f e = sin (f * e) ^ 2
