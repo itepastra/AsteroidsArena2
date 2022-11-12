@@ -39,6 +39,7 @@ Test-Suite projectname-testsuite
                     , VFunctions
                     , VectorCalc
                     , Wall
+                    , Point
 
 executable editor
   ghc-options:        -threaded
@@ -78,6 +79,7 @@ executable editor
                     , VFunctions
                     , VectorCalc
                     , Wall
+                    , Point
                   
 executable aa2  
   ghc-options:        -threaded
@@ -127,4 +129,5 @@ executable aa2
                     , VectorCalc
                     , View
                     , Wall
+                    , Point
   default-language:    Haskell2010

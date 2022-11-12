@@ -7,18 +7,19 @@ import Data.Aeson (Value (String), decode, encode)
 import Data.Foldable (maximumBy)
 import Data.Map (Map)
 import JSONfuncs ()
+import Point (Point (Point))
 import Test.QuickCheck (Arbitrary, Discard (..), Property, Testable (property), counterexample, quickCheck, withMaxSuccess, within, (===))
-import Types1 (ElapsedTime, Point (Point), Var)
-import VFunctions (VFunction, fromString, mkNumFunc)
+import Types1 (ElapsedTime, Var)
 import VFunctionHelpers (simplify)
-import VectorCalc ( V2Math((|+|)), (|.|) )
+import VFunctions (VFunction, fromString, mkNumFunc)
+import VectorCalc ( (|.|), (|+|) )
 
 -- Vector math tests
 
-prop_vAdd :: Point -> Point -> Property
+prop_vAdd :: Point Float -> Point Float -> Property
 prop_vAdd v1@(Point x1 y1) v2@(Point x2 y2) = v1 |+| v2 === Point (x1 + x2) (y1 + y2)
 
-prop_dot :: Point -> Point -> Property
+prop_dot :: Point Float -> Point Float -> Property
 prop_dot v1@(Point x1 y1) v2@(Point x2 y2) = v1 |.| v2 === (x1 * x2) + (y1 * y2)
 
 -- VFunction Tests

@@ -14,7 +14,7 @@ import Types1
       ElapsedTime,
       PhysicsObject(..), Var (X) )
 import InitWall (InitWall (..))
-import VectorCalc ( V2Math((|+|)), (|-|), (|.|), (|*|) )
+import VectorCalc ( (|*|), (|-|), (|.|), (|+|) ) 
 import Data.Maybe (mapMaybe)
 import PointHelpers (zeroPoint)
 import Data.Map (singleton)

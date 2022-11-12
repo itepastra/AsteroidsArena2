@@ -8,8 +8,7 @@ import Data.List (intercalate)
 import Select (getAllSelected)
 import Graphics.Gloss.Interface.IO.Game (Key, circleSolid, color, green)
 import Sprites (baseWall, selectedWall)
-import VectorCalc (V2Math(y), x)
-import Rotation
+import Rotation ( Rotate(getAngle) )
 import GeneralHelperFunctions (scaleboth, translateP)
 
 data EditorState = CreatorState

@@ -20,7 +20,6 @@ import Types1
     Hud (..),
     IntervalTime,
     PhysicsObject (..),
-    Point (Point),
     Score,
     Selected (val),
     Time,

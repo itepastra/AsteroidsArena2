@@ -1,12 +1,12 @@
 module PointHelpers where
 
-import Types1 (Point (Point))
+import Point (Point (Point))
 
-zeroPoint :: Point
+zeroPoint :: Num a => Point a
 zeroPoint = Point 0 0
 
-yUnit :: Point
+yUnit :: Num a => Point a
 yUnit = Point 0 1
 
-xUnit :: Point
+xUnit :: Num a => Point a
 xUnit = Point 1 0

@@ -2,9 +2,10 @@ module Arbitrary where
 
 import Control.Monad (liftM2, liftM3)
 import Test.QuickCheck (Arbitrary (..), CoArbitrary (..), Gen, arbitraryBoundedEnum, chooseInt, elements, oneof, sized, suchThat)
-import Types1 (Var (X), Point (Point))
+import Types1 (Var (X))
 import VFunctions (DOp, SOp, VFunction (Constant, OneIn, ThreeIn, TwoIn, Variable))
 import Wall (InitWall (..))
+import Point (Point (Point))
 
 instance (Eq a, Arbitrary a, Arbitrary b, Eq b) => Arbitrary (VFunction b a) where
   arbitrary =
@@ -48,5 +49,5 @@ instance (CoArbitrary a, CoArbitrary b) => CoArbitrary (VFunction b a) where
   coarbitrary (TwoIn op f1 f2) = coarbitrary f1 . coarbitrary f2
   coarbitrary (ThreeIn op f1 f2 f3) = coarbitrary f1 . coarbitrary f2 . coarbitrary f3
 
-instance Arbitrary Point where
+instance Arbitrary a => Arbitrary (Point a) where
   arbitrary = liftM2 Point arbitrary arbitrary

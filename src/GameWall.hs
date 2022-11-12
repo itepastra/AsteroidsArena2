@@ -9,8 +9,9 @@ import PointHelpers (yUnit)
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseWall)
 import TypeClasses (HasA (..))
-import Types1 (ElapsedTime, Normal, Offset, Point, Strength)
-import VectorCalc (V2Math (..), (|*|))
+import Types1 (ElapsedTime, Normal, Offset, Strength)
+import VectorCalc ((|*|))
+import Point (Point)
 
 data Wall = Wall
   { offset :: Offset,
@@ -36,7 +37,7 @@ instance Rotate Wall where
 instance Pictured Wall where
   getPicture w = translateP (point w) $ rotWithRot w baseWall
 
-point :: Wall -> Point
+point :: Wall -> Point Float
 point w = (-offset w) |*| normal w
 
 normal :: Wall -> Normal

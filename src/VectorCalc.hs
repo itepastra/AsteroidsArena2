@@ -1,50 +1,35 @@
-{-# LANGUAGE InstanceSigs #-}
-
 module VectorCalc where
 
 import FISQ (fisqrt)
-import Types1 (Point (..))
-import Prelude hiding (negate)
+import GHC.Base (liftA2)
+import Point (Point (Point))
 
-class V2Math a where
-  x :: a -> Float
-  y :: a -> Float
-  (|+|) :: V2Math b => a -> b -> a
-  vmap :: (Float -> Float) -> a -> a
-  negate :: a -> a
-  fromTuple :: (Float, Float) -> a
+(|-|) :: Num a => Point a -> Point a -> Point a
+(|-|) = (-)
 
-(|-|) :: (V2Math b, V2Math a) => a -> b -> a
-a |-| b = a |+| negate a
+(|+|) :: Num a => Point a -> Point a -> Point a
+(|+|) = (+)
 
-(|.|) :: (V2Math b, V2Math a) => a -> b -> Float
-a |.| b = x a * x b + y a * y b
+(|.|) :: Num a => Point a -> Point a -> a
+(|.|) = (sum .) . (*)
 
-(|#|) :: (V2Math b, V2Math a) => a -> b -> Float
+(|#|) :: Num a => Point a -> Point a -> a
 a |#| b = c |.| c where c = a |-| b
 
-(|*|) :: V2Math a => Float -> a -> a
-a |*| v = vmap (a *) v
+(|*|) :: Num a => a -> Point a -> Point a
+a |*| v = fmap (a *) v
 
-toTuple :: V2Math a => a -> (Float, Float)
+x :: Point a -> a
+x (Point a _) = a
+
+y :: Point a -> a
+y (Point _ a) = a
+
+toTuple :: Point a -> (a, a)
 toTuple v = (x v, y v)
 
-normalize :: V2Math a => a -> a
-normalize a = fisqrt (a |.| a) |*| a
+normalize :: Floating a => Point a -> Point a
+normalize a = sqrt (a |.| a) |*| a
 
-instance V2Math Point where
-  x :: Point -> Float
-  x (Point a _) = a
-
-  y :: Point -> Float
-  y (Point _ a) = a
-
-  (|+|) :: V2Math b => Point -> b -> Point
-  a |+| b = Point (x a + x b) (y a + y b)
-
-  fromTuple :: (Float, Float) -> Point
-  fromTuple (a, b) = Point a b
-  negate a = Point (-x a) (-y a)
-
-  vmap :: (Float -> Float) -> Point -> Point
-  vmap f (Point x y) = Point (f x) (f y)
+fromTuple :: (a, a) -> Point a
+fromTuple (a, b) = Point a b

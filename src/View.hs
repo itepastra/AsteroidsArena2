@@ -21,7 +21,7 @@ import Types1
     PhysicsObject (..),
     Selected (..),
   )
-import VectorCalc (V2Math (fromTuple, x, y), (|*|), (|-|), (|.|))
+import VectorCalc ( (|*|), (|-|), fromTuple ) 
 import Wall (InitWall, Wall, createWall, point, selfMove)
 import TypeClasses (HasPhysics(getPhysObj))
 

@@ -7,9 +7,10 @@ import GHC.Float (float2Int)
 import Graphics.Gloss (color, green, makeColor)
 import Graphics.Gloss.Data.Picture (Picture (..), arcSolid, circleSolid, lineLoop, polygon, rectangleUpperSolid, scale, translate)
 import System.Random (StdGen)
-import Types1 (Point (Point), Velocity)
+import Types1 ( Velocity)
 import VectorCalc ((|.|))
 import GeneralHelperFunctions (biFloat, scaleboth)
+import Point (Point(Point))
 
 basePlayer :: Picture
 basePlayer = Color playerColor $ Polygon [(0, 20), (20, -15), (0, 0), (-20, -15)]
@@ -38,7 +39,7 @@ baseWall = Color wallColor $ rectangleUpperSolid 10000 10000
 selectedWall :: Picture
 selectedWall = Color selectedWallColor $ rectangleUpperSolid 10000 10000
 
-starrySky :: Float -> [Point] -> Picture
+starrySky :: Float -> [Point Float] -> Picture
 starrySky f = translate (-xw / 2) (-yh / 2) . Pictures . map (\(Point a b) -> translate (a `mod'` xw) (b `mod'` yh) $ scaleboth f baseStar)
   where
     (xw, yh) = biFloat Constants.pageSize

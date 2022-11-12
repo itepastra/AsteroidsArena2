@@ -15,8 +15,8 @@ import PointHelpers (yUnit, zeroPoint)
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseExhaust, basePlayer)
 import TypeClasses (HasPhysics (..))
-import Types1 (Acceleration, HealthPoints, LookDirection, Point (..))
-import VectorCalc ( V2Math((|+|)), (|*|) )
+import Types1 (Acceleration, HealthPoints, LookDirection)
+import VectorCalc ( (|*|), (|+|) )
 
 data Player = Player
   { phys :: PhysicsObject,

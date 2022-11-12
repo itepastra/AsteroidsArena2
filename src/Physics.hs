@@ -8,7 +8,7 @@ module Physics (updatePhysObj, moveStep, accelStep, frictionStep, PhysicsObject 
 
 import TypeClasses (HasPhysics (..), HasA(..))
 import Types1 (Acceleration, Collides, PhysicsObject (..), TimeStep)
-import VectorCalc ( V2Math((|+|)), (|#|), (|*|) )
+import VectorCalc ( (|#|), (|*|), (|+|) )
 import JSONfuncs
 
 instance HasPhysics a => HasA PhysicsObject a where

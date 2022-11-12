@@ -20,8 +20,8 @@ import Sprites (baseAsteroid, baseSpaceMine)
 import System.Random (Random (..), RandomGen, StdGen)
 import System.Random.Stateful (randomM)
 import TypeClasses (HasPhysics (..))
-import Types1 (ElapsedTime, IntervalTime, Point (Point), Size, TimeStep, UniformTime)
-import VectorCalc (V2Math ((|+|)), normalize, (|#|), (|*|), (|-|))
+import Types1 (ElapsedTime, IntervalTime, Size, TimeStep, UniformTime)
+import VectorCalc ( normalize, (|#|), (|*|), (|-|), (|+|) ) 
 import GeneralHelperFunctions (scaleboth)
 
 data Asteroid
