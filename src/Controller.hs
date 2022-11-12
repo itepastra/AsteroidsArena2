@@ -29,6 +29,7 @@ import Physics (PhysicsObject, accelStep, checkCollision, frictionStep, moveStep
 import qualified Physics as Asteroid
 import qualified Physics as Player
 import Player (Player (Player, hp, lookAngle, lookDirection), lookAccel, playerDamage, playerHeal, shoot)
+import PointHelpers (zeroPoint)
 import Rotation (Angle, Rotate (rotate))
 import Select (getSingleSelected, sTime, selectFirst)
 import Stars (genStarPositions)
@@ -36,7 +37,6 @@ import System.Random (Random (random, randomRs), RandomGen (split), StdGen, getS
 import TypeClasses (HasA (..), HasPhysics, V2Math (..))
 import Types1 (Acceleration, ElapsedTime, Hud (..), IntervalTime, Point (Point), Score, Selected (..), Time, TimeStep)
 import Wall (Wall, selfMove, totalAcceleration)
-import PointHelpers (zeroPoint)
 
 step :: Float -> GameState -> IO GameState
 step secs gstate@(MenuState {levels = []}) = do
@@ -63,12 +63,14 @@ pureStep secs gstate@(GameState {player = (Player {hp = 0})}) =
     { previousState = playerHeal 1 # const (empty :: Set Key) # const Invisible # gstate,
       timeSinceDeath = 1
     }
-pureStep secs gstate@(GameState {}) =
+pureStep secs gstate@(GameState {}) = inGameTick secs gstate
+
+inGameTick :: ElapsedTime -> GameState -> GameState
+inGameTick secs gstate =
   gstate
     { player = newDamagedPlayer,
       asteroids = rrna,
       bullets = trueNewBullets,
-      timeSinceLastShot = newTimeSinceLast,
       walls = map (selfMove (elapsedTime gstate)) (walls gstate),
       timeTillNextAsteroid = ttna,
       rand = nnrand,
@@ -77,11 +79,11 @@ pureStep secs gstate@(GameState {}) =
     }
   where
     -- move the player, bullets and asteroids
-    (newTimeSinceLast, newBullets, newAsteroids, newPlayer) = positionUpdateStage secs gstate
+    gstat2 = positionUpdateStage secs gstate
     -- check player damage and the bullets that remain
-    (newDamagedPlayer, trueNewBullets) = bulletPlayerUpdateStage newAsteroids newBullets newPlayer (hud gstate)
+    (newDamagedPlayer, trueNewBullets) = bulletPlayerUpdateStage gstat2
     -- remove, and spawn new asteroids
-    (ttna, rrna, nnrand, sInc) = asteroidUpdateStage2 newBullets newPlayer gstate secs newAsteroids
+    (ttna, rrna, nnrand, sInc) = asteroidUpdateStage2 secs gstat2
     -- if the player is visible, update the score
     snew = case hud gstate of
       Visible -> score gstate + sInc
@@ -90,43 +92,53 @@ pureStep secs gstate@(GameState {}) =
 childAsteroids :: RandomGen g => g -> [Asteroid] -> ([Asteroid], g)
 childAsteroids g = foldl (\(as, g) a -> first ($ as) (getChildAsteroids g a)) ([], g)
 
-positionUpdateStage :: TimeStep -> GameState -> (Float, [Bullet], [Asteroid], Player)
+positionUpdateStage :: TimeStep -> GameState -> GameState
 positionUpdateStage secs gstate =
-  uncurry
-    (,,,)
-    (second bulletsUpdate (bulletSpawn keyset (timeSinceLastShot gstate) secs playr))
-    (map (updateAsteroid secs (getA playr)) (asteroids gstate))
-    (updatePlayer (rotSpeed keyset) wallarr secs (acc keyset) playr)
+  gstate
+    { bullets = bulletsUpdate bs,
+      asteroids = map (updateAsteroid secs (getA playr)) (asteroids gstate),
+      player = updatePlayer (rotSpeed keyset) wallarr secs (acc keyset) playr,
+      timeSinceLastShot = timesinceshot
+    }
   where
     bulletsUpdate spawnedBullet = mapMaybe (updateBullet secs wallarr) (spawnedBullet (bullets gstate))
     playr = player gstate
     keyset = keys gstate
     wallarr = walls gstate
+    (timesinceshot, bs) = bulletSpawn keyset (timeSinceLastShot gstate) secs playr
     acc :: Set Key -> Acceleration
     acc k
       | member (Char 'w') k = lookAccel playr
       | otherwise = zeroPoint
 
-bulletPlayerUpdateStage :: [Asteroid] -> [Bullet] -> Player -> Hud -> (Player, [Bullet])
-bulletPlayerUpdateStage as bs p h = (dp, bulletCollisions as p bs)
+bulletPlayerUpdateStage :: GameState -> (Player, [Bullet])
+bulletPlayerUpdateStage gstate = (dp, bulletCollisions as p bs)
   where
     dp = case h of
       Visible -> playerDamage as bs p
       Invisible -> p
+    p = player gstate
+    bs = bullets gstate
+    as = asteroids gstate
+    h = hud gstate
 
-asteroidUpdateStage2 :: [Bullet] -> Player -> GameState -> IntervalTime -> [Asteroid] -> (IntervalTime, [Asteroid], StdGen, Int)
-asteroidUpdateStage2 bs p gstate secs as =
-  (\((r, as, i), ds) -> (\(a, (b, d)) -> (a, b, d, length ds)) (i, first (++ as) (childAsteroids r ds))) $
-    first
-      ( spawnNewAsteroid
-          (levelConfig gstate)
-          (elapsedTime gstate)
-          secs
-          (timeTillNextAsteroid gstate)
-          (rand gstate)
-          (getA p)
-      )
-      (asteroidCollisions bs p as)
+asteroidUpdateStage2 :: IntervalTime-> GameState -> (IntervalTime, [Asteroid], StdGen, Int)
+asteroidUpdateStage2 secs gstate =
+  (timetillnextasteroid, spawnedAsteroids ++ actualAsteroid, rng3, length ds)
+  where
+    lc = levelConfig gstate
+    et = elapsedTime gstate
+    timetillnextasteroid = timeTillNextAsteroid gstate
+    rng1 = rand gstate
+    p = player gstate
+    playerPhysics = getA p
+    bs = bullets gstate
+    (as, ds) =asteroidCollisions bs p ( asteroids gstate)
+    (rng2, actualAsteroid, it) = spawnNewAsteroid lc et secs timetillnextasteroid rng1 playerPhysics as
+    (spawnedAsteroids, rng3) = childAsteroids rng2 ds
+
+
+hmm ((r, as, i), ds) = (\(a, (b, d)) -> (a, b, d, length ds)) (i, first (++ as) (childAsteroids r ds))
 
 bulletCollisions :: (HasPhysics a, HasPhysics b) => [a] -> b -> [Bullet] -> [Bullet]
 bulletCollisions as p = filter (\b -> not (any (checkCollision b) as || checkCollision p b))

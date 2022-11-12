@@ -94,6 +94,6 @@ askFor s = do
   hFlush stdout
   getLine
 
-updateWall :: Maybe (VFunction Float Var ) -> Part -> EditorState -> EditorState
+updateWall :: Maybe (VFunction Float Var) -> Part -> EditorState -> EditorState
 updateWall (Just f) p g = g {iwalls = smap (setPart p f) $ iwalls g}
 updateWall Nothing _ g = g
