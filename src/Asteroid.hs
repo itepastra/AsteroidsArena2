@@ -97,3 +97,8 @@ flipField :: PhysicsObject -> Asteroid -> Asteroid
 flipField pp a
   | (position . getPhysObj) a |#| position pp <= Constants.asteroidDespawnRange2 = a
   | otherwise = updatePhysObj (\pa -> pa {position = position pp |-| (Constants.spawnDistance |*| normalize (position pa |-| position pp))}) a
+
+
+applyOnConstructor :: (Asteroid -> t) -> (Asteroid -> t) -> Asteroid -> t
+applyOnConstructor f1 f2 a@(Asteroid {}) = f1 a
+applyOnConstructor f1 f2 a@(SpaceMine {}) = f2 a

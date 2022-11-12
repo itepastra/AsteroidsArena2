@@ -1,6 +1,7 @@
 module Select where
 
 import Data.List (findIndex)
+import Data.Map (Map, fromList, toList)
 import Types1 (Selected (..), TimeStep)
 
 instance Functor Selected where

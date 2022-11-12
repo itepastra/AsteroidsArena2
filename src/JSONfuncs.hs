@@ -170,18 +170,18 @@ instance ToJSON Level where
       ]
 
 instance (ToJSON a, ToJSON b, Show b) => ToJSON (VFunction b a) where
-  toJSON (Constant v) = object ["type" .= ("c" :: String), "v" .= v]
-  toJSON (Variable x) = object ["type" .= ("var" :: String), "v" .= x]
-  toJSON (OneIn op f1) = object ["type" .= ("sfunc" :: String), "op" .= op, "f1" .= f1]
-  toJSON (TwoIn op f1 f2) = object ["type" .= ("dfunc" :: String), "op" .= op, "f1" .= f1, "f2" .= f2]
-  toJSON (ThreeIn op f1 f2 f3) = object ["type" .= ("dfunc" :: String), "op" .= op, "f1" .= f1, "f2" .= f2, "f3" .= f3]
+  toJSON (Constant v) = object ["_type" .= ("c" :: String), "v" .= v]
+  toJSON (Variable x) = object ["_type" .= ("var" :: String), "v" .= x]
+  toJSON (OneIn op f1) = object ["_type" .= ("sfunc" :: String), "_op" .= op, "f1" .= f1]
+  toJSON (TwoIn op f1 f2) = object ["_type" .= ("dfunc" :: String), "_op" .= op, "f1" .= f1, "f2" .= f2]
+  toJSON (ThreeIn op f1 f2 f3) = object ["_type" .= ("dfunc" :: String), "_op" .= op, "f1" .= f1, "f2" .= f2, "f3" .= f3]
 
 instance (FromJSON a, FromJSON b, Read b) => FromJSON (VFunction b a) where
   parseJSON = withObject "AFunction" $ \v ->
-    case A.lookup "type" v of
+    case A.lookup "_type" v of
       Nothing -> mzero
       Just "c" -> Constant <$> v .: "v"
       Just "var" -> Variable <$> v .: "v"
-      Just "sfunc" -> OneIn <$> v .: "op" <*> v .: "f1"
-      Just "dfunc" -> TwoIn <$> v .: "op" <*> v .: "f1" <*> v .: "f2"
+      Just "sfunc" -> OneIn <$> v .: "_op" <*> v .: "f1"
+      Just "dfunc" -> TwoIn <$> v .: "_op" <*> v .: "f1" <*> v .: "f2"
       _ -> mzero

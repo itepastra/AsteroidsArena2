@@ -8,7 +8,8 @@ module VFunctions where
 import Control.Applicative ((<|>))
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Fixed (mod')
-import Data.Map (Map, findWithDefault)
+import Data.Map (Map, findWithDefault, fromList)
+import GHC.Enum (boundedEnumFromThen)
 import GHC.Generics (Generic)
 import ParenthesesHelpers (beforeParens, betweenParens, firstParenSeg, lastParenSeg)
 import Safe (readMay)
@@ -44,6 +45,7 @@ data DOp where
 
 data TOp where
   TAddF :: TOp
+  ClampF :: TOp
   deriving (Eq, Generic, FromJSON, ToJSON, Bounded, Enum)
 
 data VFunction b a where
@@ -150,7 +152,7 @@ size (OneIn _ f1) = 1 + size f1
 size (TwoIn _ f1 f2) = 1 + size f1 + size f2
 size (ThreeIn _ f1 f2 f3) = 1 + size f1 + size f2 + size f3
 
-mkNumFunc :: (Ord a, Floating b) => VFunction b a -> Map a b -> b
+mkNumFunc :: (Ord a, Floating b, Ord b) => VFunction b a -> Map a b -> b
 mkNumFunc (Variable a) x = insertVar a x
 mkNumFunc (Constant a) x = a
 mkNumFunc (OneIn op f1) x = createOneIn op (mkNumFunc f1 x)
@@ -183,8 +185,9 @@ createTwoIn MulF = (*)
 createTwoIn SubF = (-)
 createTwoIn DivF = (/)
 
-createThreeIn :: Num a => TOp -> a -> a -> a -> a
+createThreeIn :: (Num a, Ord a) => TOp -> a -> a -> a -> a
 createThreeIn TAddF x y z = x + y + z
+createThreeIn ClampF x mi ma = min ma (max mi x)
 
 simplifyOne :: Floating b => SOp -> VFunction b a -> VFunction b a
 simplifyOne SID f1 = f1
@@ -231,6 +234,7 @@ simplifyTwo DivF f1 f2
 
 simplifyThree :: Num b => TOp -> VFunction b a -> VFunction b a -> VFunction b a -> VFunction b a
 simplifyThree TAddF f1 f2 f3 = f1 + f2 + f3
+simplifyThree ClampF f1 f2 f3 = ThreeIn ClampF f1 f2 f3
 
 instance (Show a, Show b) => Show (VFunction b a) where
   show (Constant v) = show v
@@ -296,7 +300,7 @@ parsePrefix str = case (beforeParens str, fromString =<< firstParenSeg str) of
   (Just "atan", Just fa) -> Just $ atan fa
   (Just "atanh", Just fa) -> Just $ atanh fa
   (Just "id", Just fa) -> Just $ OneIn SID fa
-  _ -> fmap Constant (readMay str)
+  _ -> Nothing
 
 parseInfix :: (Read a, Floating a, Read b) => String -> Maybe (VFunction a b)
 parseInfix s

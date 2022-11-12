@@ -1,6 +1,5 @@
 module Main where
 
-import Arbitrary ()
 import qualified Constants
 import Data.Set (delete, empty, insert)
 import EditorModel (EditorState (..), levelFromCreatorState)
@@ -53,9 +52,6 @@ inputCreator (EventKey (Char '\DC3') Down (Modifiers _ Down _) _) g = do
   encodeLevel "levels/" $ levelFromCreatorState g
   putStrLn ("saved level at: levels/" ++ name (levelFromCreatorState g))
   pure g
-inputCreator (EventKey (Char 'z') Down _ _) g = do
-  w <- generate arbitrary
-  pure g {iwalls = selectFirst (Selected 120 (tupleCollapse # w) : iwalls g)}
 inputCreator k s = ((pure .) . pureInput) k s
 
 tupleCollapse :: (VFunction Float Var, VFunction Float Var, VFunction Float Var) -> (VFunction Float Var, VFunction Float Var, VFunction Float Var)

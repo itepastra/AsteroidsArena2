@@ -81,7 +81,6 @@ executable editor
                      , VectorCalc
                      , Wall
                      , Pictured
-                     , Arbitrary
                      , NoPrereqs
                      , VFunctions
                      
