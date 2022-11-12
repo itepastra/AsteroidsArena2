@@ -21,9 +21,10 @@ import Sprites
     baseWall,
     selectedWall,
   )
-import TypeClasses (HasPhysics (getPhysObj), Pictured (..), V2Math (..))
+import TypeClasses (HasPhysics (getPhysObj), Pictured (..))
 import Types1 (ElapsedTime, OverlayText (..), PhysicsObject (position, velocity), Point (Point), Selected (..))
 import Wall (InitWall, Wall (sFunc), createWall, point, selfMove)
+import VectorCalc
 
 instance Pictured a => Pictured (Maybe a) where
   getPicture Nothing = blank

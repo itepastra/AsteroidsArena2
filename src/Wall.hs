@@ -10,13 +10,21 @@ import GHC.Generics (Generic)
 import GHC.Read (Read (readPrec))
 import Graphics.Gloss (translate)
 import qualified Graphics.Gloss as Gloss
-import Physics (PhysicsObject (..))
+import Types1
+    ( PhysicsObject(..),
+      Acceleration,
+      ElapsedTime,
+      InWall,
+      Normal,
+      Offset,
+      Point(Point),
+      Strength,
+      Var(X) )
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseWall)
-import TypeClasses (HasA (..), HasPhysics (..), Pictured (..), V2Math (..))
-import Types1 (Acceleration, ElapsedTime, InWall, Normal, Offset, Point (Point), Strength, Var (X))
+import TypeClasses (HasA (..), HasPhysics (..), Pictured (..))
 import VFunctions (VFunction, mkNumFunc)
-import VectorCalc ()
+import VectorCalc ( V2Math((|+|)), (|-|), (|.|), (|*|) )
 import PointHelpers (yUnit, zeroPoint)
 
 data Wall = Wall

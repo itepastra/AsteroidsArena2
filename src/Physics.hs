@@ -5,9 +5,9 @@
 
 module Physics (updatePhysObj, moveStep, accelStep, frictionStep, PhysicsObject (..), checkCollision) where
 
-import TypeClasses (HasPhysics (..), V2Math (..), HasA(..))
+import TypeClasses (HasPhysics (..), HasA(..))
 import Types1 (Acceleration, Collides, PhysicsObject (..), TimeStep)
-import VectorCalc ()
+import VectorCalc ( V2Math((|+|)), (|#|), (|*|) )
 
 instance HasPhysics a => HasA PhysicsObject a where
   getA = getPhysObj

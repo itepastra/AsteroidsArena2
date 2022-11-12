@@ -3,7 +3,7 @@ module Bullet where
 import Graphics.Gloss (translate)
 import Physics (PhysicsObject (..))
 import Sprites (baseBullet)
-import TypeClasses (HasPhysics (..), Pictured (..), V2Math (..))
+import TypeClasses (HasPhysics (..), Pictured (..))
 import Types1 (Lifetime, TimeStep)
 
 data Bullet = Bullet

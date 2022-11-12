@@ -14,8 +14,9 @@ import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseAsteroid, baseSpaceMine)
 import System.Random (Random (..), RandomGen, StdGen)
 import System.Random.Stateful (randomM)
-import TypeClasses (HasPhysics (..), Pictured (..), V2Math (..))
+import TypeClasses (HasPhysics (..), Pictured (..))
 import Types1 (ElapsedTime, IntervalTime, Point (Point), Size, TimeStep, UniformTime)
+import VectorCalc ( V2Math((|+|)), (|-|), (|#|), (|*|), normalize )
 
 data Asteroid
   = Asteroid

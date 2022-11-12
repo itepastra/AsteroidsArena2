@@ -1,13 +1,15 @@
 module Rotation (rot, Angle, Rotate (..)) where
 
-import TypeClasses (V2Math (..))
+import PointHelpers (zeroPoint)
 import Types1 (Angle)
+import Prelude hiding (negate)
+import VectorCalc ( V2Math(fromTuple, y, x, negate), toTuple )
 
 rot :: (V2Math a) => Angle -> a -> a
 rot 0 v = v
 rot 90 v = fromTuple (-y v, x v)
 rot (-90) v = fromTuple (y v, -x v)
-rot 180 v = TypeClasses.negate v
+rot 180 v = negate v
 rot r v = fromTuple (x * cs - y * sn, x * sn + y * cs)
   where
     (x, y) = toTuple v

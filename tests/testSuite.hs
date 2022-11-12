@@ -8,10 +8,10 @@ import Data.Foldable (maximumBy)
 import Data.Map (Map)
 import JSONfuncs ()
 import Test.QuickCheck (Arbitrary, Discard (..), Property, Testable (property), counterexample, quickCheck, withMaxSuccess, within, (===))
-import TypeClasses (V2Math (..))
 import Types1 (ElapsedTime, Point (Point), Var)
 import VFunctions (VFunction, fromString, mkNumFunc)
 import VFunctionHelpers (simplify)
+import VectorCalc ( V2Math((|+|)), (|.|) )
 
 -- Vector math tests
 
