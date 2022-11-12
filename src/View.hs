@@ -4,7 +4,7 @@ module View where
 
 import qualified Colors
 import qualified Constants
-import GeneralHelperFunctions (biFloat, scaleboth)
+import GeneralHelperFunctions (biFloat, scaleboth, translateP)
 import Graphics.Gloss (Picture (..), blank, blue, color, rectangleSolid, rotate, scale, translate)
 import Level (Level (..))
 import Model (GameState (..), gameStateFromLevel)
@@ -14,7 +14,6 @@ import Rotation (Rotate (getAngle))
 import Select (getSelectedIndex, getSingleSelected)
 import Sprites (selectedWall, starrySky)
 import System.Random (mkStdGen)
-import TypeClasses (HasPhysics (getPhysObj))
 import Types1
   ( ElapsedTime,
     Hud (..),
@@ -24,12 +23,13 @@ import Types1
   )
 import VectorCalc (V2Math (fromTuple, x, y), (|*|), (|-|), (|.|))
 import Wall (InitWall, Wall, createWall, point, selfMove)
+import TypeClasses (HasPhysics(getPhysObj))
 
 view :: GameState -> IO Picture
 view = pure . getPicture
 
 viewHud :: GameState -> Picture
-viewHud gs@(GameState {score = s, player = p, timeTillNextAsteroid = ttna}) = Pictures (zipWith formatl [400, 350, 300, 250] ["score: " ++ show s, "speed: " ++ show (sqrt (v |.| v)), "HP: " ++ show health])
+viewHud gs@(GameState {score = s, player = p, timeTillNextAsteroid = ttna}) = Pictures (zipWith formatl [400, 350, 300, 250] ["score: " ++ show s, "HP: " ++ show health])
   where
     formatl h = colorText . translate (20 - fromIntegral (fst Constants.pageSize) / 2) h . scaleboth 0.3 . Text
     v = velocity $ getPhysObj p
@@ -64,7 +64,7 @@ viewWalls :: GameState -> Picture
 viewWalls = getPicture . walls
 
 moveWorldToCenter :: PhysicsObject -> Picture -> Picture
-moveWorldToCenter (PhysObj {position = t}) = translate (-x t) (-y t)
+moveWorldToCenter = translateP . position
 
 dimmedScreen :: Picture
 dimmedScreen = color Colors.overlayColor $ uncurry rectangleSolid $ biFloat Constants.pageSize

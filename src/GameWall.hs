@@ -3,6 +3,7 @@
 
 module GameWall where
 
+import GeneralHelperFunctions (translateP)
 import Pictured (Pictured (..), rotWithRot, translate)
 import PointHelpers (yUnit)
 import Rotation (Angle, Rotate (..), rot)
@@ -33,9 +34,7 @@ instance Rotate Wall where
   getAngle = angle
 
 instance Pictured Wall where
-  getPicture w = translate (x p) (y p) $ rotWithRot w baseWall
-    where
-      p = point w
+  getPicture w = translateP (point w) $ rotWithRot w baseWall
 
 point :: Wall -> Point
 point w = (-offset w) |*| normal w

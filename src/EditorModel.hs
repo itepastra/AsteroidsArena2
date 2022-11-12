@@ -10,7 +10,7 @@ import Graphics.Gloss.Interface.IO.Game (Key, circleSolid, color, green)
 import Sprites (baseWall, selectedWall)
 import VectorCalc (V2Math(y), x)
 import Rotation
-import GeneralHelperFunctions (scaleboth)
+import GeneralHelperFunctions (scaleboth, translateP)
 
 data EditorState = CreatorState
   { elapsedTime :: ElapsedTime,
@@ -39,8 +39,8 @@ viewWallsSelect et = Pictures . map (viewSelectedWall et)
 
 viewSelectedWall :: ElapsedTime -> Selected InitWall -> Picture
 viewSelectedWall et iw = case iw of
-  NotSelected iw' -> translate (x (p iw')) (y (p iw')) $ rotWithRot iw' baseWall
-  Selected _ iw' -> translate (x (p iw')) (y (p iw')) $ rotWithRot iw' selectedWall
+  NotSelected iw' -> translateP (p iw')  $ rotWithRot iw' baseWall
+  Selected _ iw' -> translateP (p iw') $ rotWithRot iw' selectedWall
   where
     p i = point (w i)
     a i = getAngle (w i)

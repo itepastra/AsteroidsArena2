@@ -12,12 +12,12 @@ module Pictured
 where
 
 import qualified Colors
+import GeneralHelperFunctions (scaleboth, translateP)
 import Graphics.Gloss.Data.Picture (Picture (..), blank, color, rotate, scale, translate)
 import Rotation (Rotate, getAngle)
 import TypeClasses (HasPhysics, getPhysObj)
 import Types1 (OverlayText (..), Selected (..), position)
 import VectorCalc (x, y)
-import GeneralHelperFunctions (scaleboth)
 
 class Pictured a where
   getPicture :: a -> Picture
@@ -41,9 +41,7 @@ instance Pictured OverlayText where
   getPicture (ST s) = (colorText . translateI (-20 * length s) (-150) . scaleboth 0.5 . Text) s
 
 mvWithPhys :: HasPhysics a => a -> Picture -> Picture
-mvWithPhys o = translate (x p) (y p)
-  where
-    p = position $ getPhysObj o
+mvWithPhys = translateP . position . getPhysObj
 
 rotWithRot :: Rotate a => a -> Picture -> Picture
 rotWithRot o = rotate (getAngle o)
