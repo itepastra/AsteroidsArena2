@@ -17,10 +17,10 @@ input :: Event -> GameState -> IO GameState
 input (EventKey (SpecialKey KeyEsc) Down _ _) g@(MenuState {}) = die =<< getRandomString
 input (EventKey (SpecialKey KeyEsc) Down _ _) _ = menuState
 input e@(EventKey (SpecialKey KeyEnter) Down _ _) g@(MenuState {levels = lvls}) = do
-  print printable
+  print p
   pure $ pureInput e g
   where
-    printable = Just . iasteroidSpawnFunction . initConf . initState =<< getSingleSelected (levels g)
+    p = Just . iasteroidSpawnFunction . initConf . initState =<< getSingleSelected (levels g)
 input k s = ((pure .) . pureInput) k s
 
 pureInput :: Event -> GameState -> GameState
