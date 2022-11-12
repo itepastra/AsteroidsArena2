@@ -22,6 +22,7 @@ import System.Random.Stateful (randomM)
 import TypeClasses (HasPhysics (..))
 import Types1 (ElapsedTime, IntervalTime, Point (Point), Size, TimeStep, UniformTime)
 import VectorCalc (V2Math ((|+|)), normalize, (|#|), (|*|), (|-|))
+import GeneralHelperFunctions (scaleboth)
 
 data Asteroid
   = Asteroid
@@ -46,10 +47,10 @@ instance Rotate Asteroid where
   getAngle = rotateAngle
 
 instance Pictured Asteroid where
-  getPicture o@(SpaceMine {}) = mvRotPic o $ scale f f baseSpaceMine
+  getPicture o@(SpaceMine {}) = mvRotPic o $ scaleboth f baseSpaceMine
     where
       f = 2 ^ size o
-  getPicture o@(Asteroid {}) = mvRotPic o $ scale f f baseAsteroid
+  getPicture o@(Asteroid {}) = mvRotPic o $ scaleboth f baseAsteroid
     where
       f = 2 ^ size o
 

@@ -17,6 +17,7 @@ import Rotation (Rotate, getAngle)
 import TypeClasses (HasPhysics, getPhysObj)
 import Types1 (OverlayText (..), Selected (..), position)
 import VectorCalc (x, y)
+import GeneralHelperFunctions (scaleboth)
 
 class Pictured a where
   getPicture :: a -> Picture
@@ -37,7 +38,7 @@ instance (Pictured a) => Pictured (Selected a) where
 
 instance Pictured OverlayText where
   getPicture (OT s) = (colorText . translateI (-40 * length s) (-50) . Text) s
-  getPicture (ST s) = (colorText . translateI (-20 * length s) (-150) . scale 0.5 0.5 . Text) s
+  getPicture (ST s) = (colorText . translateI (-20 * length s) (-150) . scaleboth 0.5 . Text) s
 
 mvWithPhys :: HasPhysics a => a -> Picture -> Picture
 mvWithPhys o = translate (x p) (y p)

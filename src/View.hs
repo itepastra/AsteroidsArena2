@@ -4,15 +4,10 @@ module View where
 
 import qualified Colors
 import qualified Constants
+import GeneralHelperFunctions (biFloat, scaleboth)
 import Graphics.Gloss (Picture (..), blank, blue, color, rectangleSolid, rotate, scale, translate)
 import Level (Level (..))
 import Model (GameState (..), gameStateFromLevel)
-import Types1
-    ( PhysicsObject(..),
-      ElapsedTime,
-      Hud(..),
-      OverlayText(..),
-      Selected(..) )
 import Pictured (Pictured (getPicture), colorText)
 import Player (Player (hp))
 import Rotation (Rotate (getAngle))
@@ -20,9 +15,15 @@ import Select (getSelectedIndex, getSingleSelected)
 import Sprites (selectedWall, starrySky)
 import System.Random (mkStdGen)
 import TypeClasses (HasPhysics (getPhysObj))
+import Types1
+  ( ElapsedTime,
+    Hud (..),
+    OverlayText (..),
+    PhysicsObject (..),
+    Selected (..),
+  )
+import VectorCalc (V2Math (fromTuple, x, y), (|*|), (|-|), (|.|))
 import Wall (InitWall, Wall, createWall, point, selfMove)
-import VectorCalc ( V2Math(y, fromTuple, x), (|-|), (|.|), (|*|) )
-import GeneralHelperFunctions (biFloat)
 
 view :: GameState -> IO Picture
 view = pure . getPicture
@@ -30,7 +31,7 @@ view = pure . getPicture
 viewHud :: GameState -> Picture
 viewHud gs@(GameState {score = s, player = p, timeTillNextAsteroid = ttna}) = Pictures (zipWith formatl [400, 350, 300, 250] ["score: " ++ show s, "speed: " ++ show (sqrt (v |.| v)), "HP: " ++ show health])
   where
-    formatl h = colorText . translate (20 - fromIntegral (fst Constants.pageSize) / 2) h . Scale 0.3 0.3 . Text
+    formatl h = colorText . translate (20 - fromIntegral (fst Constants.pageSize) / 2) h . scaleboth 0.3 . Text
     v = velocity $ getPhysObj p
     health = hp p
 viewHud _ = blank
@@ -57,10 +58,10 @@ viewAsteroids :: GameState -> Picture
 viewAsteroids = getPicture . asteroids
 
 viewBullets :: GameState -> Picture
-viewBullets = getPicture  . bullets
+viewBullets = getPicture . bullets
 
 viewWalls :: GameState -> Picture
-viewWalls = getPicture  . walls
+viewWalls = getPicture . walls
 
 moveWorldToCenter :: PhysicsObject -> Picture -> Picture
 moveWorldToCenter (PhysObj {position = t}) = translate (-x t) (-y t)

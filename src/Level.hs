@@ -15,6 +15,7 @@ import Types1
     Var (..),
   )
 import VFunctions (VFunction, mkNumFunc)
+import GeneralHelperFunctions (scaleboth)
 
 data Level = Level
   { name :: String,
@@ -23,7 +24,7 @@ data Level = Level
   deriving (Show)
 
 instance Pictured Level where
-  getPicture l = scale 0.3 0.3 $ Text (name l)
+  getPicture l = scaleboth 0.3 $ Text (name l)
 
 data GameStateInit = GameStateInit
   { initWalls :: [InitWall],

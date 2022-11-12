@@ -127,6 +127,9 @@ instance Applicative (VFunction b) where
   (TwoIn op f1 f2) <*> f = TwoIn op (f1 <*> f) (f2 <*> f)
   (ThreeIn op f1 f2 f3) <*> f = ThreeIn op (f1 <*> f) (f2 <*> f) (f3 <*> f)
 
+
+-- (<*>) :: A (a -> b) -> A a -> a b
+
 instance Monad (VFunction b) where
   (Constant a) >>= f = Constant a
   (Variable x) >>= f = f x

@@ -10,6 +10,7 @@ import Graphics.Gloss.Interface.IO.Game (Key, circleSolid, color, green)
 import Sprites (baseWall, selectedWall)
 import VectorCalc (V2Math(y), x)
 import Rotation
+import GeneralHelperFunctions (scaleboth)
 
 data EditorState = CreatorState
   { elapsedTime :: ElapsedTime,
@@ -28,8 +29,8 @@ instance Pictured EditorState where
     Pictures
       [ viewWallsSelect (elapsedTime gs) (iwalls gs), -- display the walls
         color green $ circleSolid 20, -- display where the player is
-        translate (-800) 400 $ colorText $ scale 0.2 0.2 $ Text (intercalate "\n" $ map show $ getAllSelected $ iwalls gs), -- display the wall stats
-        translate (-800) (-430) $ colorText $ scale 0.2 0.2 $ Text (show (elapsedTime gs) ++ " @ " ++ show (timeMultiplier gs) )
+        translate (-800) 400 $ colorText $ scaleboth 0.2 $ Text (intercalate "\n" $ map show $ getAllSelected $ iwalls gs), -- display the wall stats
+        translate (-800) (-430) $ colorText $ scaleboth 0.2 $ Text (show (elapsedTime gs) ++ " @ " ++ show (timeMultiplier gs) )
       ]
 
 

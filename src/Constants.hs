@@ -1,4 +1,3 @@
-{-# LANGUAGE Safe #-}
 
 module Constants where
 

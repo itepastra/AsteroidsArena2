@@ -1,8 +1,7 @@
-{-# LANGUAGE Safe #-}
-
 module GeneralHelperFunctions where
 
 import Data.Bifunctor (Bifunctor (bimap))
+import Graphics.Gloss (Picture, scale)
 
 tZip3 :: (t1 -> a, t2 -> b, t3 -> c) -> (t1, t2, t3) -> (a, b, c)
 tZip3 (f1, f2, f3) (a, b, c) = (f1 a, f2 b, f3 c)
@@ -15,3 +14,6 @@ biFloat = biF fromIntegral
 
 biF :: Bifunctor p => (c -> d) -> p c c -> p d d
 biF f = bimap f f
+
+scaleboth :: Float -> Picture -> Picture
+scaleboth f = scale f f
