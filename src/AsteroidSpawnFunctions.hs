@@ -4,7 +4,7 @@ import Data.Map (fromList)
 import Types1 (ElapsedTime, IntervalTime, Time, TimeAvg, UniformTime, Var (..))
 import VFunctions (VFunction (Variable), mkNumFunc)
 
--- functions to go from a uniform variable to an different distribution
+-- functions to go from a uniform variable to a different distribution
 expRandom :: Floating a => VFunction a Var
 expRandom = (-(Variable Z)) * log (Variable X)
 
