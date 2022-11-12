@@ -12,10 +12,10 @@ import Level (GameStateInit (..), InitLevelConfig (..), Level (..), LevelConfig 
 import Model (GameState (GameState))
 import Player (Player (..))
 import qualified Player
-import TypeClasses (V2Math (..))
 import Types1 (PhysicsObject (..), Point (Point), Var (..))
 import VFunctions (DOp (..), SOp (..), VFunction (..))
 import Wall (InitWall (..), Wall (..))
+import VectorCalc ( V2Math(y, x) )
 
 instance FromJSON Point where
   parseJSON = withObject "Point" $ \v ->

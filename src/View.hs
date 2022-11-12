@@ -20,8 +20,9 @@ import Rotation (Rotate (getAngle))
 import Select (getSelectedIndex, getSingleSelected)
 import Sprites (selectedWall, starrySky)
 import System.Random (mkStdGen)
-import TypeClasses (HasPhysics (getPhysObj), Pictured (..), V2Math (..))
+import TypeClasses (HasPhysics (getPhysObj), Pictured (..))
 import Wall (InitWall, Wall, createWall, point, selfMove)
+import VectorCalc ( V2Math(y, fromTuple, x), (|-|), (|.|), (|*|) )
 
 view :: GameState -> IO Picture
 view = pure . getPicture

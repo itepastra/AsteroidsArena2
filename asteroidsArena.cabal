@@ -35,6 +35,7 @@ Test-Suite projectname-testsuite
                           , Wall
                           , NoPrereqs
                           , VFunctions
+                          , VFunctionHelpers
                           , Asteroid
                           , AsteroidSpawnFunctions
                           , Bullet
@@ -83,6 +84,7 @@ executable editor
                      , Pictured
                      , NoPrereqs
                      , VFunctions
+                     , VFunctionHelpers
                      
 executable aa2  
   ghc-options:         -threaded
@@ -130,4 +132,5 @@ executable aa2
                      , EditorModel
                      , NoPrereqs
                      , VFunctions
+                     , VFunctionHelpers
   default-language:    Haskell2010

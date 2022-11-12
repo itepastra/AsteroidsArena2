@@ -10,9 +10,10 @@ import qualified Graphics.Gloss as Gloss
 import Physics (PhysicsObject (..), checkCollision)
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseExhaust, basePlayer)
-import TypeClasses (HasPhysics (..), Pictured (..), V2Math (..))
+import TypeClasses (HasPhysics (..), Pictured (..))
 import Types1 (Acceleration, HealthPoints, LookDirection, Point (..))
 import PointHelpers (zeroPoint, yUnit)
+import VectorCalc
 
 data Player = Player
   { phys :: PhysicsObject,

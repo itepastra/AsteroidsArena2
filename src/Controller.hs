@@ -34,10 +34,11 @@ import Rotation (Angle, Rotate (rotate))
 import Select (getSingleSelected, sTime, selectFirst)
 import Stars (genStarPositions)
 import System.Random (Random (random, randomRs), RandomGen (split), StdGen, getStdGen, randomR)
-import TypeClasses (HasA (..), HasPhysics, V2Math (..))
+import TypeClasses (HasA (..), HasPhysics)
 import Types1 (Acceleration, ElapsedTime, Hud (..), IntervalTime, Point (Point), Score, Selected (..), Time, TimeStep)
 import Wall (Wall, selfMove, totalAcceleration)
 import Data.Maybe (mapMaybe)
+import VectorCalc ( V2Math((|+|)) )
 
 step :: Float -> GameState -> IO GameState
 step secs gstate@(MenuState {levels = []}) = do
