@@ -18,8 +18,8 @@ import Asteroid
 import Bullet (Bullet (lifeTime), updateLifetime)
 import qualified Constants
 import Data.Bifunctor (Bifunctor (second), bimap, first)
-import Data.List (sort)
-import Data.Maybe (mapMaybe)
+import Data.Foldable (foldr')
+import Data.List (sort, sortBy)
 import Data.Set (Set, empty, member)
 import Graphics.Gloss.Interface.IO.Game (Key (Char, SpecialKey), SpecialKey (KeySpace))
 import Level (Level, LevelConfig (asteroidSpawnFunction, spaceMineOddsFunction))
@@ -37,6 +37,7 @@ import System.Random (Random (random, randomRs), RandomGen (split), StdGen, getS
 import TypeClasses (HasA (..), HasPhysics, V2Math (..))
 import Types1 (Acceleration, ElapsedTime, Hud (..), IntervalTime, Point (Point), Score, Selected (..), Time, TimeStep)
 import Wall (Wall, selfMove, totalAcceleration)
+import Data.Maybe (mapMaybe)
 
 step :: Float -> GameState -> IO GameState
 step secs gstate@(MenuState {levels = []}) = do
@@ -122,9 +123,9 @@ bulletPlayerUpdateStage gstate = (dp, bulletCollisions as p bs)
     as = asteroids gstate
     h = hud gstate
 
-asteroidUpdateStage2 :: IntervalTime-> GameState -> (IntervalTime, [Asteroid], StdGen, Int)
+asteroidUpdateStage2 :: IntervalTime -> GameState -> (IntervalTime, [Asteroid], StdGen, Int)
 asteroidUpdateStage2 secs gstate =
-  (timetillnextasteroid, spawnedAsteroids ++ actualAsteroid, rng3, length ds)
+  (it, spawnedAsteroids ++ actualAsteroid, rng3, length ds)
   where
     lc = levelConfig gstate
     et = elapsedTime gstate
@@ -133,10 +134,9 @@ asteroidUpdateStage2 secs gstate =
     p = player gstate
     playerPhysics = getA p
     bs = bullets gstate
-    (as, ds) =asteroidCollisions bs p ( asteroids gstate)
+    (as, ds) = asteroidCollisions bs p (asteroids gstate)
     (rng2, actualAsteroid, it) = spawnNewAsteroid lc et secs timetillnextasteroid rng1 playerPhysics as
     (spawnedAsteroids, rng3) = childAsteroids rng2 ds
-
 
 hmm ((r, as, i), ds) = (\(a, (b, d)) -> (a, b, d, length ds)) (i, first (++ as) (childAsteroids r ds))
 
@@ -144,7 +144,7 @@ bulletCollisions :: (HasPhysics a, HasPhysics b) => [a] -> b -> [Bullet] -> [Bul
 bulletCollisions as p = filter (\b -> not (any (checkCollision b) as || checkCollision p b))
 
 asteroidCollisions :: (HasPhysics a, HasPhysics b) => [a] -> b -> [Asteroid] -> ([Asteroid], [Asteroid])
-asteroidCollisions bs p = foldr (\a (as, ds) -> if checkCollision p a then (as, ds) else (if any (checkCollision a) bs then (as, a : ds) else (a : as, ds))) ([], [])
+asteroidCollisions bs p = foldr' (\a (as, ds) -> if checkCollision p a then (as, ds) else (if any (checkCollision a) bs then (as, a : ds) else (a : as, ds))) ([], [])
 
 spawnNewAsteroid :: LevelConfig -> ElapsedTime -> IntervalTime -> Time -> StdGen -> PhysicsObject -> [Asteroid] -> (StdGen, [Asteroid], IntervalTime)
 spawnNewAsteroid lc et it t rng phy oas

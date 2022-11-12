@@ -10,7 +10,8 @@ import JSONfuncs ()
 import Test.QuickCheck (Arbitrary, Discard (..), Property, Testable (property), counterexample, quickCheck, withMaxSuccess, within, (===))
 import TypeClasses (V2Math (..))
 import Types1 (ElapsedTime, Point (Point), Var)
-import VFunctions (VFunction, fromString, mkNumFunc, simplify)
+import VFunctions (VFunction, fromString, mkNumFunc)
+import VFunctionHelpers (simplify)
 
 -- Vector math tests
 

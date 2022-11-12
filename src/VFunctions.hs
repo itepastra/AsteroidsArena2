@@ -5,7 +5,7 @@
 
 module VFunctions where
 
-import Control.Applicative ((<|>))
+import Control.Applicative (Applicative (..), (<|>))
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Fixed (mod')
 import Data.Map (Map, findWithDefault, fromList)
@@ -114,36 +114,36 @@ instance Traversable (VFunction b) where
   traverse f (TwoIn op f1 f2) = TwoIn op <$> traverse f f1 <*> traverse f f2
   traverse f (ThreeIn op f1 f2 f3) = ThreeIn op <$> traverse f f1 <*> traverse f f2 <*> traverse f f3
 
-instance Applicative (VFunction a) where
+instance Applicative (VFunction b) where
   pure = Variable
-  (<*>) = undefined
+  (Variable f1) <*> f = fmap f1 f
+  (Constant f1) <*> f = undefined
+  (OneIn op f1) <*> f = f1 <*> f
+  (TwoIn op f1 f2) <*> f = f1 <*> f
+  (ThreeIn op f1 f2 f3) <*> f = f1 <*> f
 
-insert :: (a -> VFunction b a) -> VFunction b a -> VFunction b a
-insert f (Constant a) = Constant a
-insert f (Variable x) = f x
-insert f (OneIn op f1) = OneIn op (insert f f1)
-insert f (TwoIn op f1 f2) = TwoIn op (insert f f1) (insert f f2)
-insert f (ThreeIn op f1 f2 f3) = ThreeIn op (insert f f1) (insert f f2) (insert f f3)
+instance Monad (VFunction b) where
+  (Constant a) >>= f = Constant a
+  (Variable x) >>= f = f x
+  (OneIn op f1) >>= f = OneIn op (f1 >>= f)
+  (TwoIn op f1 f2) >>= f = TwoIn op (f1 >>= f) (f2 >>= f)
+  (ThreeIn op f1 f2 f3) >>= f = ThreeIn op (f1 >>= f) (f2 >>= f) (f3 >>= f)
+
+-- insert :: (a -> VFunction b c) -> VFunction b a -> VFunction b c
+-- insert f (Constant a) = Constant a
+-- insert f (Variable x) = f x
+-- insert f (OneIn op f1) = OneIn op (insert f f1)
+-- insert f (TwoIn op f1 f2) = TwoIn op (insert f f1) (insert f f2)
+-- insert f (ThreeIn op f1 f2 f3) = ThreeIn op (insert f f1) (insert f f2) (insert f f3)
 
 insertAt :: Eq a => a -> VFunction b a -> VFunction b a -> VFunction b a
-insertAt v tf = insert (f v tf)
+insertAt v tf = (f v tf =<<)
   where
     f a f b
       | a == b = f
       | otherwise = Variable b
 
-simplify :: (Eq a, Eq b, Floating b) => VFunction b a -> VFunction b a
-simplify (OneIn op f1) = simplifyOne op (simplify f1)
-simplify (TwoIn op f1 f2) = simplifyTwo op (simplify f1) (simplify f2)
-simplify (ThreeIn op f1 f2 f3) = simplifyThree op (simplify f1) (simplify f2) (simplify f3)
-simplify a = a
 
-collapse :: (Eq a, Eq b, Floating b) => VFunction b a -> VFunction b a
-collapse f
-  | f' == f = f
-  | otherwise = collapse f'
-  where
-    f' = simplify f
 
 size :: VFunction b a -> Word
 size (Constant _) = 1

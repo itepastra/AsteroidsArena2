@@ -3,7 +3,7 @@ module DefaultLevels (defaultLevels) where
 import qualified Constants
 import Data.Fixed (mod')
 import Level (GameStateInit (..), InitLevelConfig (..), Level (..))
-import LevelHelperFunctions ( defaultLvlConfig, addRots, wallPoly )
+import LevelHelperFunctions ( defaultLvlConfig, addRotations, wallCreatePoly )
 import NoPrereqs (flipFlop)
 
 
@@ -23,8 +23,8 @@ defaultLevels =
         initState =
           GameStateInit
             { initWalls =
-                addRots (flipFlop (repeat 10)) $
-                  wallPoly 4 400 450,
+                addRotations (flipFlop (repeat 10)) $
+                  wallCreatePoly 4 400 450,
               initConf = defaultLvlConfig
             }
       },
@@ -33,7 +33,7 @@ defaultLevels =
         initState =
           GameStateInit
             { initWalls =
-                wallPoly 3 400 450,
+                wallCreatePoly 3 400 450,
               initConf = defaultLvlConfig
             }
       },
@@ -42,8 +42,8 @@ defaultLevels =
         initState =
           GameStateInit
             { initWalls =
-                addRots (flipFlop [1 ..]) $
-                  wallPoly 11 400 450,
+                addRotations (flipFlop [1 ..]) $
+                  wallCreatePoly 11 400 450,
               initConf = defaultLvlConfig
             }
       },
@@ -52,7 +52,7 @@ defaultLevels =
         initState =
           GameStateInit
             { initWalls =
-                wallPoly 2 400 450,
+                wallCreatePoly 2 400 450,
               initConf = defaultLvlConfig
             }
       }

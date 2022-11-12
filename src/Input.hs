@@ -5,16 +5,22 @@ import qualified Data.Maybe
 import Data.Set (delete, empty, insert)
 import ExitStrings (getRandomString)
 import Graphics.Gloss.Interface.IO.Game (Event (EventKey), Key (Char, SpecialKey), KeyState (Down, Up), SpecialKey (KeyEnter, KeyEsc, KeyTab))
+import Level (GameStateInit (initConf), InitLevelConfig (iasteroidSpawnFunction), Level (initState))
 import Model (GameState (..), gameStateFromLevel)
+import Player (newPlayer)
 import Select (getSingleSelected, selectNext, selectPrev)
 import System.Exit (die)
 import System.Random (getStdGen)
 import Types1 (Hud (..))
-import Player (newPlayer)
 
 input :: Event -> GameState -> IO GameState
 input (EventKey (SpecialKey KeyEsc) Down _ _) g@(MenuState {}) = die =<< getRandomString
 input (EventKey (SpecialKey KeyEsc) Down _ _) _ = menuState
+input e@(EventKey (SpecialKey KeyEnter) Down _ _) g@(MenuState {levels = lvls}) = do
+  print waa
+  pure $ pureInput e g
+  where
+    waa = Just . iasteroidSpawnFunction . initConf . initState =<< getSingleSelected (levels g)
 input k s = ((pure .) . pureInput) k s
 
 pureInput :: Event -> GameState -> GameState
@@ -57,3 +63,5 @@ retryState g =
       starPositions = starPositions $ previousState g,
       hud = Visible
     }
+
+hmm z y x = (0.0 - 3 * exp (log 0.99 * y)) * log x

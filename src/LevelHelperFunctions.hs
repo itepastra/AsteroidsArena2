@@ -1,47 +1,46 @@
 module LevelHelperFunctions where
 
-import AsteroidSpawnFunctions (expDecay, expRandom, pow)
+import AsteroidSpawnFunctions (expRandom, pow)
 import qualified Constants
 import Level (InitLevelConfig (..))
 import Types1 (Angle, Offset, Part (..), Strength, Var (..))
-import VFunctions (VFunction (..), collapse, insertAt)
 import Wall (InitWall (..))
+import VFunctionHelpers (addLinearTerm, collapse)
+import VFunctions (VFunction (..), insertAt)
 
-wallPoly :: Int -> Offset -> Strength -> [InitWall]
-wallPoly n o s = map (\x -> InitWall {irFunc = Constant (fromIntegral x * 360 / fromIntegral n), ioFunc = Constant o, isFunc = Constant s}) [1 .. n]
+wallCreatePoly :: Int -> Offset -> Strength -> [InitWall]
+wallCreatePoly n o s = map (\x -> InitWall {irFunc = Constant (fromIntegral x * 360 / fromIntegral n), ioFunc = Constant o, isFunc = Constant s}) [1 .. n]
 
-modPart :: Part -> (VFunction Float Var -> VFunction Float Var) -> InitWall -> InitWall
-modPart Str wf iw = iw {isFunc = collapse $ wf (isFunc iw)}
-modPart Rot wf iw = iw {irFunc = collapse $ wf (irFunc iw)}
-modPart Off wf iw = iw {ioFunc = collapse $ wf (ioFunc iw)}
+wallModPart :: Part -> (VFunction Float Var -> VFunction Float Var) -> InitWall -> InitWall
+wallModPart Str wf iw = iw {isFunc = collapse $ wf (isFunc iw)}
+wallModPart Rot wf iw = iw {irFunc = collapse $ wf (irFunc iw)}
+wallModPart Off wf iw = iw {ioFunc = collapse $ wf (ioFunc iw)}
 
-setPart :: Part -> VFunction Float Var -> InitWall -> InitWall
-setPart Str wf iw = iw {isFunc = wf}
-setPart Rot wf iw = iw {irFunc = wf}
-setPart Off wf iw = iw {ioFunc = wf}
+wallSetPart :: Part -> VFunction Float Var -> InitWall -> InitWall
+wallSetPart Str wf iw = iw {isFunc = wf}
+wallSetPart Rot wf iw = iw {irFunc = wf}
+wallSetPart Off wf iw = iw {ioFunc = wf}
 
-addLinearTerm :: (VFunction Float Var -> VFunction Float Var -> VFunction Float Var) -> Float -> VFunction Float Var -> VFunction Float Var
-addLinearTerm op x f = op f (Constant x * Variable X)
 
 wallPartMap :: Part -> [VFunction Float Var -> VFunction Float Var] -> [InitWall] -> [InitWall]
-wallPartMap = zipWith . modPart
+wallPartMap = zipWith . wallModPart
 
 wallPartSetMap :: Part -> [VFunction Float Var] -> [InitWall] -> [InitWall]
-wallPartSetMap = zipWith . setPart
+wallPartSetMap = zipWith . wallSetPart
 
-addRots :: [Angle] -> [InitWall] -> [InitWall]
-addRots as = wallPartMap Rot (map (addLinearTerm (+)) as)
+addRotations :: [Angle] -> [InitWall] -> [InitWall]
+addRotations as = wallPartMap Rot (map (addLinearTerm X) as)
 
-addStrengts :: [Strength] -> [InitWall] -> [InitWall]
-addStrengts ss = wallPartMap Str (map (addLinearTerm (+)) ss)
+addStrengths :: [Strength] -> [InitWall] -> [InitWall]
+addStrengths ss = wallPartMap Str (map (addLinearTerm X) ss)
 
 addOffsets :: [Offset] -> [InitWall] -> [InitWall]
-addOffsets os = wallPartMap Off (map (addLinearTerm (+)) os)
+addOffsets os = wallPartMap Off (map (addLinearTerm X) os)
 
 defaultLvlConfig :: InitLevelConfig
 defaultLvlConfig =
   InitLevelConfig
-    { iasteroidSpawnFunction = insertAt Z expDecay expRandom,
+    { iasteroidSpawnFunction = expRandom,
       ispaceMineOddsFunction = pow,
       iasteroidSpawnStart = Constants.asteroidSpawnAverageInterval
     }

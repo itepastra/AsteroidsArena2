@@ -7,7 +7,7 @@ import Graphics.Gloss (Display (InWindow), Picture (Pictures), rotate, translate
 import Graphics.Gloss.Interface.IO.Game (Event (..), KeyState (..), Modifiers (Modifiers), Picture, SpecialKey (..), black, playIO)
 import Graphics.Gloss.Interface.Pure.Game (Key (..))
 import Level (Level (name))
-import LevelHelperFunctions (defaultLvlConfig, modPart, setPart)
+import LevelHelperFunctions (defaultLvlConfig, wallModPart, wallSetPart)
 import LevelImport (encodeLevel)
 import Pictured ()
 import Rotation (Rotate (getAngle))
@@ -18,8 +18,9 @@ import System.IO (hFlush, stdout)
 import Test.QuickCheck (Arbitrary (arbitrary), generate)
 import TypeClasses (HasA ((#)), Pictured (..), V2Math (..))
 import Types1 (ElapsedTime, Part (..), Selected (NotSelected, Selected, time), Var)
-import VFunctions (VFunction (Constant), collapse, fromString)
+import VFunctions (VFunction (Constant), fromString)
 import Wall (InitWall (..), createWall, point, selfMove)
+import VFunctionHelpers (collapse)
 
 {-
 The code here is shitty I know, but it's also not direclty for the project and just a side so I dont really care
@@ -52,9 +53,9 @@ inputCreator (EventKey (Char '\DC3') Down (Modifiers _ Down _) _) g = do
   encodeLevel "levels/" $ levelFromCreatorState g
   putStrLn ("saved level at: levels/" ++ name (levelFromCreatorState g))
   pure g
-inputCreator k s = ((pure .) . pureInput) k s
+inputCreator k s = print k >> ((pure .) . pureInput) k s
 
-tupleCollapse :: (VFunction Float Var, VFunction Float Var, VFunction Float Var) -> (VFunction Float Var, VFunction Float Var, VFunction Float Var)
+tupleCollapse :: (Eq a, Eq b, Floating b) => (VFunction b a, VFunction b a, VFunction b a) -> (VFunction b a, VFunction b a, VFunction b a)
 tupleCollapse (a, b, c) = (collapse a, collapse b, collapse c)
 
 pureInput :: Event -> EditorState -> EditorState
@@ -62,10 +63,10 @@ pureInput :: Event -> EditorState -> EditorState
 pureInput (EventKey (Char 'e') Down _ _) g = g {iwalls = selectNext $ iwalls g}
 pureInput (EventKey (Char 'q') Down _ _) g = g {iwalls = selectPrev $ iwalls g}
 -- rotate and set offset
-pureInput (EventKey (Char 'a') Down _ _) g = g {iwalls = smap (modPart Rot (15 +)) $ iwalls g}
-pureInput (EventKey (Char 'd') Down _ _) g = g {iwalls = smap (modPart Rot ((-15) +)) $ iwalls g}
-pureInput (EventKey (Char 'w') Down _ _) g = g {iwalls = smap (modPart Off ((-15) +)) $ iwalls g}
-pureInput (EventKey (Char 's') Down _ _) g = g {iwalls = smap (modPart Off (15 +)) $ iwalls g}
+pureInput (EventKey (Char 'a') Down _ _) g = g {iwalls = smap (wallModPart Rot (15 +)) $ iwalls g}
+pureInput (EventKey (Char 'd') Down _ _) g = g {iwalls = smap (wallModPart Rot ((-15) +)) $ iwalls g}
+pureInput (EventKey (Char 'w') Down _ _) g = g {iwalls = smap (wallModPart Off ((-15) +)) $ iwalls g}
+pureInput (EventKey (Char 's') Down _ _) g = g {iwalls = smap (wallModPart Off (15 +)) $ iwalls g}
 -- create a new wall
 pureInput (EventKey (Char 'n') Down _ _) g = g {iwalls = selectFirst (Selected 120 newWall : iwalls g)}
 pureInput (EventKey (Char 'c') Down _ _) g = g {iwalls = selectFirst (head (iwalls g) : iwalls g)}
@@ -95,5 +96,5 @@ askFor s = do
   getLine
 
 updateWall :: Maybe (VFunction Float Var) -> Part -> EditorState -> EditorState
-updateWall (Just f) p g = g {iwalls = smap (setPart p f) $ iwalls g}
+updateWall (Just f) p g = g {iwalls = smap (wallSetPart p f) $ iwalls g}
 updateWall Nothing _ g = g
