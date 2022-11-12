@@ -47,7 +47,7 @@ type Strength = Float -- how strongly a wall pushes the player and bullets
 
 type InWall = Bool -- wether an object should get forces from the wall
 
-type Size = Int -- how large an asteroid is
+type Size = Word -- how large an asteroid is
 
 type Offset = Float -- how far from the origin a wall is
 
