@@ -7,6 +7,7 @@ module Pictured
     scale,
     translate,
     colorText,
+    translateI,
   )
 where
 
@@ -35,8 +36,8 @@ instance (Pictured a) => Pictured (Selected a) where
         Selected x _ -> Colors.rainbowGradientColor x
 
 instance Pictured OverlayText where
-  getPicture (OT s) = (color Colors.textColor . translate (fromIntegral (-40 * length s)) (-50) . Text) s
-  getPicture (ST s) = (color Colors.textColor . translate (fromIntegral (-20 * length s)) (-150) . scale 0.5 0.5 . Text) s
+  getPicture (OT s) = (colorText . translateI (-40 * length s) (-50) . Text) s
+  getPicture (ST s) = (colorText . translateI (-20 * length s) (-150) . scale 0.5 0.5 . Text) s
 
 mvWithPhys :: HasPhysics a => a -> Picture -> Picture
 mvWithPhys o = translate (x p) (y p)
@@ -51,3 +52,6 @@ mvRotPic o = mvWithPhys o . rotWithRot o
 
 colorText :: Picture -> Picture
 colorText = color Colors.textColor
+
+translateI :: (Integral a, Integral b) => a -> b -> Picture -> Picture
+translateI x y = translate (fromIntegral x) (fromIntegral y)

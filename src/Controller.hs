@@ -17,7 +17,6 @@ import Asteroid
   )
 import Bullet (Bullet (lifeTime), updateLifetime)
 import qualified Constants
-import Data.Bifunctor (Bifunctor (second), bimap, first)
 import Data.Foldable (foldr')
 import Data.List (sort, sortBy)
 import Data.Set (Set, empty, member)
@@ -39,6 +38,7 @@ import Types1 (Acceleration, ElapsedTime, Hud (..), IntervalTime, Point (Point),
 import Wall (Wall, selfMove, totalAcceleration)
 import Data.Maybe (mapMaybe)
 import VectorCalc ( V2Math((|+|)) )
+import Data.Bifunctor (Bifunctor(first))
 
 step :: Float -> GameState -> IO GameState
 step secs gstate@(MenuState {levels = []}) = do

@@ -33,7 +33,7 @@ Test-Suite projectname-testsuite
                      , TypeClasses
                      , VectorCalc
                      , Wall
-                     , NoPrereqs
+                     , GeneralHelperFunctions
                      , VFunctions
                      , VFunctionHelpers
                      , Asteroid
@@ -84,7 +84,7 @@ executable editor
                      , VectorCalc
                      , Wall
                      , Pictured
-                     , NoPrereqs
+                     , GeneralHelperFunctions
                      , VFunctions
                      , VFunctionHelpers
                      , GameWall
@@ -134,7 +134,7 @@ executable aa2
                      , View
                      , Wall
                      , EditorModel
-                     , NoPrereqs
+                     , GeneralHelperFunctions
                      , VFunctions
                      , VFunctionHelpers
                      , GameWall

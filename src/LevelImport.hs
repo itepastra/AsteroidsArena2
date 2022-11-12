@@ -7,7 +7,6 @@ import Level (Level (name))
 import System.Directory (createDirectory, createDirectoryIfMissing)
 import System.Directory.Tree (AnchoredDirTree (dirTree, (:/)), DirTree (File, file), flattenDir, readDirectoryWith)
 import Data.List (elemIndex)
-import Data.Bifunctor (Bifunctor(bimap))
 import Safe (readMay)
 
 fileLevels :: IO (AnchoredDirTree (Maybe Level))
