@@ -54,8 +54,5 @@ setStrength s w = w {strength = s}
 fromOAS :: (Offset, Angle, Strength) -> Wall -> Wall
 fromOAS (o, a, s) = setOffset o . setRotation a . setStrength s
 
-fromOASR :: (Offset, Angle, Strength, Angle) -> Wall -> Wall
-fromOASR (o, a, s, r) = fromOAS (o, a, s)
-
 selfMove :: ElapsedTime -> Wall -> Wall
 selfMove et w = fromOAS (oFunc w et, rFunc w et, sFunc w et) w
