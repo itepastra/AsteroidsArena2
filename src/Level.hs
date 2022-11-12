@@ -9,7 +9,7 @@ import Types1
     UniformTime,
     Var (..),
   )
-import VFunctions (VFunction, mkNumFunc)
+import VFunctions (VFunction,  mkNumFunc)
 import Wall (InitWall)
 
 data Level = Level

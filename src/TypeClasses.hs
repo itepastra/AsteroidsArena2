@@ -3,10 +3,8 @@
 
 module TypeClasses where
 
-import FISQ (fisqrt)
 import Graphics.Gloss (Picture)
 import Types1 (PhysicsObject)
-import Prelude hiding (negate)
 
 class Pictured a where
   getPicture :: a -> Picture

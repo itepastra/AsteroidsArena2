@@ -139,8 +139,6 @@ asteroidUpdateStage2 secs gstate =
     (rng2, actualAsteroid, it) = spawnNewAsteroid lc et secs timetillnextasteroid rng1 playerPhysics as
     (spawnedAsteroids, rng3) = childAsteroids rng2 ds
 
-hmm ((r, as, i), ds) = (\(a, (b, d)) -> (a, b, d, length ds)) (i, first (++ as) (childAsteroids r ds))
-
 bulletCollisions :: (HasPhysics a, HasPhysics b) => [a] -> b -> [Bullet] -> [Bullet]
 bulletCollisions as p = filter (\b -> not (any (checkCollision b) as || checkCollision p b))
 
