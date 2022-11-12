@@ -83,7 +83,7 @@ inGameTick secs gstate =
     gstat2 = positionUpdateStage secs gstate
     -- check player damage and the bullets that remain
     (newDamagedPlayer, trueNewBullets) = bulletPlayerUpdateStage gstat2
-    -- remove, and spawn new asteroids
+    -- remove old and spawn new asteroids
     (ttna, rrna, nnrand, sInc) = asteroidUpdateStage2 secs gstat2
     -- if the player is visible, update the score
     snew = case hud gstate of
@@ -138,7 +138,6 @@ asteroidUpdateStage2 secs gstate =
     (rng2, actualAsteroid, it) = spawnNewAsteroid lc et secs timetillnextasteroid rng1 playerPhysics as
     (spawnedAsteroids, rng3) = childAsteroids rng2 ds
 
-hmm ((r, as, i), ds) = (\(a, (b, d)) -> (a, b, d, length ds)) (i, first (++ as) (childAsteroids r ds))
 
 bulletCollisions :: (HasPhysics a, HasPhysics b) => [a] -> b -> [Bullet] -> [Bullet]
 bulletCollisions as p = filter (\b -> not (any (checkCollision b) as || checkCollision p b))
