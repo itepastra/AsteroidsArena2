@@ -84,7 +84,7 @@ inGameTick secs gstate =
     gstat2 = positionUpdateStage secs gstate
     -- check player damage and the bullets that remain
     (newDamagedPlayer, trueNewBullets) = bulletPlayerUpdateStage gstat2
-    -- remove, and spawn new asteroids
+    -- remove old and spawn new asteroids
     (ttna, rrna, nnrand, sInc) = asteroidUpdateStage2 secs gstat2
     -- if the player is visible, update the score
     snew = case hud gstate of

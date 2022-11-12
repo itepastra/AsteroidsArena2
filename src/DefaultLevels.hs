@@ -10,7 +10,7 @@ import NoPrereqs (flipFlop)
 defaultLevels :: [Level]
 defaultLevels =
   [ Level
-      { name = "1 - empty",
+      { name = "empty",
         initState =
           GameStateInit
             { initWalls =
@@ -19,7 +19,7 @@ defaultLevels =
             }
       },
     Level
-      { name = "2 - box",
+      { name = "weird box",
         initState =
           GameStateInit
             { initWalls =
@@ -29,7 +29,7 @@ defaultLevels =
             }
       },
     Level
-      { name = "3 - triangle",
+      { name = "triangle",
         initState =
           GameStateInit
             { initWalls =
@@ -38,7 +38,7 @@ defaultLevels =
             }
       },
     Level
-      { name = "4 - ManyGon",
+      { name = "manygon",
         initState =
           GameStateInit
             { initWalls =
@@ -48,7 +48,7 @@ defaultLevels =
             }
       },
     Level
-      { name = "5 - Twisty Line",
+      { name = "twisty line",
         initState =
           GameStateInit
             { initWalls =
