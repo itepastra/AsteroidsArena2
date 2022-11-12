@@ -15,7 +15,7 @@ import Sprites (baseAsteroid, baseSpaceMine)
 import System.Random (Random (..), RandomGen, StdGen)
 import System.Random.Stateful (randomM)
 import TypeClasses (HasPhysics (..), Pictured (..), V2Math (..))
-import Types1 (IntervalTime, Point (Point), Size, TimeStep, UniformTime)
+import Types1 (ElapsedTime, IntervalTime, Point (Point), Size, TimeStep, UniformTime)
 
 data Asteroid
   = Asteroid
@@ -39,8 +39,8 @@ instance Rotate Asteroid where
   rotate a asteroid = asteroid {rotateAngle = (rotateAngle asteroid + a) `mod'` 360}
   getAngle = rotateAngle
 
-genRandomAsteroid :: (UniformTime -> IntervalTime) -> StdGen -> PhysicsObject -> (StdGen, Asteroid, IntervalTime)
-genRandomAsteroid t g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAngle, timeTillNext)
+genRandomAsteroid :: (UniformTime -> IntervalTime) -> Float -> StdGen -> PhysicsObject -> (StdGen, Asteroid, IntervalTime)
+genRandomAsteroid t odds g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAngle, timeTillNext)
   where
     ((spawnAngle, moveAngle, size, uTime, moveSpeed, rSpeed, rAngle), g1) = randomR ((0, -25, 1, 0, 20, -15, 0), (360, 25, 3, 1, 80, 15, 360)) g0
     (atype, g) = randomR (0, 1) g1
@@ -49,7 +49,7 @@ genRandomAsteroid t g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAngle, 
     vel = (rot moveAngle . (moveSpeed |*|) . normalize) (position p |-| pos)
     rad = Constants.asteroidRadius * (2 ^ size)
     constr
-      | atype < Constants.spaceMineOdds = SpaceMine
+      | atype < odds = SpaceMine
       | otherwise = Asteroid
 
 getChildAsteroids :: RandomGen g => g -> Asteroid -> ([Asteroid] -> [Asteroid], g)

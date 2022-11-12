@@ -25,8 +25,9 @@ data GameStateInit = GameStateInit
   deriving (Show)
 
 data InitLevelConfig = InitLevelConfig
-  { iasteroidSpawnFunction :: VFunction Float Var,
-    iasteroidDecayFunction :: VFunction Float Var,
+  { -- iasteroidSpawnFunction should use Y for elapsed time and X for a random number [0,1), and Z for a starting interval multiplier (Z gets filled in on creation)
+    iasteroidSpawnFunction :: VFunction Float Var,
+    -- ispaceMineOddsFunction should use X for elapsed time and returns a number [0,1)
     ispaceMineOddsFunction :: VFunction Float Var,
     iasteroidSpawnStart :: Time
   }
@@ -34,17 +35,14 @@ data InitLevelConfig = InitLevelConfig
 
 data LevelConfig = LevelConfig
   { asteroidSpawnFunction :: ElapsedTime -> UniformTime -> IntervalTime,
-    spaceMineOddsFunction :: Float -> ElapsedTime -> Float
+    spaceMineOddsFunction :: ElapsedTime -> Float
   }
 
 initToReal :: InitLevelConfig -> LevelConfig
 initToReal ic = LevelConfig af sf
   where
-    af et ut = mkNumFunc a (fromList [(Z, iasteroidSpawnStart ic), (Y, et), (X, ut)])
-    sf f et = mkNumFunc (ispaceMineOddsFunction ic) (fromList [(Y, f), (X, et)])
-    a = insert b (iasteroidSpawnFunction ic)
-    b Z = iasteroidDecayFunction ic
-    b c = pure c
+    af et ut = mkNumFunc (iasteroidSpawnFunction ic) (fromList [(Z, iasteroidSpawnStart ic), (Y, et), (X, ut)])
+    sf et = mkNumFunc (ispaceMineOddsFunction ic) (fromList [(X, et)])
 
 instance Eq Level where
   l1 == l2 = name l1 == name l2

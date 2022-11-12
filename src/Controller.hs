@@ -22,7 +22,7 @@ import Data.List (sort)
 import Data.Maybe (mapMaybe)
 import Data.Set (Set, empty, member)
 import Graphics.Gloss.Interface.IO.Game (Key (Char, SpecialKey), SpecialKey (KeySpace))
-import Level (Level, LevelConfig (asteroidSpawnFunction))
+import Level (Level, LevelConfig (asteroidSpawnFunction, spaceMineOddsFunction))
 import LevelImport (cleanFileLevels)
 import Model (GameState (..), gameStateFromLevel)
 import Physics (PhysicsObject, accelStep, checkCollision, frictionStep, moveStep, updatePhysObj)
@@ -136,7 +136,7 @@ asteroidCollisions bs p = foldr (\a (as, ds) -> if checkCollision p a then (as, 
 
 spawnNewAsteroid :: LevelConfig -> ElapsedTime -> IntervalTime -> Time -> StdGen -> PhysicsObject -> [Asteroid] -> (StdGen, [Asteroid], IntervalTime)
 spawnNewAsteroid lc et it t rng phy oas
-  | t <= 0 = (\(a, b, c) -> (a, b : oas, c)) $ genRandomAsteroid (asteroidSpawnFunction lc et) rng phy
+  | t <= 0 = (\(a, b, c) -> (a, b : oas, c)) $ genRandomAsteroid (asteroidSpawnFunction lc et) (spaceMineOddsFunction lc et) rng phy
   | otherwise = (rng, oas, t - it)
 
 instance HasA Player GameState where

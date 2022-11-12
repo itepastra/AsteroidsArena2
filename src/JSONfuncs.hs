@@ -131,8 +131,6 @@ instance FromJSON InitLevelConfig where
       <$> v
       .: "asteroidSpawnFunction"
       <*> v
-      .: "asteroidDecayFunction"
-      <*> v
       .: "spaceMineOddsFunction"
       <*> v
       .: "asteroidSpawnStart"
@@ -141,7 +139,6 @@ instance ToJSON InitLevelConfig where
   toJSON w =
     object
       [ "asteroidSpawnFunction" .= iasteroidSpawnFunction w,
-        "asteroidDecayFunction" .= iasteroidDecayFunction w,
         "spaceMineOddsFunction" .= ispaceMineOddsFunction w,
         "asteroidSpawnStart" .= iasteroidSpawnStart w
       ]

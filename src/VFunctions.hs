@@ -14,7 +14,6 @@ import ParenthesesHelpers (beforeParens, betweenParens, firstParenSeg, lastParen
 import Safe (readMay)
 import Text.Read (readMaybe)
 
-
 data SOp where
   SID :: SOp
   AbsF :: SOp
@@ -124,6 +123,12 @@ insert f (OneIn op f1) = OneIn op (insert f f1)
 insert f (TwoIn op f1 f2) = TwoIn op (insert f f1) (insert f f2)
 insert f (ThreeIn op f1 f2 f3) = ThreeIn op (insert f f1) (insert f f2) (insert f f3)
 
+insertAt :: Eq a => a -> VFunction b a -> VFunction b a -> VFunction b a
+insertAt v tf = insert (f v tf)
+  where
+    f a f b
+      | a == b = f
+      | otherwise = Variable b
 
 simplify :: (Eq a, Eq b, Floating b) => VFunction b a -> VFunction b a
 simplify (OneIn op f1) = simplifyOne op (simplify f1)

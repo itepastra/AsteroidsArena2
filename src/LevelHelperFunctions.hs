@@ -3,8 +3,8 @@ module LevelHelperFunctions where
 import AsteroidSpawnFunctions (expDecay, expRandom, pow)
 import qualified Constants
 import Level (InitLevelConfig (..))
-import Types1 (Angle, Offset, Part (..), Strength, Var (X))
-import VFunctions (VFunction (..), collapse)
+import Types1 (Angle, Offset, Part (..), Strength, Var (..))
+import VFunctions (VFunction (..), collapse, insertAt)
 import Wall (InitWall (..))
 
 wallPoly :: Int -> Offset -> Strength -> [InitWall]
@@ -41,8 +41,7 @@ addOffsets os = wallPartMap Off (map (addLinearTerm (+)) os)
 defaultLvlConfig :: InitLevelConfig
 defaultLvlConfig =
   InitLevelConfig
-    { iasteroidSpawnFunction = expRandom,
-      iasteroidDecayFunction = expDecay,
+    { iasteroidSpawnFunction = insertAt Z expDecay expRandom,
       ispaceMineOddsFunction = pow,
       iasteroidSpawnStart = Constants.asteroidSpawnAverageInterval
     }
