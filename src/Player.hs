@@ -12,6 +12,7 @@ import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseExhaust, basePlayer)
 import TypeClasses (HasPhysics (..), Pictured (..), V2Math (..))
 import Types1 (Acceleration, HealthPoints, LookDirection, Point (..))
+import PointHelpers (zeroPoint, yUnit)
 
 data Player = Player
   { phys :: PhysicsObject,
@@ -58,4 +59,4 @@ playerDamage as bs p@(Player {}) = np
     ad a = 5 * 2 ^ size a
 
 newPlayer :: Player
-newPlayer = Player (PhysObj (Point 0 0) (Point 0 0) Constants.playerRadius) Constants.playerMaxHp (Point 0 1) 0
+newPlayer = Player (PhysObj zeroPoint zeroPoint Constants.playerRadius) Constants.playerMaxHp yUnit 0

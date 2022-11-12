@@ -36,6 +36,7 @@ import System.Random (Random (random, randomRs), RandomGen (split), StdGen, getS
 import TypeClasses (HasA (..), HasPhysics, V2Math (..))
 import Types1 (Acceleration, ElapsedTime, Hud (..), IntervalTime, Point (Point), Score, Selected (..), Time, TimeStep)
 import Wall (Wall, selfMove, totalAcceleration)
+import PointHelpers (zeroPoint)
 
 step :: Float -> GameState -> IO GameState
 step secs gstate@(MenuState {levels = []}) = do
@@ -104,7 +105,7 @@ positionUpdateStage secs gstate =
     acc :: Set Key -> Acceleration
     acc k
       | member (Char 'w') k = lookAccel playr
-      | otherwise = Point 0 0
+      | otherwise = zeroPoint
 
 bulletPlayerUpdateStage :: [Asteroid] -> [Bullet] -> Player -> Hud -> (Player, [Bullet])
 bulletPlayerUpdateStage as bs p h = (dp, bulletCollisions as p bs)

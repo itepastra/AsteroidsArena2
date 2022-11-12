@@ -9,6 +9,7 @@ import Physics
     frictionStep,
     updatePhysObj,
   )
+import PointHelpers (xUnit)
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseAsteroid, baseSpaceMine)
 import System.Random (Random (..), RandomGen, StdGen)
@@ -44,7 +45,7 @@ genRandomAsteroid t g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAngle, 
     ((spawnAngle, moveAngle, size, uTime, moveSpeed, rSpeed, rAngle), g1) = randomR ((0, -25, 1, 0, 20, -15, 0), (360, 25, 3, 1, 80, 15, 360)) g0
     (atype, g) = randomR (0, 1) g1
     timeTillNext = t uTime
-    pos = position p |+| (Constants.spawnDistance |*| rot spawnAngle (Point 1 0))
+    pos = position p |+| (Constants.spawnDistance |*| rot spawnAngle xUnit)
     vel = (rot moveAngle . (moveSpeed |*|) . normalize) (position p |-| pos)
     rad = Constants.asteroidRadius * (2 ^ size)
     constr
@@ -76,7 +77,7 @@ getChildAsteroids' (angle, speed, rSpeed) (Asteroid {size = s, phys = phy, rotat
         ( \a rs ->
             Asteroid
               { size = s - 1,
-                phys = phy {velocity = (speed |*| rot (angle + a) (Point 1 0)) |+| velocity phy, radius = radius phy / 2},
+                phys = phy {velocity = (speed |*| rot (angle + a) xUnit) |+| velocity phy, radius = radius phy / 2},
                 rotateSpeed = rs + rss,
                 rotateAngle = rs + ra
               }

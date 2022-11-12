@@ -27,6 +27,7 @@ Test-Suite projectname-testsuite
                           , Constants
                           , FISQ
                           , Physics
+                          , PointHelpers
                           , Rotation
                           , Sprites
                           , TypeClasses
@@ -34,6 +35,13 @@ Test-Suite projectname-testsuite
                           , Wall
                           , NoPrereqs
                           , VFunctions
+                          , Asteroid
+                          , AsteroidSpawnFunctions
+                          , Bullet
+                          , JSONfuncs
+                          , Level
+                          , Model
+                          , Player
 
 executable editor
   ghc-options:         -threaded
@@ -65,6 +73,7 @@ executable editor
                      , Model
                      , Physics
                      , Player
+                     , PointHelpers
                      , Rotation
                      , Select
                      , Sprites
@@ -107,6 +116,7 @@ executable aa2
                      , Model
                      , ParenthesesHelpers
                      , Physics
+                     , PointHelpers
                      , Pictured
                      , Player
                      , Rotation

@@ -17,6 +17,7 @@ import TypeClasses (HasA (..), HasPhysics (..), Pictured (..), V2Math (..))
 import Types1 (Acceleration, ElapsedTime, InWall, Normal, Offset, Point (Point), Strength, X (X))
 import VFunctions (VFunction, mkNumFunc)
 import VectorCalc ()
+import PointHelpers (yUnit, zeroPoint)
 
 data Wall = Wall
   { offset :: Offset,
@@ -52,7 +53,7 @@ point :: Wall -> Point
 point w = (-offset w) |*| normal w
 
 normal :: Wall -> Normal
-normal w = rot (angle w) (Point 0 1)
+normal w = rot (angle w) yUnit
 
 instance Rotate Wall where
   rotate a w = w {angle = angle w + a}
@@ -71,7 +72,7 @@ wallAcceleration o w
   | otherwise = Nothing
 
 totalAcceleration :: HasPhysics a => [Wall] -> a -> Acceleration
-totalAcceleration ws o = foldr (|+|) (Point 0 0) (mapMaybe (wallAcceleration o) ws)
+totalAcceleration ws o = foldr (|+|) zeroPoint (mapMaybe (wallAcceleration o) ws)
 
 setOffset :: Offset -> Wall -> Wall
 setOffset o w = w {offset = o}
