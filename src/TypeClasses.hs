@@ -6,9 +6,6 @@ module TypeClasses where
 import Graphics.Gloss (Picture)
 import Types1 (PhysicsObject)
 
-class Pictured a where
-  getPicture :: a -> Picture
-
 class HasPhysics a where
   getPhysObj :: a -> PhysicsObject
   setPhysObj :: PhysicsObject -> a -> a

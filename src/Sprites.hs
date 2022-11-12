@@ -2,7 +2,6 @@ module Sprites where
 
 import Colors (asteroidColor, asteroidLineColor, bulletColor, exhaustGradientColor, playerColor, rainbowGradientColor, spaceMineColor, starColor, wallColor, selectedWallColor)
 import qualified Constants
-import Data.Bifunctor (Bifunctor (bimap))
 import Data.Fixed (mod')
 import GHC.Float (float2Int)
 import Graphics.Gloss (color, green, makeColor)
@@ -10,6 +9,7 @@ import Graphics.Gloss.Data.Picture (Picture (..), arcSolid, circleSolid, lineLoo
 import System.Random (StdGen)
 import Types1 (Point (Point), Velocity)
 import VectorCalc ((|.|))
+import GeneralHelperFunctions (biFloat)
 
 basePlayer :: Picture
 basePlayer = Color playerColor $ Polygon [(0, 20), (20, -15), (0, 0), (-20, -15)]
@@ -43,7 +43,7 @@ selectedWall = Color selectedWallColor $ rectangleUpperSolid 10000 10000
 starrySky :: Float -> [Point] -> Picture
 starrySky f = translate (-xw / 2) (-yh / 2) . Pictures . map (\(Point a b) -> translate (a `mod'` xw) (b `mod'` yh) $ scale f f baseStar)
   where
-    (xw, yh) = bimap fromIntegral fromIntegral Constants.pageSize
+    (xw, yh) = biFloat Constants.pageSize
     sf a = -a / 2
 
 baseExhaust :: Velocity -> Picture

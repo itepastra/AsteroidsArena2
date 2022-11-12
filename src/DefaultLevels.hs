@@ -4,7 +4,7 @@ import qualified Constants
 import Data.Fixed (mod')
 import Level (GameStateInit (..), InitLevelConfig (..), Level (..))
 import LevelHelperFunctions ( defaultLvlConfig, addRotations, wallCreatePoly )
-import NoPrereqs (flipFlop)
+import GeneralHelperFunctions (flipFlop)
 
 
 defaultLevels :: [Level]

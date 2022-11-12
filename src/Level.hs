@@ -10,13 +10,17 @@ import Types1
     Var (..),
   )
 import VFunctions (VFunction,  mkNumFunc)
-import Wall (InitWall)
+import InitWall ( InitWall )
+import Pictured (Pictured (..), scale, Picture (Text))
 
 data Level = Level
   { name :: String,
     initState :: GameStateInit
   }
   deriving (Show)
+
+instance Pictured Level where
+  getPicture l = scale 0.3 0.3 $ Text (name l)
 
 data GameStateInit = GameStateInit
   { initWalls :: [InitWall],

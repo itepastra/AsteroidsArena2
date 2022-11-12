@@ -1,11 +1,15 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+
 module GameWall where
-import Types1 (Offset, Strength, ElapsedTime, Point, Normal)
-import Rotation ( Angle, rot, Rotate (..) )
+
+import Pictured (Pictured (..), rotWithRot, translate)
+import PointHelpers (yUnit)
+import Rotation (Angle, Rotate (..), rot)
+import Sprites (baseWall)
 import TypeClasses (HasA (..))
-import VectorCalc ( (|*|) )
-import PointHelpers ( yUnit )
+import Types1 (ElapsedTime, Normal, Offset, Point, Strength)
+import VectorCalc (V2Math (..), (|*|))
 
 data Wall = Wall
   { offset :: Offset,
@@ -15,6 +19,7 @@ data Wall = Wall
     oFunc :: ElapsedTime -> Offset,
     sFunc :: ElapsedTime -> Strength
   }
+
 instance HasA (ElapsedTime -> Angle, ElapsedTime -> Offset, ElapsedTime -> Strength) Wall where
   getA w = (rFunc w, oFunc w, sFunc w)
   setA (irf, iof, isf) iw = iw {rFunc = irf, oFunc = iof, sFunc = isf}
@@ -23,15 +28,20 @@ instance HasA (Angle, Offset, Strength) Wall where
   getA w = (angle w, offset w, strength w)
   setA (a, o, s) w = w {angle = a, offset = o, strength = s}
 
+instance Rotate Wall where
+  rotate a w = w {angle = angle w + a}
+  getAngle = angle
+
+instance Pictured Wall where
+  getPicture w = translate (x p) (y p) $ rotWithRot w baseWall
+    where
+      p = point w
+
 point :: Wall -> Point
 point w = (-offset w) |*| normal w
 
 normal :: Wall -> Normal
 normal w = rot (angle w) yUnit
-
-instance Rotate Wall where
-  rotate a w = w {angle = angle w + a}
-  getAngle = angle
 
 setOffset :: Offset -> Wall -> Wall
 setOffset o w = w {offset = o}
