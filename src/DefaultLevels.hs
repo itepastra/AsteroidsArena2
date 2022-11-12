@@ -1,10 +1,9 @@
 module DefaultLevels (defaultLevels) where
 
-import AsteroidSpawnFunctions (DecayFunctions (..), MapFunctions (..), RandomFunctions (..))
 import qualified Constants
 import Data.Fixed (mod')
 import Level (GameStateInit (..), InitLevelConfig (..), Level (..))
-import LevelHelperFunctions
+import LevelHelperFunctions ( defaultLvlConfig, addRots, wallPoly )
 import NoPrereqs (flipFlop)
 
 

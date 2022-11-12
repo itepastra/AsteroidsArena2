@@ -1,12 +1,15 @@
 module Level where
 
-import AsteroidSpawnFunctions (DecayFunctions, MapFunctions, RandomFunctions, getDecayFunc, getRandomFunc, getSpaceMineOddFunc)
+import AsteroidSpawnFunctions ()
+import Data.Map (fromList)
 import Types1
   ( ElapsedTime,
     IntervalTime,
     Time,
     UniformTime,
+    Var (..),
   )
+import VFunctions (VFunction, insert, mkNumFunc)
 import Wall (InitWall)
 
 data Level = Level
@@ -22,9 +25,9 @@ data GameStateInit = GameStateInit
   deriving (Show)
 
 data InitLevelConfig = InitLevelConfig
-  { iasteroidSpawnFunction :: RandomFunctions,
-    iasteroidDecayFunction :: DecayFunctions,
-    ispaceMineOddsFunction :: MapFunctions,
+  { iasteroidSpawnFunction :: VFunction Float Var,
+    iasteroidDecayFunction :: VFunction Float Var,
+    ispaceMineOddsFunction :: VFunction Float Var,
     iasteroidSpawnStart :: Time
   }
   deriving (Show)
@@ -35,7 +38,13 @@ data LevelConfig = LevelConfig
   }
 
 initToReal :: InitLevelConfig -> LevelConfig
-initToReal ic = LevelConfig (getRandomFunc (iasteroidSpawnFunction ic) . getDecayFunc (iasteroidDecayFunction ic) (iasteroidSpawnStart ic)) (getSpaceMineOddFunc (ispaceMineOddsFunction ic))
+initToReal ic = LevelConfig af sf
+  where
+    af et ut = mkNumFunc a (fromList [(Z, iasteroidSpawnStart ic), (Y, et), (X, ut)])
+    sf f et = mkNumFunc (ispaceMineOddsFunction ic) (fromList [(Y, f), (X, et)])
+    a = insert b (iasteroidSpawnFunction ic)
+    b Z = iasteroidDecayFunction ic
+    b c = pure c
 
 instance Eq Level where
   l1 == l2 = name l1 == name l2

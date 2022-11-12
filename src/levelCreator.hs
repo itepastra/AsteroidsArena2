@@ -17,9 +17,9 @@ import Sprites (baseWall, selectedWall)
 import System.Exit (exitSuccess)
 import System.IO (hFlush, stdout)
 import Test.QuickCheck (Arbitrary (arbitrary), generate)
-import TypeClasses ( HasA ((#)), Pictured (..), V2Math (..))
-import Types1 (ElapsedTime, Part (..), Selected (NotSelected, Selected, time), X)
-import VFunctions (VFunction (Constant), fromString, collapse)
+import TypeClasses (HasA ((#)), Pictured (..), V2Math (..))
+import Types1 (ElapsedTime, Part (..), Selected (NotSelected, Selected, time), Var)
+import VFunctions (VFunction (Constant), collapse, fromString)
 import Wall (InitWall (..), createWall, point, selfMove)
 
 {-
@@ -58,7 +58,7 @@ inputCreator (EventKey (Char 'z') Down _ _) g = do
   pure g {iwalls = selectFirst (Selected 120 (tupleCollapse # w) : iwalls g)}
 inputCreator k s = ((pure .) . pureInput) k s
 
-tupleCollapse :: (VFunction X Float, VFunction X Float, VFunction X Float) -> (VFunction X Float, VFunction X Float, VFunction X Float)
+tupleCollapse :: (VFunction Float Var, VFunction Float Var, VFunction Float Var) -> (VFunction Float Var, VFunction Float Var, VFunction Float Var)
 tupleCollapse (a, b, c) = (collapse a, collapse b, collapse c)
 
 pureInput :: Event -> EditorState -> EditorState
@@ -98,6 +98,6 @@ askFor s = do
   hFlush stdout
   getLine
 
-updateWall :: Maybe (VFunction X Float) -> Part -> EditorState -> EditorState
+updateWall :: Maybe (VFunction Float Var ) -> Part -> EditorState -> EditorState
 updateWall (Just f) p g = g {iwalls = smap (setPart p f) $ iwalls g}
 updateWall Nothing _ g = g

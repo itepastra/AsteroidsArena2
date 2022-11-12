@@ -67,7 +67,7 @@ data Part = Str | Rot | Off
 
 data OverlayText = OT String | ST String
 
-data X = X
+data Var = X | Y | Z | I | J | K
   deriving (Eq, Ord, Show, Read, ToJSON, FromJSON, Generic)
 
 data PhysicsObject = PhysObj
@@ -82,3 +82,6 @@ instance Eq Point where
 instance Bounded UniformTime where
   minBound = 0
   maxBound = 1
+
+instance Show Point where
+  show (Point x y) = "P " ++ show x ++ " " ++ show y

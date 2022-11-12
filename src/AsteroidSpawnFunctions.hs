@@ -1,70 +1,46 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric #-}
+module AsteroidSpawnFunctions where
 
-module AsteroidSpawnFunctions
-  ( getRandomFunc,
-    getDecayFunc,
-    getSpaceMineOddFunc,
-    RandomFunctions (..),
-    DecayFunctions (..),
-    MapFunctions (..),
-  )
-where
-
-import Data.Aeson (ToJSON)
-import Data.Aeson.Types (FromJSON)
-import GHC.Generics (Generic)
-import Types1 (ElapsedTime, IntervalTime, Time, TimeAvg, UniformTime)
+import Data.Map (fromList)
+import Types1 (ElapsedTime, IntervalTime, Time, TimeAvg, UniformTime, Var (..))
+import VFunctions (VFunction (Variable), mkNumFunc)
 
 -- functions to go from a uniform variable to an different distribution
+expRandom :: Floating a => VFunction a Var
+expRandom = (-(Variable Z)) * log (Variable X)
 
-expRandom :: TimeAvg -> UniformTime -> IntervalTime
-expRandom t uTime = (-t) * log uTime
-
-uniRandom :: TimeAvg -> UniformTime -> IntervalTime
-uniRandom = (*) . (2 *)
+uniRandom :: Floating a => VFunction a Var
+uniRandom = (Variable Z * 2) * Variable X
 
 -- functions that take a starting value and the total elapsed time to generate a mean time between asteroids
 
-expDecay :: IntervalTime -> ElapsedTime -> TimeAvg
-expDecay i et = i * (0.99 ** et)
+expDecay :: Floating b => VFunction b Var
+expDecay = Variable Z * (0.99 ** Variable Y)
 
-divDecay :: IntervalTime -> ElapsedTime -> TimeAvg
-divDecay i = (i /) . (1 +)
+divDecay :: Fractional b => VFunction b Var
+divDecay = Variable Z / (1 + Variable Y)
 
 -- functions that map an elapsed time to a range between 0 and 1
--- //TODO remake these as Afunctions
-eSigmoid :: Float -> ElapsedTime -> Float -- Practically an AFunction 
-eSigmoid b e = recip (1 + b ** e)
 
-lSigmoid :: Float -> ElapsedTime -> Float
-lSigmoid b e = recip (1 + b * e)
+eSigmoid :: Floating a => VFunction a Var
+eSigmoid = recip (1 + Variable X ** Variable Y)
 
-pow :: Float -> ElapsedTime -> Float
-pow b e = 1 - (b ** (-e))
+lSigmoid :: Floating a => VFunction a Var
+lSigmoid = recip (1 + Variable X * Variable Y)
 
-sin2 :: Float -> ElapsedTime -> Float
-sin2 f e = sin (f * e) ^ 2
+pow :: Floating a => VFunction a Var
+pow = 1 - Variable X ** (-Variable Y)
 
-data RandomFunctions = ExpRandom | UniRandom
-  deriving (Generic, ToJSON, FromJSON, Show)
+sin2 :: Floating a => VFunction a Var
+sin2 = sin (Variable X * Variable Y) ^ 2
 
-data DecayFunctions = ExpDecay | DivDecay
-  deriving (Generic, ToJSON, FromJSON, Show)
+-- eSigmoid :: Float -> ElapsedTime -> Float -- Practically an AFunction
+-- eSigmoid b e = recip (1 + b ** e)
 
-data MapFunctions = ESigmoid | LSigmoid | Pow | Sin2
-  deriving (Generic, ToJSON, FromJSON, Show)
+-- lSigmoid :: Float -> ElapsedTime -> Float
+-- lSigmoid b e = recip (1 + b * e)
 
-getRandomFunc :: RandomFunctions -> (TimeAvg -> UniformTime -> IntervalTime)
-getRandomFunc ExpRandom = expRandom
-getRandomFunc UniRandom = uniRandom
+-- pow :: Float -> ElapsedTime -> Float
+-- pow b e = 1 - b ** (-e)
 
-getDecayFunc :: DecayFunctions -> (Time -> UniformTime -> TimeAvg)
-getDecayFunc ExpDecay = expDecay
-getDecayFunc DivDecay = divDecay
-
-getSpaceMineOddFunc :: MapFunctions -> (Float -> ElapsedTime -> Float)
-getSpaceMineOddFunc ESigmoid = eSigmoid
-getSpaceMineOddFunc LSigmoid = lSigmoid
-getSpaceMineOddFunc Pow = pow
-getSpaceMineOddFunc Sin2 = sin2
+-- sin2 :: Float -> ElapsedTime -> Float
+-- sin2 f e = sin (f * e) ^ 2

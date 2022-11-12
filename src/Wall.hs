@@ -14,7 +14,7 @@ import Physics (PhysicsObject (..))
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseWall)
 import TypeClasses (HasA (..), HasPhysics (..), Pictured (..), V2Math (..))
-import Types1 (Acceleration, ElapsedTime, InWall, Normal, Offset, Point (Point), Strength, X (X))
+import Types1 (Acceleration, ElapsedTime, InWall, Normal, Offset, Point (Point), Strength, Var (X))
 import VFunctions (VFunction, mkNumFunc)
 import VectorCalc ()
 import PointHelpers (yUnit, zeroPoint)
@@ -29,15 +29,15 @@ data Wall = Wall
   }
 
 data InitWall = InitWall
-  { irFunc :: VFunction X Float,
-    ioFunc :: VFunction X Float,
-    isFunc :: VFunction X Float
+  { irFunc :: VFunction Float Var,
+    ioFunc :: VFunction Float Var,
+    isFunc :: VFunction Float Var
   }
 
 instance Show InitWall where
   show w = "Rotation: " ++ show (irFunc w) ++ " Offset: " ++ show (ioFunc w) ++ " Strength: " ++ show (isFunc w) ++ "\n"
 
-instance HasA (VFunction X Float, VFunction X Float, VFunction X Float) InitWall where
+instance HasA (VFunction Float Var, VFunction Float Var, VFunction Float Var) InitWall where
   getA w = (irFunc w, ioFunc w, isFunc w)
   setA (irf, iof, isf) iw = iw {irFunc = irf, ioFunc = iof, isFunc = isf}
 

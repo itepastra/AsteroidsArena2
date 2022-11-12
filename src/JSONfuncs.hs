@@ -3,7 +3,6 @@
 module JSONfuncs where
 
 import Asteroid (Asteroid (..))
-import AsteroidSpawnFunctions (RandomFunctions (..))
 import Bullet (Bullet (..))
 import Control.Applicative ((<|>))
 import Control.Monad (MonadPlus (mzero))
@@ -14,7 +13,7 @@ import Model (GameState (GameState))
 import Player (Player (..))
 import qualified Player
 import TypeClasses (V2Math (..))
-import Types1 (PhysicsObject (..), Point (Point), X (..))
+import Types1 (PhysicsObject (..), Point (Point), Var (..))
 import VFunctions (DOp (..), SOp (..), VFunction (..))
 import Wall (InitWall (..), Wall (..))
 

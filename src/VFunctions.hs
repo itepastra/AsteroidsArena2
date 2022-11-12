@@ -14,8 +14,6 @@ import ParenthesesHelpers (beforeParens, betweenParens, firstParenSeg, lastParen
 import Safe (readMay)
 import Text.Read (readMaybe)
 
-data Var = X | Y | Z | I | J | K
-  deriving (Eq, Bounded, Enum)
 
 data SOp where
   SID :: SOp
@@ -50,13 +48,13 @@ data TOp where
   deriving (Eq, Generic, FromJSON, ToJSON, Bounded, Enum)
 
 data VFunction b a where
-  Variable :: b -> VFunction b a
-  Constant :: a -> VFunction b a
+  Variable :: a -> VFunction b a
+  Constant :: b -> VFunction b a
   OneIn :: SOp -> VFunction b a -> VFunction b a
   TwoIn :: DOp -> VFunction b a -> VFunction b a -> VFunction b a
   ThreeIn :: TOp -> VFunction b a -> VFunction b a -> VFunction b a -> VFunction b a
 
-instance Num a => Num (VFunction b a) where
+instance Num b => Num (VFunction b a) where
   (+) = TwoIn AddF
   (*) = TwoIn MulF
   abs = OneIn AbsF
@@ -64,11 +62,11 @@ instance Num a => Num (VFunction b a) where
   fromInteger = Constant . fromInteger
   (-) = TwoIn SubF
 
-instance Fractional a => Fractional (VFunction b a) where
+instance Fractional b => Fractional (VFunction b a) where
   fromRational = Constant . fromRational
   (/) = TwoIn DivF
 
-instance Floating a => Floating (VFunction b a) where
+instance Floating b => Floating (VFunction b a) where
   pi = Constant pi
   exp = OneIn ExpF
   log = OneIn LogF
@@ -84,8 +82,8 @@ instance Floating a => Floating (VFunction b a) where
   atanh = OneIn ATanhF
 
 instance Functor (VFunction b) where
-  fmap f (Constant a) = Constant (f a)
-  fmap f (Variable x) = Variable x
+  fmap f (Constant a) = Constant a
+  fmap f (Variable x) = Variable (f x)
   fmap f (OneIn op f1) = OneIn op (fmap f f1)
   fmap f (TwoIn op f1 f2) = TwoIn op (fmap f f1) (fmap f f2)
   fmap f (ThreeIn op f1 f2 f3) = ThreeIn op (fmap f f1) (fmap f f2) (fmap f f3)
@@ -102,26 +100,38 @@ instance (Ord a, Ord b) => Ord (VFunction b a) where
   compare f1 f2 = compare (size f1) (size f2)
 
 instance Foldable (VFunction b) where
-  foldMap f (Variable _) = mempty
-  foldMap f (Constant a) = f a
+  foldMap f (Variable a) = f a
+  foldMap f (Constant a) = mempty
   foldMap f (OneIn _ f1) = foldMap f f1
   foldMap f (TwoIn _ f1 f2) = foldMap f f1 <> foldMap f f2
   foldMap f (ThreeIn _ f1 f2 f3) = foldMap f f1 <> foldMap f f2 <> foldMap f f3
 
 instance Traversable (VFunction b) where
-  traverse _ (Variable a) = pure (Variable a)
-  traverse f (Constant a) = Constant <$> f a
+  traverse _ (Constant a) = pure (Constant a)
+  traverse f (Variable a) = Variable <$> f a
   traverse f (OneIn op f1) = OneIn op <$> traverse f f1
   traverse f (TwoIn op f1 f2) = TwoIn op <$> traverse f f1 <*> traverse f f2
   traverse f (ThreeIn op f1 f2 f3) = ThreeIn op <$> traverse f f1 <*> traverse f f2 <*> traverse f f3
 
-simplify :: (Floating a, Eq a, Eq b) => VFunction b a -> VFunction b a
+instance Applicative (VFunction a) where
+  pure = Variable
+  (<*>) = undefined
+
+insert :: (a -> VFunction b a) -> VFunction b a -> VFunction b a
+insert f (Constant a) = Constant a
+insert f (Variable x) = f x
+insert f (OneIn op f1) = OneIn op (insert f f1)
+insert f (TwoIn op f1 f2) = TwoIn op (insert f f1) (insert f f2)
+insert f (ThreeIn op f1 f2 f3) = ThreeIn op (insert f f1) (insert f f2) (insert f f3)
+
+
+simplify :: (Eq a, Eq b, Floating b) => VFunction b a -> VFunction b a
 simplify (OneIn op f1) = simplifyOne op (simplify f1)
 simplify (TwoIn op f1 f2) = simplifyTwo op (simplify f1) (simplify f2)
 simplify (ThreeIn op f1 f2 f3) = simplifyThree op (simplify f1) (simplify f2) (simplify f3)
 simplify a = a
 
-collapse :: (Floating a, Eq a, Eq b) => VFunction b a -> VFunction b a
+collapse :: (Eq a, Eq b, Floating b) => VFunction b a -> VFunction b a
 collapse f
   | f' == f = f
   | otherwise = collapse f'
@@ -135,7 +145,7 @@ size (OneIn _ f1) = 1 + size f1
 size (TwoIn _ f1 f2) = 1 + size f1 + size f2
 size (ThreeIn _ f1 f2 f3) = 1 + size f1 + size f2 + size f3
 
-mkNumFunc :: (Floating a, Ord b) => VFunction b a -> Map b a -> a
+mkNumFunc :: (Ord a, Floating b) => VFunction b a -> Map a b -> b
 mkNumFunc (Variable a) x = insertVar a x
 mkNumFunc (Constant a) x = a
 mkNumFunc (OneIn op f1) x = createOneIn op (mkNumFunc f1 x)
@@ -171,7 +181,7 @@ createTwoIn DivF = (/)
 createThreeIn :: Num a => TOp -> a -> a -> a -> a
 createThreeIn TAddF x y z = x + y + z
 
-simplifyOne :: Floating a => SOp -> VFunction b a -> VFunction b a
+simplifyOne :: Floating b => SOp -> VFunction b a -> VFunction b a
 simplifyOne SID f1 = f1
 simplifyOne AbsF (OneIn AbsF f1) = abs f1
 simplifyOne AbsF f1 = abs f1
@@ -192,7 +202,7 @@ simplifyOne ASinhF f1 = asinh f1
 simplifyOne ACoshF f1 = acosh f1
 simplifyOne ATanhF f1 = atanh f1
 
-simplifyTwo :: (Fractional a, Eq a, Eq b) => DOp -> VFunction b a -> VFunction b a -> VFunction b a
+simplifyTwo :: (Fractional b, Eq a, Eq b) => DOp -> VFunction b a -> VFunction b a -> VFunction b a
 simplifyTwo AddF (Constant a) (Constant b) = Constant (a + b)
 simplifyTwo MulF (Constant a) (Constant b) = Constant (a * b)
 simplifyTwo AddF f1 f2
@@ -214,7 +224,7 @@ simplifyTwo DivF f1 f2
   | f2 == -1 = negate f1
   | otherwise = f1 / f2
 
-simplifyThree :: Num a => TOp -> VFunction b a -> VFunction b a -> VFunction b a -> VFunction b a
+simplifyThree :: Num b => TOp -> VFunction b a -> VFunction b a -> VFunction b a -> VFunction b a
 simplifyThree TAddF f1 f2 f3 = f1 + f2 + f3
 
 instance (Show a, Show b) => Show (VFunction b a) where
@@ -253,7 +263,7 @@ toStringSingle op s = show op ++ "(" ++ s ++ ")"
 toStringDouble :: DOp -> String -> String -> String
 toStringDouble op s1 s2 = "(" ++ s1 ++ ")" ++ show op ++ "(" ++ s2 ++ ")"
 
-fromString :: (Read a, RealFrac a, Floating a, Read b) => String -> Maybe (VFunction b a)
+fromString :: (Read a, Floating a, Read b) => String -> Maybe (VFunction a b)
 fromString s = parseInfix s <|> parsePrefix s <|> parseVar s
 
 parseVar :: (Read b, Read a) => String -> Maybe (VFunction b a)
@@ -264,7 +274,7 @@ parseVar s = case readMay s of
   Nothing -> Nothing
   Just any -> Just $ Constant any
 
-parsePrefix :: (Floating a, Read a, RealFrac a, Read b) => String -> Maybe (VFunction b a)
+parsePrefix :: (Read a, Read b, Floating a) => String -> Maybe (VFunction a b)
 parsePrefix str = case (beforeParens str, fromString =<< firstParenSeg str) of
   (Just "abs", Just fa) -> Just $ abs fa
   (Just "signum", Just fa) -> Just $ signum fa
@@ -283,7 +293,7 @@ parsePrefix str = case (beforeParens str, fromString =<< firstParenSeg str) of
   (Just "id", Just fa) -> Just $ OneIn SID fa
   _ -> fmap Constant (readMay str)
 
-parseInfix :: (Read a, RealFrac a, Floating a, Read b) => String -> Maybe (VFunction b a)
+parseInfix :: (Read a, Floating a, Read b) => String -> Maybe (VFunction a b)
 parseInfix s
   | any (\p -> p == '*' || p == '+' || p == '-' || p == '^' || p == '/') s =
       case (betweenParens s, fromString =<< firstParenSeg s, fromString =<< lastParenSeg s) of

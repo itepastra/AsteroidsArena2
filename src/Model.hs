@@ -6,7 +6,6 @@
 module Model where
 
 import Asteroid (Asteroid (Asteroid))
-import AsteroidSpawnFunctions (DecayFunctions (..), MapFunctions (Pow), RandomFunctions (..), getDecayFunc, getRandomFunc, getSpaceMineOddFunc)
 import Bullet (Bullet)
 import Constants (asteroidRadius, asteroidSpawnAverageInterval, playerMaxHp, playerRadius)
 import Data.Set (Set, empty)
