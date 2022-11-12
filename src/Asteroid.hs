@@ -21,8 +21,8 @@ import System.Random (Random (..), RandomGen, StdGen)
 import System.Random.Stateful (randomM)
 import TypeClasses (HasPhysics (..))
 import Types1 (ElapsedTime, IntervalTime, Size, TimeStep, UniformTime)
-import VectorCalc ( normalize, (|#|), (|*|), (|-|), (|+|) ) 
 import GeneralHelperFunctions (scaleboth)
+import VectorCalc ((|*|), normalize, (|#|))
 
 data Asteroid
   = Asteroid
@@ -81,8 +81,8 @@ genRandomAsteroid t odds g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAn
     ((spawnAngle, moveAngle, size, uTime, moveSpeed, rSpeed, rAngle), g1) = randomR ((0, -25, 1, 0, 20, -15, 0), (360, 25, 3, 1, 80, 15, 360)) g0
     (atype, g) = randomR (0, 1) g1
     timeTillNext = t uTime
-    pos = position p |+| (Constants.spawnDistance |*| rot spawnAngle xUnit)
-    vel = (rot moveAngle . (moveSpeed |*|) . normalize) (position p |-| pos)
+    pos = position p + (Constants.spawnDistance |*| rot spawnAngle xUnit)
+    vel = (rot moveAngle . (moveSpeed |*|) . normalize) (position p - pos)
     rad = Constants.asteroidRadius * (2 ^ size)
     constr
       | atype < odds = SpaceMine
@@ -114,7 +114,7 @@ getChildAsteroids' (angle, speed, rSpeed) (Asteroid {size = s, phys = phy, rotat
         ( \a rs ->
             Asteroid
               { size = s - 1,
-                phys = phy {velocity = (speed |*| rot (angle + a) xUnit) |+| velocity phy, radius = radius phy / 2},
+                phys = phy {velocity = (speed |*| rot (angle + a) xUnit) + velocity phy, radius = radius phy / 2},
                 rotateSpeed = rs + rss,
                 rotateAngle = rs + ra
               }
@@ -124,7 +124,7 @@ getChildAsteroids' (angle, speed, rSpeed) (Asteroid {size = s, phys = phy, rotat
 
 track :: PhysicsObject -> TimeStep -> Asteroid -> Asteroid
 track p secs a@(Asteroid {}) = a
-track p secs a@(SpaceMine {}) = frictionStep Constants.asteroidFrictionExponent secs . accelStep secs (((300 ^ 2) / (pp |#| pa)) |*| (pp |-| pa)) $ a
+track p secs a@(SpaceMine {}) = frictionStep Constants.asteroidFrictionExponent secs . accelStep secs (((300 ^ 2) / (pp |#| pa)) |*| (pp - pa)) $ a
   where
     pp = position p
     pa = (position . getPhysObj) a
@@ -132,4 +132,4 @@ track p secs a@(SpaceMine {}) = frictionStep Constants.asteroidFrictionExponent 
 flipField :: PhysicsObject -> Asteroid -> Asteroid
 flipField pp a
   | (position . getPhysObj) a |#| position pp <= Constants.asteroidDespawnRange2 = a
-  | otherwise = updatePhysObj (\pa -> pa {position = position pp |-| (Constants.spawnDistance |*| normalize (position pa |-| position pp))}) a
+  | otherwise = updatePhysObj (\pa -> pa {position = position pp - (Constants.spawnDistance |*| normalize (position pa - position pp))}) a

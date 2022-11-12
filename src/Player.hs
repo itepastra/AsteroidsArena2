@@ -16,7 +16,7 @@ import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseExhaust, basePlayer)
 import TypeClasses (HasPhysics (..))
 import Types1 (Acceleration, HealthPoints, LookDirection)
-import VectorCalc ( (|*|), (|+|) )
+import VectorCalc ( (|*|)  )
 
 data Player = Player
   { phys :: PhysicsObject,
@@ -40,12 +40,12 @@ lookAccel :: Player -> Acceleration
 lookAccel p = Constants.playerAcceleration |*| lookDirection p
 
 shoot :: Player -> Bullet
-shoot p = Bullet (PhysObj (position phy |+| pv) (velocity phy |+| bv) Constants.bulletRadius) Constants.bulletLifetime
+shoot p = Bullet (PhysObj (position phy + pv) (velocity phy + bv) Constants.bulletRadius) Constants.bulletLifetime
   where
     phy = getPhysObj p
     ld = lookDirection p
     bv = Constants.bulletSpeed |*| ld
-    pv = 0.1 |*| (velocity phy |+| bv)
+    pv = 0.1 |*| (velocity phy + bv)
 
 playerHeal :: HealthPoints -> Player -> Player
 playerHeal h p@(Player {}) = p {hp = h}

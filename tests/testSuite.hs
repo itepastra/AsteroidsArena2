@@ -12,12 +12,12 @@ import Test.QuickCheck (Arbitrary, Discard (..), Property, Testable (property), 
 import Types1 (ElapsedTime, Var)
 import VFunctionHelpers (simplify)
 import VFunctions (VFunction, fromString, mkNumFunc)
-import VectorCalc ( (|.|), (|+|) )
+import VectorCalc ((|.|))
 
 -- Vector math tests
 
 prop_vAdd :: Point Float -> Point Float -> Property
-prop_vAdd v1@(Point x1 y1) v2@(Point x2 y2) = v1 |+| v2 === Point (x1 + x2) (y1 + y2)
+prop_vAdd v1@(Point x1 y1) v2@(Point x2 y2) = v1 + v2 === Point (x1 + x2) (y1 + y2)
 
 prop_dot :: Point Float -> Point Float -> Property
 prop_dot v1@(Point x1 y1) v2@(Point x2 y2) = v1 |.| v2 === (x1 * x2) + (y1 * y2)

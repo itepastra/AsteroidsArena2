@@ -8,7 +8,7 @@ module Physics (updatePhysObj, moveStep, accelStep, frictionStep, PhysicsObject 
 
 import TypeClasses (HasPhysics (..), HasA(..))
 import Types1 (Acceleration, Collides, PhysicsObject (..), TimeStep)
-import VectorCalc ( (|#|), (|*|), (|+|) )
+import VectorCalc ( (|#|), (|*|)  )
 import JSONfuncs
 
 instance HasPhysics a => HasA PhysicsObject a where
@@ -19,10 +19,10 @@ updatePhysObj :: HasA PhysicsObject a => (PhysicsObject -> PhysicsObject) -> a -
 updatePhysObj = updateA
 
 move :: TimeStep -> PhysicsObject -> PhysicsObject
-move dt (PhysObj p v r) = PhysObj (p |+| (dt |*| v)) v r
+move dt (PhysObj p v r) = PhysObj (p + (dt |*| v)) v r
 
 accelerate :: TimeStep -> Acceleration -> PhysicsObject -> PhysicsObject
-accelerate dt a (PhysObj p v r) = PhysObj p (v |+| (dt |*| a)) r
+accelerate dt a (PhysObj p v r) = PhysObj p (v + (dt |*| a)) r
 
 friction :: Float -> TimeStep -> PhysicsObject -> PhysicsObject
 friction m dt p = p {velocity = (m ** dt) |*| velocity p}

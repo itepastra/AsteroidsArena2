@@ -14,7 +14,7 @@ import Types1
       ElapsedTime,
       PhysicsObject(..), Var (X) )
 import InitWall (InitWall (..))
-import VectorCalc ( (|*|), (|-|), (|.|), (|+|) ) 
+import VectorCalc ( (|*|), (|.|) ) 
 import Data.Maybe (mapMaybe)
 import PointHelpers (zeroPoint)
 import Data.Map (singleton)
@@ -23,7 +23,7 @@ import VFunctions (mkNumFunc)
 
 
 isInWall :: HasPhysics a => a -> Wall -> InWall
-isInWall obj w = (pos |-| p) |.| n <= 0
+isInWall obj w = (pos - p) |.| n <= 0
   where
     pos = (position . getPhysObj) obj
     p = point w
@@ -35,7 +35,7 @@ wallAcceleration o w
   | otherwise = Nothing
 
 totalAcceleration :: HasPhysics a => [Wall] -> a -> Acceleration
-totalAcceleration ws o = foldr (|+|) zeroPoint (mapMaybe (wallAcceleration o) ws)
+totalAcceleration ws o = foldr (+) zeroPoint (mapMaybe (wallAcceleration o) ws)
 
 
 createWall :: InitWall -> Wall

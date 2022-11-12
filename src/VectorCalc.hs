@@ -4,17 +4,11 @@ import FISQ (fisqrt)
 import GHC.Base (liftA2)
 import Point (Point (Point))
 
-(|-|) :: Num a => Point a -> Point a -> Point a
-(|-|) = (-)
-
-(|+|) :: Num a => Point a -> Point a -> Point a
-(|+|) = (+)
-
 (|.|) :: Num a => Point a -> Point a -> a
 (|.|) = (sum .) . (*)
 
 (|#|) :: Num a => Point a -> Point a -> a
-a |#| b = c |.| c where c = a |-| b
+a |#| b = c |.| c where c = a - b
 
 (|*|) :: Num a => a -> Point a -> Point a
 a |*| v = fmap (a *) v

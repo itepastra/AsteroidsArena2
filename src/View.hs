@@ -14,6 +14,7 @@ import Rotation (Rotate (getAngle))
 import Select (getSelectedIndex, getSingleSelected)
 import Sprites (selectedWall, starrySky)
 import System.Random (mkStdGen)
+import TypeClasses (getPhysObj)
 import Types1
   ( ElapsedTime,
     Hud (..),
@@ -21,9 +22,8 @@ import Types1
     PhysicsObject (..),
     Selected (..),
   )
-import VectorCalc ( (|*|), (|-|), fromTuple ) 
+import VectorCalc (fromTuple, (|*|))
 import Wall (InitWall, Wall, createWall, point, selfMove)
-import TypeClasses (HasPhysics(getPhysObj))
 
 view :: GameState -> IO Picture
 view = pure . getPicture
@@ -41,10 +41,7 @@ viewBackground (GameState {player = p, starPositions = sps}) =
   Pictures
     ( zipWith
         ( \pax sp ->
-            ( starrySky pax
-                . map ((|-| (pax |*| position (getPhysObj p))) . fromTuple)
-            )
-              sp
+            starrySky pax (map (\s -> fromTuple s - (pax |*| position (getPhysObj p))) sp)
         )
         Constants.parallax
         sps

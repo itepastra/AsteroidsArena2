@@ -37,7 +37,6 @@ import TypeClasses (HasA (..), HasPhysics)
 import Types1 (Acceleration, ElapsedTime, Hud (..), IntervalTime, Score, Selected (..), Time, TimeStep)
 import Wall (Wall, selfMove, totalAcceleration)
 import Data.Maybe (mapMaybe)
-import VectorCalc ( (|+|) ) 
 import Data.Bifunctor (Bifunctor(first))
 
 step :: Float -> GameState -> IO GameState
@@ -181,7 +180,7 @@ updatePlayer :: Angle -> [Wall] -> TimeStep -> Acceleration -> Player -> Player
 updatePlayer rotspeed ws secs accel =
   rotate (rotspeed * secs)
     . frictionStep Constants.playerFrictionExponent secs
-    . (\p -> accelStep secs (accel |+| totalAcceleration ws p) p)
+    . (\p -> accelStep secs (accel + totalAcceleration ws p) p)
     . moveStep secs
 
 rotSpeed :: Set Key -> Float
