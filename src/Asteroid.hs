@@ -14,9 +14,10 @@ import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseAsteroid, baseSpaceMine)
 import System.Random (Random (..), RandomGen, StdGen)
 import System.Random.Stateful (randomM)
-import TypeClasses (HasPhysics (..), Pictured (..))
+import TypeClasses (HasPhysics (..))
 import Types1 (ElapsedTime, IntervalTime, Point (Point), Size, TimeStep, UniformTime)
 import VectorCalc ( V2Math((|+|)), (|-|), (|#|), (|*|), normalize )
+import Pictured (mvRotPic, Pictured (..))
 
 data Asteroid
   = Asteroid
@@ -39,6 +40,14 @@ instance HasPhysics Asteroid where
 instance Rotate Asteroid where
   rotate a asteroid = asteroid {rotateAngle = (rotateAngle asteroid + a) `mod'` 360}
   getAngle = rotateAngle
+
+instance Pictured Asteroid where
+  getPicture o@(SpaceMine {}) = mvRotPic o $ scale f f baseSpaceMine
+    where
+      f = 2 ^ size o
+  getPicture o@(Asteroid {}) = mvRotPic o $ scale f f baseAsteroid
+    where
+      f = 2 ^ size o
 
 genRandomAsteroid :: (UniformTime -> IntervalTime) -> Float -> StdGen -> PhysicsObject -> (StdGen, Asteroid, IntervalTime)
 genRandomAsteroid t odds g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAngle, timeTillNext)

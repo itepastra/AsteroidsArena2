@@ -10,10 +10,11 @@ import qualified Graphics.Gloss as Gloss
 import Physics (PhysicsObject (..), checkCollision)
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseExhaust, basePlayer)
-import TypeClasses (HasPhysics (..), Pictured (..))
+import TypeClasses (HasPhysics (..))
 import Types1 (Acceleration, HealthPoints, LookDirection, Point (..))
 import PointHelpers (zeroPoint, yUnit)
 import VectorCalc
+import Pictured (mvRotPic, Pictured (..))
 
 data Player = Player
   { phys :: PhysicsObject,
@@ -29,6 +30,10 @@ instance HasPhysics Player where
 instance Rotate Player where
   rotate a p = p {lookDirection = rot a (lookDirection p), lookAngle = lookAngle p - a}
   getAngle = lookAngle
+  
+instance Pictured Player where
+  getPicture o@(Player {}) = mvRotPic o $ Pictures [baseExhaust (velocity $ getPhysObj o), basePlayer]
+
 
 lookAccel :: Player -> Acceleration
 lookAccel p = Constants.playerAcceleration |*| lookDirection p

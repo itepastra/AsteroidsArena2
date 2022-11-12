@@ -14,13 +14,13 @@ import Types1
       Hud(..),
       OverlayText(..),
       Selected(..) )
-import Pictured ()
+import Pictured (Pictured (getPicture))
 import Player (Player (hp))
 import Rotation (Rotate (getAngle))
 import Select (getSelectedIndex, getSingleSelected)
 import Sprites (selectedWall, starrySky)
 import System.Random (mkStdGen)
-import TypeClasses (HasPhysics (getPhysObj), Pictured (..))
+import TypeClasses (HasPhysics (getPhysObj))
 import Wall (InitWall, Wall, createWall, point, selfMove)
 import VectorCalc ( V2Math(y, fromTuple, x), (|-|), (|.|), (|*|) )
 
