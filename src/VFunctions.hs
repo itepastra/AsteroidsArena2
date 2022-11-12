@@ -5,6 +5,8 @@
 
 module VFunctions where
 
+-- functions have been completely overbuild, this module makes it possible for any (Float a) function to be applied and saved to JSON
+
 import Control.Applicative (Applicative (..), (<|>))
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Fixed (mod')
@@ -116,11 +118,11 @@ instance Traversable (VFunction b) where
 
 instance Applicative (VFunction b) where
   pure = Variable
+  (Constant x) <*> f = Constant x
   (Variable f1) <*> f = fmap f1 f
-  (Constant f1) <*> f = undefined
-  (OneIn op f1) <*> f = f1 <*> f
-  (TwoIn op f1 f2) <*> f = f1 <*> f
-  (ThreeIn op f1 f2 f3) <*> f = f1 <*> f
+  (OneIn op f1) <*> f = OneIn op (f1 <*> f)
+  (TwoIn op f1 f2) <*> f = TwoIn op (f1 <*> f) (f2 <*> f)
+  (ThreeIn op f1 f2 f3) <*> f = ThreeIn op (f1 <*> f) (f2 <*> f) (f3 <*> f)
 
 instance Monad (VFunction b) where
   (Constant a) >>= f = Constant a
@@ -129,21 +131,12 @@ instance Monad (VFunction b) where
   (TwoIn op f1 f2) >>= f = TwoIn op (f1 >>= f) (f2 >>= f)
   (ThreeIn op f1 f2 f3) >>= f = ThreeIn op (f1 >>= f) (f2 >>= f) (f3 >>= f)
 
--- insert :: (a -> VFunction b c) -> VFunction b a -> VFunction b c
--- insert f (Constant a) = Constant a
--- insert f (Variable x) = f x
--- insert f (OneIn op f1) = OneIn op (insert f f1)
--- insert f (TwoIn op f1 f2) = TwoIn op (insert f f1) (insert f f2)
--- insert f (ThreeIn op f1 f2 f3) = ThreeIn op (insert f f1) (insert f f2) (insert f f3)
-
 insertAt :: Eq a => a -> VFunction b a -> VFunction b a -> VFunction b a
 insertAt v tf = (f v tf =<<)
   where
     f a f b
       | a == b = f
       | otherwise = Variable b
-
-
 
 size :: VFunction b a -> Word
 size (Constant _) = 1

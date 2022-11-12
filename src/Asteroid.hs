@@ -70,6 +70,7 @@ getChildAsteroids g a = ((getChildAsteroids' nums a ++), ng)
 
 getChildAsteroids' :: (Angle, Float, Float) -> Asteroid -> [Asteroid]
 getChildAsteroids' _ (Asteroid {size = 1}) = []
+getChildAsteroids' _ (SpaceMine {}) = []
 getChildAsteroids' (angle, speed, rSpeed) (Asteroid {size = s, phys = phy, rotateAngle = ra, rotateSpeed = rss}) = ca
   where
     ca =
@@ -84,7 +85,6 @@ getChildAsteroids' (angle, speed, rSpeed) (Asteroid {size = s, phys = phy, rotat
         )
         [-120, 0, 120]
         [0, -rSpeed, rSpeed]
-getChildAsteroids' _ (SpaceMine {}) = []
 
 track :: PhysicsObject -> TimeStep -> Asteroid -> Asteroid
 track p secs a@(Asteroid {}) = a
@@ -97,8 +97,3 @@ flipField :: PhysicsObject -> Asteroid -> Asteroid
 flipField pp a
   | (position . getPhysObj) a |#| position pp <= Constants.asteroidDespawnRange2 = a
   | otherwise = updatePhysObj (\pa -> pa {position = position pp |-| (Constants.spawnDistance |*| normalize (position pa |-| position pp))}) a
-
-
-applyOnConstructor :: (Asteroid -> t) -> (Asteroid -> t) -> Asteroid -> t
-applyOnConstructor f1 f2 a@(Asteroid {}) = f1 a
-applyOnConstructor f1 f2 a@(SpaceMine {}) = f2 a
