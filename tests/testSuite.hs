@@ -2,29 +2,30 @@
 
 module Main where
 
-import AFunctions (collapse, createFunc, fromString, getCarr, simplify, toString, AFunction)
 import Arbitrary ()
 import Data.Aeson (Value (String), decode, encode)
 import Data.Foldable (maximumBy)
+import Data.Map (Map)
 import JSONfuncs ()
 import Test.QuickCheck (Arbitrary, Discard (..), Property, Testable (property), counterexample, quickCheck, withMaxSuccess, within, (===))
-import Types1 (ElapsedTime)
+import Types1 (ElapsedTime, X)
+import VFunctions (VFunction, fromString, mkNumFunc, simplify)
 
-prop_stringConversion :: AFunction Float -> Property
-prop_stringConversion f = fromString (toString f) === Just f
+prop_stringConversion :: VFunction X Float -> Property
+prop_stringConversion f = fromString (show f) === Just f
 
-prop_jsonConversion :: AFunction Float -> Property
-prop_jsonConversion f = decode (encode f) === Just f
+prop_jsonConversion :: VFunction X Float -> Property
+prop_jsonConversion f = counterexample (show $ encode f) (decode (encode f) == Just f)
 
-prop_simplify :: AFunction Float -> ElapsedTime -> Property
-prop_simplify f et = case createFunc f et of
+prop_simplify :: (Eq a, Arbitrary a, Show a, Floating a, Real a, Ord b, Show b) => VFunction b a -> Map b a -> Property
+prop_simplify f et = case mkNumFunc f et of
   c
     | c /= c -> property Discard
-    | otherwise -> approxEEE f co c $ createFunc co et
+    | otherwise -> approxEEE f co c $ mkNumFunc co et
     where
       co = simplify f
 
-prop_funcEQ :: (Eq a, Show a) => AFunction a -> Property
+prop_funcEQ :: (Eq a, Show a, Eq b, Show b) => VFunction b a -> Property
 prop_funcEQ f = (===) f f
 
 main :: IO ()
@@ -33,15 +34,15 @@ main = do
   quickCheck prop_stringConversion
   quickCheck prop_jsonConversion
   putStrLn "simplify"
-  quickCheck prop_simplify
+  quickCheck (prop_simplify :: VFunction X Float -> Map X Float -> Property)
   putStrLn "check if it stays equal"
-  quickCheck (prop_funcEQ :: AFunction String -> Property)
+  quickCheck (prop_funcEQ :: VFunction X String -> Property)
   putStrLn "Done"
 
-approxEEE :: (Arbitrary a, Show a, Fractional a, Real a, Floating a) => AFunction a -> AFunction a -> a -> a -> Property
+approxEEE :: (Arbitrary a, Show a, Fractional a, Real a, Floating a, Show b) => VFunction b a -> VFunction b a -> a -> a -> Property
 approxEEE f1 f2 x y = counterexample (show f1 ++ interpret res ++ show f2 ++ "\n\n" ++ show x ++ interpret res ++ show y) res
   where
-    res = x == y || abs (x - y) <= max (0.0005 * absMaximum (getCarr f1)) (0.05 * absMaximum (getCarr f2))
+    res = x == y || abs (x - y) <= 5
     interpret True = " == "
     interpret False = " /= "
 

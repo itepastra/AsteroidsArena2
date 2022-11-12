@@ -5,11 +5,12 @@ import qualified Data.Maybe
 import Data.Set (delete, empty, insert)
 import ExitStrings (getRandomString)
 import Graphics.Gloss.Interface.IO.Game (Event (EventKey), Key (Char, SpecialKey), KeyState (Down, Up), SpecialKey (KeyEnter, KeyEsc, KeyTab))
-import Model (GameState (..), gameStateFromLevel, newPlayer)
+import Model (GameState (..), gameStateFromLevel)
 import Select (getSingleSelected, selectNext, selectPrev)
 import System.Exit (die)
 import System.Random (getStdGen)
 import Types1 (Hud (..))
+import Player (newPlayer)
 
 input :: Event -> GameState -> IO GameState
 input (EventKey (SpecialKey KeyEsc) Down _ _) g@(MenuState {}) = die =<< getRandomString

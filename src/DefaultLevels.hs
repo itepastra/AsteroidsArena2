@@ -1,6 +1,5 @@
 module DefaultLevels (defaultLevels) where
 
-import AFunctions (AFunction (AddF, MulF))
 import AsteroidSpawnFunctions (DecayFunctions (..), MapFunctions (..), RandomFunctions (..))
 import qualified Constants
 import Data.Fixed (mod')

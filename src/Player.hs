@@ -1,4 +1,4 @@
-module Player (Player (..), lookAccel, shoot, playerHeal, playerDamage) where
+module Player (Player (..), lookAccel, shoot, playerHeal, playerDamage, newPlayer) where
 
 import Asteroid (Asteroid (Asteroid), size)
 import Bullet (Bullet (Bullet))
@@ -11,7 +11,7 @@ import Physics (PhysicsObject (..), checkCollision)
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseExhaust, basePlayer)
 import TypeClasses (HasPhysics (..), Pictured (..), V2Math (..))
-import Types1 (Acceleration, HealthPoints, LookDirection)
+import Types1 (Acceleration, HealthPoints, LookDirection, Point (..))
 
 data Player = Player
   { phys :: PhysicsObject,
@@ -56,3 +56,6 @@ playerDamage as bs p@(Player {}) = np
     asteroidDamage _ Nothing _ = Nothing
     asteroidDamage p (Just hp) a = if checkCollision p a then (if hp > ad a then Just (hp - ad a) else Nothing) else Just hp
     ad a = 5 * 2 ^ size a
+
+newPlayer :: Player
+newPlayer = Player (PhysObj (Point 0 0) (Point 0 0) Constants.playerRadius) Constants.playerMaxHp (Point 0 1) 0

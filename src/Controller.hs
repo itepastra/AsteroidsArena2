@@ -186,26 +186,3 @@ stateSelect :: [Selected Level] -> StdGen -> Maybe GameState
 stateSelect x d = case getSingleSelected x of
   Nothing -> Nothing
   Just le -> Just $ gameStateFromLevel d le
-
--- ######### GEDAAN ##########
--- despawn bullets
--- bullets bewegen
--- despawn asteroids
--- asteroids bewegen
--- player beweegt
--- player inputs
--- check if player and bullets are in force field
--- accelerate the player and bullets if necessary
--- delay between shots
--- check collisions between asteroids and bullets
--- spawn asteroids (spawn angle, speed angle, speed, timetillnext, picture angle, size)
--- check collisions between player and asteroids
--- check collisions player and bullets
--- fix baby asteroid spawning'
--- SPACE MINES
-
--- ######### TE DOEN ##########
--- levels
--- high scores
--- invurnerability frames maybe?
--- balancing????

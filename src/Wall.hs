@@ -3,8 +3,10 @@
 
 module Wall (Wall (..), InitWall (..), selfMove, totalAcceleration, createWall, point, normal) where
 
-import AFunctions (AFunction, createFunc)
+import Data.Aeson (FromJSON, ToJSON)
+import Data.Map (singleton)
 import Data.Maybe (mapMaybe)
+import GHC.Generics (Generic)
 import GHC.Read (Read (readPrec))
 import Graphics.Gloss (translate)
 import qualified Graphics.Gloss as Gloss
@@ -12,7 +14,8 @@ import Physics (PhysicsObject (..))
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseWall)
 import TypeClasses (HasA (..), HasPhysics (..), Pictured (..), V2Math (..))
-import Types1 (Acceleration, ElapsedTime, InWall, Normal, Offset, Point (Point), Strength)
+import Types1 (Acceleration, ElapsedTime, InWall, Normal, Offset, Point (Point), Strength, X (X))
+import VFunctions (VFunction, mkNumFunc)
 import VectorCalc ()
 
 data Wall = Wall
@@ -25,15 +28,15 @@ data Wall = Wall
   }
 
 data InitWall = InitWall
-  { irFunc :: AFunction Float,
-    ioFunc :: AFunction Float,
-    isFunc :: AFunction Float
+  { irFunc :: VFunction X Float,
+    ioFunc :: VFunction X Float,
+    isFunc :: VFunction X Float
   }
 
 instance Show InitWall where
   show w = "Rotation: " ++ show (irFunc w) ++ " Offset: " ++ show (ioFunc w) ++ " Strength: " ++ show (isFunc w) ++ "\n"
 
-instance HasA (AFunction Float, AFunction Float, AFunction Float) InitWall where
+instance HasA (VFunction X Float, VFunction X Float, VFunction X Float) InitWall where
   getA w = (irFunc w, ioFunc w, isFunc w)
   setA (irf, iof, isf) iw = iw {irFunc = irf, ioFunc = iof, isFunc = isf}
 
@@ -44,7 +47,6 @@ instance HasA (ElapsedTime -> Angle, ElapsedTime -> Offset, ElapsedTime -> Stren
 instance HasA (Angle, Offset, Strength) Wall where
   getA w = (angle w, offset w, strength w)
   setA (a, o, s) w = w {angle = a, offset = o, strength = s}
-
 
 point :: Wall -> Point
 point w = (-offset w) |*| normal w
@@ -83,9 +85,9 @@ setStrength s w = w {strength = s}
 createWall :: InitWall -> Wall
 createWall iw = Wall {offset = coFunc 0, angle = crFunc 0, strength = csFunc 0, oFunc = coFunc, rFunc = crFunc, sFunc = csFunc}
   where
-    coFunc = createFunc (ioFunc iw)
-    crFunc = createFunc (irFunc iw)
-    csFunc = createFunc (isFunc iw)
+    coFunc = mkNumFunc (ioFunc iw) . singleton X
+    crFunc = mkNumFunc (irFunc iw) . singleton X
+    csFunc = mkNumFunc (isFunc iw) . singleton X
 
 toOAS :: Wall -> (Offset, Angle, Strength)
 toOAS w = (offset w, angle w, strength w)

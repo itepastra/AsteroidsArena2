@@ -13,7 +13,7 @@ import Data.Set (Set, empty)
 import qualified Graphics.Gloss as Gloss
 import Graphics.Gloss.Interface.IO.Game (Key)
 import Level (GameStateInit (..), InitLevelConfig (..), Level (..), LevelConfig (LevelConfig), initToReal)
-import Player (Player (..))
+import Player (Player (..), newPlayer)
 import System.Random (RandomGen, StdGen)
 import System.Random.Stateful (mkStdGen)
 import Types1
@@ -59,9 +59,6 @@ data GameState
   
   
   
-newPlayer :: Player
-newPlayer = Player (PhysObj (Point 0 0) (Point 0 0) playerRadius) Constants.playerMaxHp (Point 0 1) 0
-
 gameStateFromLevel :: StdGen -> Level -> GameState
 gameStateFromLevel r (Level {initState = initState}) =
   GameState
@@ -79,3 +76,4 @@ gameStateFromLevel r (Level {initState = initState}) =
       levelConfig = initToReal (initConf initState),
       hud = Invisible
     }
+

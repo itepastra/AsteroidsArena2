@@ -1,8 +1,12 @@
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
 module Types1 where
 
+import Data.Aeson (FromJSON, ToJSON)
+import GHC.Generics (Generic)
 import GHC.Natural (Natural)
 
 type Time = Float
@@ -58,10 +62,13 @@ data Point = Point Float Float -- a 2D point, on which vector math is possible
 data Hud = Visible | Invisible -- if the HUD should be drawn in the screen
 
 data Selected a = NotSelected {val :: a} | Selected {time :: ElapsedTime, val :: a} -- whether options in the menu are selected or not
+
 data Part = Str | Rot | Off
 
 data OverlayText = OT String | ST String
 
+data X = X
+  deriving (Eq, Ord, Show, Read, ToJSON, FromJSON, Generic)
 
 data PhysicsObject = PhysObj
   { position :: Position,

@@ -12,7 +12,6 @@ import LevelImport (encodeLevels)
 import Model (GameState (MenuState))
 import System.Random (getStdGen)
 import View (view)
-import AFunctions (fromString)
 
 main :: IO ()
 main =

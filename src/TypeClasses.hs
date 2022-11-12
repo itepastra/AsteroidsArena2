@@ -1,5 +1,5 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module TypeClasses where
 
@@ -27,6 +27,7 @@ class HasPhysics a where
   getPhysObj :: a -> PhysicsObject
   setPhysObj :: PhysicsObject -> a -> a
 
+infixr 9 #
 
 class HasA a b where
   getA :: b -> a
@@ -35,5 +36,3 @@ class HasA a b where
   updateA f a = setA (f (getA a)) a
   (#) :: HasA a b => (a -> a) -> b -> b
   (#) = updateA
-
-infixr 9 #

@@ -14,13 +14,9 @@ import Model (GameState (GameState))
 import Player (Player (..))
 import qualified Player
 import TypeClasses (V2Math (..))
-import Types1
-  (
-    PhysicsObject (..),
-    Point (Point),
-  )
+import Types1 (PhysicsObject (..), Point (Point), X (..))
+import VFunctions (DOp (..), SOp (..), VFunction (..))
 import Wall (InitWall (..), Wall (..))
-import AFunctions (AFunction(..))
 
 instance FromJSON Point where
   parseJSON = withObject "Point" $ \v ->
@@ -177,46 +173,19 @@ instance ToJSON Level where
         "initState" .= initState l
       ]
 
-instance (ToJSON a) => ToJSON (AFunction a) where
-  toJSON (C v) = object ["type" .= ("c" :: String), "v" .= v]
-  toJSON Var = object ["type" .= ("etime" :: String)]
-  toJSON (SinF f1) = object ["type" .= ("sin" :: String), "f1" .= f1]
-  toJSON (MulF f1 f2) = object ["type" .= ("lin" :: String), "f1" .= f1, "f2" .= f2]
-  toJSON (AddF f1 f2) = object ["type" .= ("add" :: String), "f1" .= f1, "f2" .= f2]
-  toJSON (SubF f1 f2) = object ["type" .= ("sub" :: String), "f1" .= f1, "f2" .= f2]
-  toJSON (DivF f1 f2) = object ["type" .= ("div" :: String), "f1" .= f1, "f2" .= f2]
-  toJSON (AbsF f1) = object ["type" .= ("abs" :: String), "f1" .= f1]
-  toJSON (SigF f1) = object ["type" .= ("sig" :: String), "f1" .= f1]
-  toJSON (ExpF f1) = object ["type" .= ("exp" :: String), "f1" .= f1]
-  toJSON (LogF f1) = object ["type" .= ("log" :: String), "f1" .= f1]
-  toJSON (CosF f1) = object ["type" .= ("cos" :: String), "f1" .= f1]
-  toJSON (AsinF f1) = object ["type" .= ("asin" :: String), "f1" .= f1]
-  toJSON (AcosF f1) = object ["type" .= ("acos" :: String), "f1" .= f1]
-  toJSON (AtanF f1) = object ["type" .= ("atan" :: String), "f1" .= f1]
-  toJSON (AsinhF f1) = object ["type" .= ("asinh" :: String), "f1" .= f1]
-  toJSON (AcoshF f1) = object ["type" .= ("acosh" :: String), "f1" .= f1]
-  toJSON (AtanhF f1) = object ["type" .= ("atanh" :: String), "f1" .= f1]
+instance (ToJSON a, ToJSON b, Show b) => ToJSON (VFunction b a) where
+  toJSON (Constant v) = object ["type" .= ("c" :: String), "v" .= v]
+  toJSON (Variable x) = object ["type" .= ("var" :: String), "v" .= x]
+  toJSON (OneIn op f1) = object ["type" .= ("sfunc" :: String), "op" .= op, "f1" .= f1]
+  toJSON (TwoIn op f1 f2) = object ["type" .= ("dfunc" :: String), "op" .= op, "f1" .= f1, "f2" .= f2]
+  toJSON (ThreeIn op f1 f2 f3) = object ["type" .= ("dfunc" :: String), "op" .= op, "f1" .= f1, "f2" .= f2, "f3" .= f3]
 
-instance (FromJSON a) => FromJSON (AFunction a) where
+instance (FromJSON a, FromJSON b, Read b) => FromJSON (VFunction b a) where
   parseJSON = withObject "AFunction" $ \v ->
     case A.lookup "type" v of
       Nothing -> mzero
-      Just "c" -> C <$> v .: "v"
-      Just "etime" -> return Var
-      Just "lin" -> MulF <$> v .: "f1" <*> v .: "f2"
-      Just "add" -> AddF <$> v .: "f1" <*> v .: "f2"
-      Just "sub" -> SubF <$> v .: "f1" <*> v .: "f2"
-      Just "div" -> DivF <$> v .: "f1" <*> v .: "f2"
-      Just "abs" -> AbsF <$> v .: "f1"
-      Just "sig" -> SigF <$> v .: "f1"
-      Just "exp" -> ExpF <$> v .: "f1"
-      Just "log" -> LogF <$> v .: "f1"
-      Just "sin" -> SinF <$> v .: "f1"
-      Just "cos" -> CosF <$> v .: "f1"
-      Just "asin" -> AsinF <$> v .: "f1"
-      Just "acos" -> AcosF <$> v .: "f1"
-      Just "atan" -> AtanF <$> v .: "f1"
-      Just "asinh" -> AsinhF <$> v .: "f1"
-      Just "acosh" -> AcoshF <$> v .: "f1"
-      Just "atanh" -> AtanhF <$> v .: "f1"
+      Just "c" -> Constant <$> v .: "v"
+      Just "var" -> Variable <$> v .: "v"
+      Just "sfunc" -> OneIn <$> v .: "op" <*> v .: "f1"
+      Just "dfunc" -> TwoIn <$> v .: "op" <*> v .: "f1" <*> v .: "f2"
       _ -> mzero

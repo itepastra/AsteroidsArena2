@@ -1,42 +1,42 @@
 module LevelHelperFunctions where
 
-import AFunctions (AFunction (..), collapse)
 import AsteroidSpawnFunctions (DecayFunctions (..), MapFunctions (..), RandomFunctions (..))
 import qualified Constants
 import Level (InitLevelConfig (..))
-import Types1 (Angle, Offset, Strength, Part (..))
+import Types1 (Angle, Offset, Part (..), Strength, X (X))
+import VFunctions (VFunction (..), collapse)
 import Wall (InitWall (..))
 
 wallPoly :: Int -> Offset -> Strength -> [InitWall]
-wallPoly n o s = map (\x -> InitWall {irFunc = C (fromIntegral x * 360 / fromIntegral n), ioFunc = C $ realToFrac o, isFunc = C $ realToFrac s}) [1 .. n]
+wallPoly n o s = map (\x -> InitWall {irFunc = Constant (fromIntegral x * 360 / fromIntegral n), ioFunc = Constant o, isFunc = Constant s}) [1 .. n]
 
-modPart :: Part -> (AFunction Float -> AFunction Float) -> InitWall -> InitWall
+modPart :: Part -> (VFunction X Float -> VFunction X Float) -> InitWall -> InitWall
 modPart Str wf iw = iw {isFunc = collapse $ wf (isFunc iw)}
 modPart Rot wf iw = iw {irFunc = collapse $ wf (irFunc iw)}
 modPart Off wf iw = iw {ioFunc = collapse $ wf (ioFunc iw)}
 
-setPart :: Part -> AFunction Float -> InitWall -> InitWall
+setPart :: Part -> VFunction X Float -> InitWall -> InitWall
 setPart Str wf iw = iw {isFunc = wf}
 setPart Rot wf iw = iw {irFunc = wf}
 setPart Off wf iw = iw {ioFunc = wf}
 
-lin :: (Real a, Fractional a) => (AFunction a -> AFunction a -> AFunction a) -> a -> AFunction a -> AFunction a
-lin w f = w (MulF (C $ realToFrac f) Var)
+addLinearTerm :: (VFunction X Float -> VFunction X Float -> VFunction X Float) -> Float -> VFunction X Float -> VFunction X Float
+addLinearTerm op x f = op f (Constant x * Variable X)
 
-wallPartMap :: Part -> [AFunction Float -> AFunction Float] -> [InitWall] -> [InitWall]
+wallPartMap :: Part -> [VFunction X Float -> VFunction X Float] -> [InitWall] -> [InitWall]
 wallPartMap = zipWith . modPart
 
-wallPartSetMap :: Part -> [AFunction Float] -> [InitWall] -> [InitWall]
+wallPartSetMap :: Part -> [VFunction X Float] -> [InitWall] -> [InitWall]
 wallPartSetMap = zipWith . setPart
 
 addRots :: [Angle] -> [InitWall] -> [InitWall]
-addRots as = wallPartMap Rot (map (lin AddF) as)
+addRots as = wallPartMap Rot (map (addLinearTerm (+)) as)
 
 addStrengts :: [Strength] -> [InitWall] -> [InitWall]
-addStrengts ss = wallPartMap Str (map (lin AddF) ss)
+addStrengts ss = wallPartMap Str (map (addLinearTerm (+)) ss)
 
 addOffsets :: [Offset] -> [InitWall] -> [InitWall]
-addOffsets os = wallPartMap Off (map (lin AddF) os)
+addOffsets os = wallPartMap Off (map (addLinearTerm (+)) os)
 
 defaultLvlConfig :: InitLevelConfig
 defaultLvlConfig =
