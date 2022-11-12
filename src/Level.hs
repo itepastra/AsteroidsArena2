@@ -1,7 +1,12 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Level where
 
 import AsteroidSpawnFunctions ()
 import Data.Map (fromList)
+import InitWall (InitWall)
+import JSONfuncs
+import Pictured (Picture (Text), Pictured (..), scale)
 import Types1
   ( ElapsedTime,
     IntervalTime,
@@ -9,9 +14,7 @@ import Types1
     UniformTime,
     Var (..),
   )
-import VFunctions (VFunction,  mkNumFunc)
-import InitWall ( InitWall )
-import Pictured (Pictured (..), scale, Picture (Text))
+import VFunctions (VFunction, mkNumFunc)
 
 data Level = Level
   { name :: String,
@@ -53,3 +56,47 @@ instance Eq Level where
 
 instance Ord Level where
   compare l1 l2 = compare (name l1) (name l2)
+
+instance FromJSON InitLevelConfig where
+  parseJSON = withObject "InitLevelConfig" $ \v ->
+    InitLevelConfig
+      <$> v
+      .: "asteroidSpawnFunction"
+      <*> v
+      .: "spaceMineOddsFunction"
+      <*> v
+      .: "asteroidSpawnStart"
+
+instance ToJSON InitLevelConfig where
+  toJSON w =
+    object
+      [ "asteroidSpawnFunction" .= iasteroidSpawnFunction w,
+        "spaceMineOddsFunction" .= ispaceMineOddsFunction w,
+        "asteroidSpawnStart" .= iasteroidSpawnStart w
+      ]
+
+instance FromJSON GameStateInit where
+  parseJSON = withObject "GameStateInit" $ \v ->
+    GameStateInit
+      <$> v
+      .: "initWalls"
+      <*> v
+      .: "initConf"
+
+instance ToJSON GameStateInit where
+  toJSON w =
+    object
+      [ "initWalls" .= initWalls w,
+        "initConf" .= initConf w
+      ]
+
+instance FromJSON Level where
+  parseJSON = withObject "Level" $ \v ->
+    Level <$> v .: "name" <*> v .: "initState"
+
+instance ToJSON Level where
+  toJSON l =
+    object
+      [ "name" .= name l,
+        "initState" .= initState l
+      ]

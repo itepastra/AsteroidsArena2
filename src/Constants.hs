@@ -2,6 +2,8 @@
 
 module Constants where
 
+import GeneralHelperFunctions (biF)
+
 pageSize :: (Int, Int)
 pageSize = (1600, 900)
 
@@ -24,14 +26,17 @@ parallax = map ((1 /) . fromIntegral) [parallaxStart .. (parallaxStart + paralla
 
 -- Asteroid Things
 
+centreToCorner2 :: Float
+centreToCorner2 = (\(x, y) -> fromIntegral (x + y)) . biF (\x -> (x `div` 2) ^ 2) $ pageSize
+
 asteroidDespawnRange2 :: Float
-asteroidDespawnRange2 = fromIntegral ((fst pageSize `div` 2) ^ 2 + (snd pageSize `div` 2) ^ 2) * 4
+asteroidDespawnRange2 = centreToCorner2 * 4
 
 asteroidRadius :: Float
 asteroidRadius = 10
 
 spawnDistance :: Float
-spawnDistance = sqrt (fromIntegral (((fst pageSize `div` 2) ^ 2) + ((snd pageSize `div` 2) ^ 2))) * 1.5
+spawnDistance = (1.5 *) . sqrt $ centreToCorner2
 
 asteroidSpawnAverageInterval :: Float
 asteroidSpawnAverageInterval = 3

@@ -62,7 +62,8 @@ pureStep secs gstate@(MenuState {}) =
 pureStep secs gstate@(PauseState {}) = gstate
 pureStep secs gstate@(GameState {player = (Player {hp = 0})}) =
   DeathState
-    { previousState = playerHeal 1 # const (empty :: Set Key) # const Invisible # gstate,
+    { 
+      previousState = playerHeal 1 # const (empty :: Set Key) # const Invisible # gstate,
       timeSinceDeath = 1
     }
 pureStep secs gstate@(GameState {}) = inGameTick secs gstate

@@ -1,20 +1,22 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Player (Player (..), lookAccel, shoot, playerHeal, playerDamage, newPlayer) where
 
 import Asteroid (Asteroid (Asteroid), size)
 import Bullet (Bullet (Bullet))
 import qualified Constants
-import Data.Aeson (FromJSON (parseJSON), ToJSON (toEncoding), object, withObject, (.:), (.=))
+import Data.Aeson (FromJSON (parseJSON), ToJSON (toEncoding), object, toJSON, withObject, (.:), (.=))
 import Data.List (foldl')
 import Graphics.Gloss (Picture (Pictures), translate)
 import qualified Graphics.Gloss as Gloss
 import Physics (PhysicsObject (..), checkCollision)
+import Pictured (Pictured (..), mvRotPic)
+import PointHelpers (yUnit, zeroPoint)
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseExhaust, basePlayer)
 import TypeClasses (HasPhysics (..))
 import Types1 (Acceleration, HealthPoints, LookDirection, Point (..))
-import PointHelpers (zeroPoint, yUnit)
-import VectorCalc
-import Pictured (mvRotPic, Pictured (..))
+import VectorCalc ( V2Math((|+|)), (|*|) )
 
 data Player = Player
   { phys :: PhysicsObject,
@@ -30,10 +32,9 @@ instance HasPhysics Player where
 instance Rotate Player where
   rotate a p = p {lookDirection = rot a (lookDirection p), lookAngle = lookAngle p - a}
   getAngle = lookAngle
-  
+
 instance Pictured Player where
   getPicture o@(Player {}) = mvRotPic o $ Pictures [baseExhaust (velocity $ getPhysObj o), basePlayer]
-
 
 lookAccel :: Player -> Acceleration
 lookAccel p = Constants.playerAcceleration |*| lookDirection p
@@ -66,3 +67,24 @@ playerDamage as bs p@(Player {}) = np
 
 newPlayer :: Player
 newPlayer = Player (PhysObj zeroPoint zeroPoint Constants.playerRadius) Constants.playerMaxHp yUnit 0
+
+instance FromJSON Player where
+  parseJSON = withObject "Player" $ \v ->
+    Player
+      <$> v
+      .: "phys"
+      <*> v
+      .: "hp"
+      <*> v
+      .: "lookDirection"
+      <*> v
+      .: "lookAngle"
+
+instance ToJSON Player where
+  toJSON p =
+    object
+      [ "phys" .= Player.phys p,
+        "hp" .= hp p,
+        "lookDirection" .= lookDirection p,
+        "lookAngle" .= lookAngle p
+      ]

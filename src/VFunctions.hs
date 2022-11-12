@@ -2,17 +2,20 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module VFunctions where
 
 -- functions have been completely overbuild, this module makes it possible for any (Float a) function to be applied and saved to JSON
 
 import Control.Applicative (Applicative (..), (<|>))
-import Data.Aeson (FromJSON, ToJSON)
+import Control.Monad (mzero)
+import qualified Data.Aeson.KeyMap as A
 import Data.Fixed (mod')
 import Data.Map (Map, findWithDefault, fromList)
 import GHC.Enum (boundedEnumFromThen)
 import GHC.Generics (Generic)
+import JSONfuncs
 import ParenthesesHelpers (beforeParens, betweenParens, firstParenSeg, lastParenSeg)
 import Safe (readMay)
 import Text.Read (readMaybe)
@@ -130,6 +133,23 @@ instance Monad (VFunction b) where
   (OneIn op f1) >>= f = OneIn op (f1 >>= f)
   (TwoIn op f1 f2) >>= f = TwoIn op (f1 >>= f) (f2 >>= f)
   (ThreeIn op f1 f2 f3) >>= f = ThreeIn op (f1 >>= f) (f2 >>= f) (f3 >>= f)
+
+instance (ToJSON a, ToJSON b, Show b) => ToJSON (VFunction b a) where
+  toJSON (Constant v) = object ["_type" .= ("c" :: String), "v" .= v]
+  toJSON (Variable x) = object ["_type" .= ("var" :: String), "v" .= x]
+  toJSON (OneIn op f1) = object ["_type" .= ("sfunc" :: String), "_op" .= op, "f1" .= f1]
+  toJSON (TwoIn op f1 f2) = object ["_type" .= ("dfunc" :: String), "_op" .= op, "f1" .= f1, "f2" .= f2]
+  toJSON (ThreeIn op f1 f2 f3) = object ["_type" .= ("dfunc" :: String), "_op" .= op, "f1" .= f1, "f2" .= f2, "f3" .= f3]
+
+instance (FromJSON a, FromJSON b, Read b) => FromJSON (VFunction b a) where
+  parseJSON = withObject "AFunction" $ \v ->
+    case A.lookup "_type" v of
+      Nothing -> mzero
+      Just "c" -> Constant <$> v .: "v"
+      Just "var" -> Variable <$> v .: "v"
+      Just "sfunc" -> OneIn <$> v .: "_op" <*> v .: "f1"
+      Just "dfunc" -> TwoIn <$> v .: "_op" <*> v .: "f1" <*> v .: "f2"
+      _ -> mzero
 
 insertAt :: Eq a => a -> VFunction b a -> VFunction b a -> VFunction b a
 insertAt v tf = (f v tf =<<)

@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module InitWall where
 
@@ -8,6 +9,7 @@ import Rotation (Rotate (..))
 import TypeClasses (HasA (..))
 import Types1 (Var (X))
 import VFunctions (VFunction (Constant), mkNumFunc)
+import JSONfuncs
 
 data InitWall = InitWall
   { irFunc :: VFunction Float Var,
@@ -25,3 +27,21 @@ instance Rotate InitWall where
 instance HasA (VFunction Float Var, VFunction Float Var, VFunction Float Var) InitWall where
   getA w = (irFunc w, ioFunc w, isFunc w)
   setA (irf, iof, isf) iw = iw {irFunc = irf, ioFunc = iof, isFunc = isf}
+
+instance FromJSON InitWall where
+  parseJSON = withObject "InitWall" $ \v ->
+    InitWall
+      <$> v
+      .: "irFunc"
+      <*> v
+      .: "ioFunc"
+      <*> v
+      .: "isFunc"
+
+instance ToJSON InitWall where
+  toJSON w =
+    object
+      [ "ioFunc" .= ioFunc w,
+        "irFunc" .= irFunc w,
+        "isFunc" .= isFunc w
+      ]

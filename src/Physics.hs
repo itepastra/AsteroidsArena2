@@ -2,12 +2,14 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MonoLocalBinds #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Physics (updatePhysObj, moveStep, accelStep, frictionStep, PhysicsObject (..), checkCollision) where
 
 import TypeClasses (HasPhysics (..), HasA(..))
 import Types1 (Acceleration, Collides, PhysicsObject (..), TimeStep)
 import VectorCalc ( V2Math((|+|)), (|#|), (|*|) )
+import JSONfuncs
 
 instance HasPhysics a => HasA PhysicsObject a where
   getA = getPhysObj
@@ -41,3 +43,22 @@ checkCollision p b = position pp |#| position pb <= r2
     pb = getA b
     r = radius pp + radius pb
     r2 = r * r
+
+
+instance FromJSON PhysicsObject where
+  parseJSON = withObject "PhysicsObject" $ \v ->
+    PhysObj
+      <$> v
+      .: "position"
+      <*> v
+      .: "velocity"
+      <*> v
+      .: "radius"
+
+instance ToJSON PhysicsObject where
+  toJSON p =
+    object
+      [ "position" .= position p,
+        "velocity" .= velocity p,
+        "radius" .= radius p
+      ]

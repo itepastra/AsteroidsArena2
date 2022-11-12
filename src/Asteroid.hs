@@ -1,14 +1,19 @@
+{-# LANGUAGE OverloadedStrings #-}
+
+
 module Asteroid where
 
 import qualified Constants
 import Data.Fixed (mod')
 import Graphics.Gloss (rotate, scale, translate)
+import JSONfuncs
 import Physics
   ( PhysicsObject (..),
     accelStep,
     frictionStep,
     updatePhysObj,
   )
+import Pictured (Pictured (..), mvRotPic)
 import PointHelpers (xUnit)
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseAsteroid, baseSpaceMine)
@@ -16,8 +21,7 @@ import System.Random (Random (..), RandomGen, StdGen)
 import System.Random.Stateful (randomM)
 import TypeClasses (HasPhysics (..))
 import Types1 (ElapsedTime, IntervalTime, Point (Point), Size, TimeStep, UniformTime)
-import VectorCalc ( V2Math((|+|)), (|-|), (|#|), (|*|), normalize )
-import Pictured (mvRotPic, Pictured (..))
+import VectorCalc (V2Math ((|+|)), normalize, (|#|), (|*|), (|-|))
 
 data Asteroid
   = Asteroid
@@ -48,6 +52,27 @@ instance Pictured Asteroid where
   getPicture o@(Asteroid {}) = mvRotPic o $ scale f f baseAsteroid
     where
       f = 2 ^ size o
+
+instance FromJSON Asteroid where
+  parseJSON = withObject "Asteroid" $ \v ->
+    Asteroid
+      <$> v
+      .: "phys"
+      <*> v
+      .: "size"
+      <*> v
+      .: "rotateSpeed"
+      <*> v
+      .: "rotateAngle"
+
+instance ToJSON Asteroid where
+  toJSON p =
+    object
+      [ "phys" .= Asteroid.phys p,
+        "size" .= size p,
+        "rotateSpeed" .= rotateSpeed p,
+        "rotateAngle" .= rotateAngle p
+      ]
 
 genRandomAsteroid :: (UniformTime -> IntervalTime) -> Float -> StdGen -> PhysicsObject -> (StdGen, Asteroid, IntervalTime)
 genRandomAsteroid t odds g0 p = (g, constr (PhysObj pos vel rad) size rSpeed rAngle, timeTillNext)

@@ -20,123 +20,111 @@ Test-Suite projectname-testsuite
                       random,
                       aeson,
                       containers
-  other-modules:       ParenthesesHelpers 
-                     , Types1
-                     , Arbitrary
-                     , Colors
-                     , Constants
-                     , FISQ
-                     , Physics
-                     , PointHelpers
-                     , Rotation
-                     , Sprites
-                     , TypeClasses
-                     , VectorCalc
-                     , Wall
-                     , GeneralHelperFunctions
-                     , VFunctions
-                     , VFunctionHelpers
-                     , Asteroid
-                     , AsteroidSpawnFunctions
-                     , Bullet
-                     , JSONfuncs
-                     , Level
-                     , Model
-                     , Player
-                     , GameWall
-                     , InitWall
+  other-modules:      Types1
+                    , Arbitrary
+                    , Colors
+                    , Constants
+                    , FISQ
+                    , GameWall
+                    , GeneralHelperFunctions
+                    , InitWall
+                    , JSONfuncs
+                    , ParenthesesHelpers
+                    , Pictured
+                    , PointHelpers
+                    , Rotation
+                    , Sprites
+                    , TypeClasses
+                    , VFunctionHelpers
+                    , VFunctions
+                    , VectorCalc
+                    , Wall
 
 executable editor
-  ghc-options:         -threaded
+  ghc-options:        -threaded
   main-is:            levelCreator.hs
-  build-depends:       base >= 4,
-                       gloss,
-                       safe,
-                       aeson,
-                       random,
-                       containers,
-                       directory,
-                       directory-tree,
-                       QuickCheck
-  hs-source-dirs:      src
-  default-language:    Haskell2010
-  other-modules:       Types1
-                     , ParenthesesHelpers
-                     , Asteroid
-                     , AsteroidSpawnFunctions
-                     , Bullet
-                     , Colors
-                     , Constants
-                     , EditorModel
-                     , FISQ
-                     , JSONfuncs
-                     , Level
-                     , LevelHelperFunctions
-                     , LevelImport
-                     , Model
-                     , Physics
-                     , Player
-                     , PointHelpers
-                     , Rotation
-                     , Select
-                     , Sprites
-                     , TypeClasses
-                     , VectorCalc
-                     , Wall
-                     , Pictured
-                     , GeneralHelperFunctions
-                     , VFunctions
-                     , VFunctionHelpers
-                     , GameWall
-                     , InitWall
+  build-depends:      base >= 4,
+                      gloss,
+                      safe,
+                      aeson,
+                      random,
+                      containers,
+                      directory,
+                      directory-tree,
+                      QuickCheck
+  hs-source-dirs:     src
+  default-language:   Haskell2010
+  other-modules:      Types1
+                    , AsteroidSpawnFunctions
+                    , Colors
+                    , Constants
+                    , EditorModel
+                    , FISQ
+                    , GameWall
+                    , GeneralHelperFunctions
+                    , InitWall
+                    , JSONfuncs
+                    , Level
+                    , LevelHelperFunctions
+                    , LevelImport
+                    , ParenthesesHelpers
+                    , Pictured
+                    , PointHelpers
+                    , Rotation
+                    , Select
+                    , Sprites
+                    , TypeClasses
+                    , VFunctionHelpers
+                    , VFunctions
+                    , VectorCalc
+                    , Wall
                   
 executable aa2  
-  ghc-options:         -threaded
-  main-is:             main.hs
-  build-depends:       base >= 4,
-                       gloss,
-                       random,
-                       containers,
-                       aeson,
-                       directory-tree,
-                       text,
-                       directory,
-                       ghc-prim,
-                       safe
-  hs-source-dirs:      src
-  other-modules:       Asteroid
-                     , AsteroidSpawnFunctions
-                     , Bullet
-                     , Colors
-                     , Constants
-                     , Controller
-                     , DefaultLevels
-                     , ExitStrings
-                     , FISQ
-                     , Input
-                     , JSONfuncs
-                     , Level
-                     , LevelHelperFunctions
-                     , LevelImport
-                     , Model
-                     , ParenthesesHelpers
-                     , Physics
-                     , PointHelpers
-                     , Pictured
-                     , Player
-                     , Rotation
-                     , Select
-                     , Sprites
-                     , Stars
-                     , TypeClasses
-                     , Types1
-                     , VectorCalc
-                     , View
-                     , Wall
-                     , EditorModel
-                     , GeneralHelperFunctions
-                     , VFunctions
-                     , VFunctionHelpers
-                     , GameWall
-                     , InitWall
+  ghc-options:        -threaded
+  main-is:            main.hs
+  build-depends:      base >= 4,
+                      gloss,
+                      random,
+                      containers,
+                      aeson,
+                      directory-tree,
+                      text,
+                      directory,
+                      ghc-prim,
+                      safe
+  hs-source-dirs:     src
+  other-modules:      Types1
+                    , Asteroid
+                    , AsteroidSpawnFunctions
+                    , Bullet
+                    , Colors
+                    , Constants
+                    , Controller
+                    , DefaultLevels
+                    , ExitStrings
+                    , FISQ
+                    , GameWall
+                    , GeneralHelperFunctions
+                    , InitWall
+                    , Input
+                    , JSONfuncs
+                    , Level
+                    , LevelHelperFunctions
+                    , LevelImport
+                    , Model
+                    , ParenthesesHelpers
+                    , Physics
+                    , Pictured
+                    , Player
+                    , PointHelpers
+                    , Rotation
+                    , Select
+                    , Sprites
+                    , Stars
+                    , TypeClasses
+                    , VFunctionHelpers
+                    , VFunctions
+                    , VectorCalc
+                    , View
+                    , Wall
   default-language:    Haskell2010
