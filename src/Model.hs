@@ -55,6 +55,9 @@ data GameState
       { previousState :: GameState
       }
   
+instance Show GameState where
+  show gstate@(GameState {}) = "time: " ++ show (elapsedTime gstate)
+  show gstate = error "No implementation for show on any gamestate other than GameState"
   
   
 gameStateFromLevel :: StdGen -> Level -> GameState

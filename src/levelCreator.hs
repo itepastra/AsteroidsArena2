@@ -16,7 +16,6 @@ import Select (getAllSelected, popSelected, selectFirst, selectNext, selectPrev,
 import Sprites (baseWall, selectedWall)
 import System.Exit (exitSuccess)
 import System.IO (hFlush, stdout)
-import Test.QuickCheck (Arbitrary (arbitrary), generate)
 import TypeClasses (HasA ((#)))
 import Types1 (ElapsedTime, Part (..), Selected (NotSelected, Selected, time), Var)
 import VFunctionHelpers (collapse)

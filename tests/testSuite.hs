@@ -3,9 +3,11 @@
 module Main where
 
 import Arbitrary ()
+import Controller (pureStep)
 import Data.Aeson (Value (String), decode, encode)
 import Data.Foldable (maximumBy)
 import Data.Map (Map)
+import Model (GameState (elapsedTime))
 import Point (Point (Point))
 import Safe (readMay)
 import Test.QuickCheck (Arbitrary, Discard (..), Property, Testable (property), counterexample, quickCheck, withMaxSuccess, within, (===))
@@ -40,9 +42,11 @@ prop_checkNormalize v1@(Point x1 y1) = case normalize v1 of
 
 -- VFunction Tests
 
-prop_stringConversion :: VFunction Float Var -> Property
-prop_stringConversion f = fromString  (show f) === Just f
+prop_funcEQ :: (Eq a, Show a, Eq b, Show b) => VFunction b a -> Property
+prop_funcEQ f = (===) f f
 
+prop_stringConversion :: VFunction Float Var -> Property
+prop_stringConversion f = fromString (show f) === Just f
 
 prop_jsonConversion :: VFunction Float Var -> Property
 prop_jsonConversion f = counterexample (show $ encode f) (decode (encode f) == Just f)
@@ -56,8 +60,10 @@ prop_simplify f et = case mkNumFunc f et of
     where
       co = simplify f
 
-prop_funcEQ :: (Eq a, Show a, Eq b, Show b) => VFunction b a -> Property
-prop_funcEQ f = (===) f f
+-- controller props
+
+prop_timeStep :: Float -> GameState -> Property
+prop_timeStep secs gstate = secs + elapsedTime gstate === elapsedTime (pureStep secs gstate)
 
 main :: IO ()
 main = do
@@ -68,12 +74,13 @@ main = do
   quickCheck prop_dot
   quickCheck prop_checkNormalize
   putStrLn "string conversion"
+  quickCheck (prop_funcEQ :: VFunction String Var -> Property)
   quickCheck prop_stringConversion
   quickCheck prop_jsonConversion
   putStrLn "simplify"
   quickCheck (prop_simplify :: VFunction Float Var -> Map Var Float -> Property)
-  putStrLn "check if it stays equal"
-  quickCheck (prop_funcEQ :: VFunction String Var -> Property)
+  putStrLn "gamestate"
+  quickCheck prop_timeStep
   putStrLn "Done"
 
 approxFloat :: (Show a, Fractional a, Ord a) => a -> a -> Property

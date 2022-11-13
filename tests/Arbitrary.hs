@@ -1,11 +1,14 @@
 module Arbitrary where
 
 import Control.Monad (liftM2, liftM3)
+import Point (Point (Point))
 import Test.QuickCheck (Arbitrary (..), CoArbitrary (..), Gen, arbitraryBoundedEnum, chooseInt, elements, oneof, sized, suchThat)
 import Types1 (Var (X))
 import VFunctions (DOp, SOp, VFunction (Constant, OneIn, ThreeIn, TwoIn, Variable))
 import Wall (InitWall (..))
-import Point (Point (Point))
+import Model (GameState (GameState), gameStateFromLevel)
+import Level (GameStateInit(GameStateInit), InitLevelConfig (InitLevelConfig), Level (Level))
+import System.Random (mkStdGen)
 
 instance (Eq a, Arbitrary a, Arbitrary b, Eq b) => Arbitrary (VFunction b a) where
   arbitrary =
@@ -36,6 +39,21 @@ instance Arbitrary InitWall where
 instance Arbitrary Var where
   arbitrary = pure X
 
+instance Arbitrary a => Arbitrary (Point a) where
+  arbitrary = liftM2 Point arbitrary arbitrary
+
+instance Arbitrary InitLevelConfig where
+  arbitrary = liftM3 InitLevelConfig arbitrary arbitrary arbitrary
+
+instance Arbitrary GameStateInit where
+  arbitrary = liftM2 GameStateInit arbitrary arbitrary
+
+instance Arbitrary Level where
+  arbitrary = liftM2 Level arbitrary arbitrary
+
+instance Arbitrary GameState where
+  arbitrary = liftM2 gameStateFromLevel (fmap mkStdGen arbitrary) arbitrary
+
 instance CoArbitrary InitWall where
   coarbitrary (InitWall a b c) = coarbitrary a . coarbitrary b . coarbitrary c
 
@@ -48,6 +66,3 @@ instance (CoArbitrary a, CoArbitrary b) => CoArbitrary (VFunction b a) where
   coarbitrary (OneIn op f1) = coarbitrary f1
   coarbitrary (TwoIn op f1 f2) = coarbitrary f1 . coarbitrary f2
   coarbitrary (ThreeIn op f1 f2 f3) = coarbitrary f1 . coarbitrary f2 . coarbitrary f3
-
-instance Arbitrary a => Arbitrary (Point a) where
-  arbitrary = liftM2 Point arbitrary arbitrary

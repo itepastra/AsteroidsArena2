@@ -19,8 +19,9 @@ Test-Suite projectname-testsuite
                       gloss,
                       random,
                       aeson,
+                      directory-tree,
                       containers,
-                      template-haskell
+                      directory
   other-modules:      Types1
                     , Arbitrary
                     , Colors
@@ -41,6 +42,13 @@ Test-Suite projectname-testsuite
                     , VectorCalc
                     , Wall
                     , Point
+                    , Asteroid
+                    , AsteroidSpawnFunctions
+                    , Bullet
+                    , Level
+                    , Model
+                    , Physics
+                    , Player
 
 executable editor
   ghc-options:        -threaded
@@ -52,9 +60,7 @@ executable editor
                       random,
                       containers,
                       directory,
-                      directory-tree,
-                      QuickCheck,
-                      template-haskell
+                      directory-tree
   hs-source-dirs:     src
   default-language:   Haskell2010
   other-modules:      Types1
@@ -95,8 +101,7 @@ executable aa2
                       text,
                       directory,
                       ghc-prim,
-                      safe,
-                      template-haskell
+                      safe
   hs-source-dirs:     src
   other-modules:      Types1
                     , Asteroid
