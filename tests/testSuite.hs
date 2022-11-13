@@ -7,10 +7,11 @@ import Data.Aeson (Value (String), decode, encode)
 import Data.Foldable (maximumBy)
 import Data.Map (Map)
 import Point (Point (Point))
+import Safe (readMay)
 import Test.QuickCheck (Arbitrary, Discard (..), Property, Testable (property), counterexample, quickCheck, withMaxSuccess, within, (===))
 import Types1 (ElapsedTime, Var)
 import VFunctionHelpers (simplify)
-import VFunctions (VFunction, fromString, mkNumFunc)
+import VFunctions (DOp, SOp, VFunction, fromString, mkNumFunc)
 import VectorCalc (normalize, (|.|))
 
 -- Vector math tests
@@ -40,7 +41,8 @@ prop_checkNormalize v1@(Point x1 y1) = case normalize v1 of
 -- VFunction Tests
 
 prop_stringConversion :: VFunction Float Var -> Property
-prop_stringConversion f = read (show f) === Just f
+prop_stringConversion f = fromString  (show f) === Just f
+
 
 prop_jsonConversion :: VFunction Float Var -> Property
 prop_jsonConversion f = counterexample (show $ encode f) (decode (encode f) == Just f)

@@ -12,13 +12,16 @@ import Control.Applicative (Applicative (..), (<|>))
 import Control.Monad (mzero)
 import qualified Data.Aeson.KeyMap as A
 import Data.Fixed (mod')
-import Data.Map (Map, findWithDefault, fromList)
+import Data.Map (Map, findWithDefault, fromDistinctAscList, fromList, toList)
 import GHC.Enum (boundedEnumFromThen)
 import GHC.Generics (Generic)
+import GHC.Read (Read (..), expectP, paren, parens)
 import JSONfuncs
 import ParenthesesHelpers (beforeParens, betweenParens, firstParenSeg, lastParenSeg)
 import Safe (readMay)
-import Text.Read (readMaybe)
+import Text.ParserCombinators.ReadP (string)
+import Text.Read (ReadPrec, choice, get, pfail, readMaybe, (+++))
+import qualified Text.Read.Lex as L
 
 data SOp where
   SID :: SOp
@@ -122,7 +125,7 @@ instance Traversable (VFunction b) where
 instance Applicative (VFunction b) where
   pure = Variable
   (Constant x) <*> f = Constant x
-  (Variable f1) <*> f = fmap f1 f
+  (Variable f1) <*> f = f1 <$> f
   (OneIn op f1) <*> f = OneIn op (f1 <*> f)
   (TwoIn op f1 f2) <*> f = TwoIn op (f1 <*> f) (f2 <*> f)
   (ThreeIn op f1 f2 f3) <*> f = ThreeIn op (f1 <*> f) (f2 <*> f) (f3 <*> f)
@@ -213,6 +216,8 @@ simplifyOne op f1 = OneIn op f1
 simplifyTwo :: (Fractional b, Eq a, Eq b) => DOp -> VFunction b a -> VFunction b a -> VFunction b a
 simplifyTwo AddF (Constant a) (Constant b) = Constant (a + b)
 simplifyTwo MulF (Constant a) (Constant b) = Constant (a * b)
+simplifyTwo AddF (Constant a) (TwoIn AddF (Constant b) f1) = Constant (a + b) + f1
+simplifyTwo AddF (Constant a) (TwoIn AddF f1 (Constant b)) = Constant (a + b) + f1
 simplifyTwo AddF f1 f2
   | f1 == Constant 0 = f2
   | f2 == Constant 0 = f1
@@ -238,7 +243,7 @@ simplifyThree ClampF f1 f2 f3 = ThreeIn ClampF f1 f2 f3
 
 instance (Show a, Show b) => Show (VFunction b a) where
   show (Constant v) = show v
-  show (Variable v) = "$" ++ show v
+  show (Variable v) = '$' : show v
   show (OneIn op fa) = toStringSingle op (show fa)
   show (TwoIn op fa fb) = toStringDouble op (show fa) (show fb)
   show (ThreeIn op fa fb fc) = undefined
