@@ -28,6 +28,8 @@ instance HasA (VFunction Float Var, VFunction Float Var, VFunction Float Var) In
   getA w = (irFunc w, ioFunc w, isFunc w)
   setA (irf, iof, isf) iw = iw {irFunc = irf, ioFunc = iof, isFunc = isf}
 
+
+
 instance FromJSON InitWall where
   parseJSON = withObject "InitWall" $ \v ->
     InitWall

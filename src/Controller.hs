@@ -69,13 +69,13 @@ pureStep secs gstate@(GameState {}) = inGameTick secs gstate
 
 inGameTick :: ElapsedTime -> GameState -> GameState
 inGameTick secs gstate =
-  gstate
+  gstat2
     { player = newDamagedPlayer,
-      asteroids = rrna,
+      asteroids = newasteroids,
       bullets = trueNewBullets,
       walls = map (selfMove (elapsedTime gstate)) (walls gstate),
       timeTillNextAsteroid = ttna,
-      rand = nnrand,
+      rand = newrand,
       score = snew,
       elapsedTime = elapsedTime gstate + secs
     }
@@ -85,10 +85,10 @@ inGameTick secs gstate =
     -- check player damage and the bullets that remain
     (newDamagedPlayer, trueNewBullets) = bulletPlayerUpdateStage gstat2
     -- remove old and spawn new asteroids
-    (ttna, rrna, nnrand, sInc) = asteroidUpdateStage2 secs gstat2
+    (ttna, newasteroids, newrand, scoreIncrement) = asteroidUpdateStage2 secs gstat2
     -- if the player is visible, update the score
     snew = case hud gstate of
-      Visible -> score gstate + sInc
+      Visible -> score gstate + scoreIncrement
       Invisible -> score gstate
 
 childAsteroids :: RandomGen g => g -> [Asteroid] -> ([Asteroid], g)
@@ -126,7 +126,7 @@ bulletPlayerUpdateStage gstate = (dp, bulletCollisions as p bs)
 
 asteroidUpdateStage2 :: IntervalTime -> GameState -> (IntervalTime, [Asteroid], StdGen, Int)
 asteroidUpdateStage2 secs gstate =
-  (it, spawnedAsteroids ++ actualAsteroid, rng3, length ds)
+  (it, childasteroids ++ aliveAsteroids, rng3, length ds)
   where
     lc = levelConfig gstate
     et = elapsedTime gstate
@@ -136,8 +136,8 @@ asteroidUpdateStage2 secs gstate =
     playerPhysics = getA p
     bs = bullets gstate
     (as, ds) = asteroidCollisions bs p (asteroids gstate)
-    (rng2, actualAsteroid, it) = spawnNewAsteroid lc et secs timetillnextasteroid rng1 playerPhysics as
-    (spawnedAsteroids, rng3) = childAsteroids rng2 ds
+    (rng2, aliveAsteroids, it) = spawnNewAsteroid lc et secs timetillnextasteroid rng1 playerPhysics as
+    (childasteroids, rng3) = childAsteroids rng2 ds
 
 bulletCollisions :: (HasPhysics a, HasPhysics b) => [a] -> b -> [Bullet] -> [Bullet]
 bulletCollisions as p = filter (\b -> not (any (checkCollision b) as || checkCollision p b))
@@ -174,7 +174,7 @@ updateBullet secs walls b
   | otherwise = Just (((accelStep secs =<< totalAcceleration walls) . updateLifetime secs . moveStep secs) b)
 
 updateAsteroid :: TimeStep -> PhysicsObject -> Asteroid -> Asteroid
-updateAsteroid secs p = (rotate =<< (secs *) . rotateSpeed) . track p secs . moveStep secs . flipField p
+updateAsteroid secs p = (rotate =<< (secs *) . rotateSpeed) . track p secs  .  moveStep secs  . flipField p
 
 updatePlayer :: Angle -> [Wall] -> TimeStep -> Acceleration -> Player -> Player
 updatePlayer rotspeed ws secs accel =

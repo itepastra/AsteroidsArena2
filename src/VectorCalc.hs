@@ -11,7 +11,7 @@ import Point (Point (Point))
 a |#| b = c |.| c where c = a - b
 
 (|*|) :: Num a => a -> Point a -> Point a
-a |*| v = fmap (a *) v
+a |*| v = pure a * v
 
 x :: Point a -> a
 x (Point a _) = a
@@ -23,7 +23,7 @@ toTuple :: Point a -> (a, a)
 toTuple v = (x v, y v)
 
 normalize :: Floating a => Point a -> Point a
-normalize a = sqrt (a |.| a) |*| a
+normalize a = (1 / sqrt (a |.| a)) |*| a
 
 fromTuple :: (a, a) -> Point a
 fromTuple (a, b) = Point a b

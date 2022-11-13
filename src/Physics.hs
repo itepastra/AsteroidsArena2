@@ -19,7 +19,7 @@ updatePhysObj :: HasA PhysicsObject a => (PhysicsObject -> PhysicsObject) -> a -
 updatePhysObj = updateA
 
 move :: TimeStep -> PhysicsObject -> PhysicsObject
-move dt (PhysObj p v r) = PhysObj (p + (dt |*| v)) v r
+move dt p = p {position = position p + (dt |*| velocity p)}
 
 accelerate :: TimeStep -> Acceleration -> PhysicsObject -> PhysicsObject
 accelerate dt a (PhysObj p v r) = PhysObj p (v + (dt |*| a)) r

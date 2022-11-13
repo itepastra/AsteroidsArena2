@@ -19,7 +19,8 @@ Test-Suite projectname-testsuite
                       gloss,
                       random,
                       aeson,
-                      containers
+                      containers,
+                      template-haskell
   other-modules:      Types1
                     , Arbitrary
                     , Colors
@@ -52,7 +53,8 @@ executable editor
                       containers,
                       directory,
                       directory-tree,
-                      QuickCheck
+                      QuickCheck,
+                      template-haskell
   hs-source-dirs:     src
   default-language:   Haskell2010
   other-modules:      Types1
@@ -93,7 +95,8 @@ executable aa2
                       text,
                       directory,
                       ghc-prim,
-                      safe
+                      safe,
+                      template-haskell
   hs-source-dirs:     src
   other-modules:      Types1
                     , Asteroid

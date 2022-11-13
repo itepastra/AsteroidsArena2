@@ -1,4 +1,3 @@
-
 module Constants where
 
 import GeneralHelperFunctions (biF)
@@ -29,13 +28,13 @@ centreToCorner2 :: Float
 centreToCorner2 = (\(x, y) -> fromIntegral (x + y)) . biF (\x -> (x `div` 2) ^ 2) $ pageSize
 
 asteroidDespawnRange2 :: Float
-asteroidDespawnRange2 = centreToCorner2 * 4
+asteroidDespawnRange2 = centreToCorner2 * 8
 
 asteroidRadius :: Float
 asteroidRadius = 10
 
 spawnDistance :: Float
-spawnDistance = (1.5 *) . sqrt $ centreToCorner2
+spawnDistance = sqrt centreToCorner2
 
 asteroidSpawnAverageInterval :: Float
 asteroidSpawnAverageInterval = 3

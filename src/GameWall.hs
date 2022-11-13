@@ -35,7 +35,7 @@ instance Rotate Wall where
   getAngle = angle
 
 instance Pictured Wall where
-  getPicture w = translateP (point w) $ rotWithRot w baseWall
+  getPicture w = translateP (-point w) $ rotWithRot (w {angle = - angle w}) baseWall
 
 point :: Wall -> Point Float
 point w = (-offset w) |*| normal w

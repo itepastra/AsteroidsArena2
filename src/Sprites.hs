@@ -1,16 +1,16 @@
 module Sprites where
 
-import Colors (asteroidColor, asteroidLineColor, bulletColor, exhaustGradientColor, playerColor, rainbowGradientColor, spaceMineColor, starColor, wallColor, selectedWallColor)
+import Colors (asteroidColor, asteroidLineColor, bulletColor, exhaustGradientColor, playerColor, rainbowGradientColor, selectedWallColor, spaceMineColor, starColor, wallColor)
 import qualified Constants
 import Data.Fixed (mod')
 import GHC.Float (float2Int)
-import Graphics.Gloss (color, green, makeColor)
-import Graphics.Gloss.Data.Picture (Picture (..), arcSolid, circleSolid, lineLoop, polygon, rectangleUpperSolid, scale, translate)
-import System.Random (StdGen)
-import Types1 ( Velocity)
-import VectorCalc ((|.|))
 import GeneralHelperFunctions (biFloat, scaleboth)
-import Point (Point(Point))
+import Graphics.Gloss (color, green, makeColor)
+import Graphics.Gloss.Data.Picture (Picture (..), arcSolid, circleSolid, lineLoop, polygon, rectangleUpperSolid, rotate, scale, translate)
+import Point (Point (Point))
+import System.Random (StdGen)
+import Types1 (Velocity)
+import VectorCalc ((|.|))
 
 basePlayer :: Picture
 basePlayer = Color playerColor $ Polygon [(0, 20), (20, -15), (0, 0), (-20, -15)]
@@ -34,7 +34,7 @@ baseStar :: Picture
 baseStar = Color starColor $ scaleboth 60 $ polygon [(0.190983, -6.20541e-2), (0.309017, -0.425325), (0.0, -0.200811), (-0.309017, -0.425325), (-0.190983, -6.20541e-2), (-0.5, 0.16246), (-0.118034, 0.16246), (0.0, 0.525731), (0.118034, 0.16246), (0.5, 0.16246)]
 
 baseWall :: Picture
-baseWall = Color wallColor $ rectangleUpperSolid 10000 10000
+baseWall = color wallColor $ rectangleUpperSolid 10000 10000
 
 selectedWall :: Picture
 selectedWall = Color selectedWallColor $ rectangleUpperSolid 10000 10000

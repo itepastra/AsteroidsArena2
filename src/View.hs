@@ -61,7 +61,7 @@ viewWalls :: GameState -> Picture
 viewWalls = getPicture . walls
 
 moveWorldToCenter :: PhysicsObject -> Picture -> Picture
-moveWorldToCenter = translateP . position
+moveWorldToCenter = translateP . negate . position
 
 dimmedScreen :: Picture
 dimmedScreen = color Colors.overlayColor $ uncurry rectangleSolid $ biFloat Constants.pageSize

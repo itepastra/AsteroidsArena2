@@ -2,10 +2,9 @@ module DefaultLevels (defaultLevels) where
 
 import qualified Constants
 import Data.Fixed (mod')
-import Level (GameStateInit (..), InitLevelConfig (..), Level (..))
-import LevelHelperFunctions ( defaultLvlConfig, addRotations, wallCreatePoly )
 import GeneralHelperFunctions (flipFlop)
-
+import Level (GameStateInit (..), InitLevelConfig (..), Level (..))
+import LevelHelperFunctions (addRotations, defaultLvlConfig, wallCreatePoly)
 
 defaultLevels :: [Level]
 defaultLevels =
@@ -54,6 +53,15 @@ defaultLevels =
             { initWalls =
                 wallCreatePoly 2 400 450,
               initConf = defaultLvlConfig
+            }
+      },
+    Level
+      { name = "Death",
+        initState =
+          GameStateInit
+            { initWalls =
+                wallCreatePoly 2 400 450,
+              initConf = defaultLvlConfig {iasteroidSpawnStart = 0.1}
             }
       }
   ]
