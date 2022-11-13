@@ -5,13 +5,13 @@ module GameWall where
 
 import GeneralHelperFunctions (translateP)
 import Pictured (Pictured (..), rotWithRot, translate)
+import Point (Point)
 import PointHelpers (yUnit)
 import Rotation (Angle, Rotate (..), rot)
 import Sprites (baseWall)
 import TypeClasses (HasA (..))
 import Types1 (ElapsedTime, Normal, Offset, Strength)
 import VectorCalc ((|*|))
-import Point (Point)
 
 data Wall = Wall
   { offset :: Offset,
@@ -35,7 +35,7 @@ instance Rotate Wall where
   getAngle = angle
 
 instance Pictured Wall where
-  getPicture w = translateP (-point w) $ rotWithRot (w {angle = - angle w}) baseWall
+  getPicture w = translateP (point w) $ rotWithRot (w {angle = - angle w}) baseWall
 
 point :: Wall -> Point Float
 point w = (-offset w) |*| normal w

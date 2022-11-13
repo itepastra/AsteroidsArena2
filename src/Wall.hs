@@ -37,7 +37,6 @@ wallAcceleration o w
 totalAcceleration :: HasPhysics a => [Wall] -> a -> Acceleration
 totalAcceleration ws o = foldr (+) zeroPoint (mapMaybe (wallAcceleration o) ws)
 
-
 createWall :: InitWall -> Wall
 createWall iw = Wall {offset = coFunc 0, angle = crFunc 0, strength = csFunc 0, oFunc = coFunc, rFunc = crFunc, sFunc = csFunc}
   where

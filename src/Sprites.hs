@@ -34,10 +34,10 @@ baseStar :: Picture
 baseStar = Color starColor $ scaleboth 60 $ polygon [(0.190983, -6.20541e-2), (0.309017, -0.425325), (0.0, -0.200811), (-0.309017, -0.425325), (-0.190983, -6.20541e-2), (-0.5, 0.16246), (-0.118034, 0.16246), (0.0, 0.525731), (0.118034, 0.16246), (0.5, 0.16246)]
 
 baseWall :: Picture
-baseWall = color wallColor $ rectangleUpperSolid 10000 10000
+baseWall = color wallColor $ rotate 180 $ rectangleUpperSolid 10000 10000
 
 selectedWall :: Picture
-selectedWall = Color selectedWallColor $ rectangleUpperSolid 10000 10000
+selectedWall = Color selectedWallColor $ rotate 180 $ rectangleUpperSolid 10000 10000
 
 starrySky :: Float -> [Point Float] -> Picture
 starrySky f = translate (-xw / 2) (-yh / 2) . Pictures . map (\(Point a b) -> translate (a `mod'` xw) (b `mod'` yh) $ scaleboth f baseStar)

@@ -27,8 +27,8 @@ eSigmoid = recip (1 + Variable X ** Variable Y)
 lSigmoid :: Floating a => VFunction a Var
 lSigmoid = recip (1 + Variable X * Variable Y)
 
-pow :: Floating a => VFunction a Var
-pow = 1 - Variable X ** (-Variable Y)
+pow :: (Floating a, Ord a) => VFunction a Var
+pow = max (0.9 - Variable X ** (-Variable Y)) 0
 
 sin2 :: Floating a => VFunction a Var
 sin2 = sin (Variable X * Variable Y) ^ 2

@@ -1,12 +1,12 @@
 module LevelHelperFunctions where
 
-import AsteroidSpawnFunctions (expRandom, pow)
+import AsteroidSpawnFunctions (expDecay, expRandom, pow)
 import qualified Constants
 import Level (InitLevelConfig (..))
 import Types1 (Angle, Offset, Part (..), Strength, Var (..))
-import Wall (InitWall (..))
 import VFunctionHelpers (addLinearTerm, collapse)
 import VFunctions (VFunction (..), insertAt)
+import Wall (InitWall (..))
 
 wallCreatePoly :: Int -> Offset -> Strength -> [InitWall]
 wallCreatePoly n o s = map (\x -> InitWall {irFunc = Constant (fromIntegral x * 360 / fromIntegral n), ioFunc = Constant o, isFunc = Constant s}) [1 .. n]
@@ -20,7 +20,6 @@ wallSetPart :: Part -> VFunction Float Var -> InitWall -> InitWall
 wallSetPart Str wf iw = iw {isFunc = wf}
 wallSetPart Rot wf iw = iw {irFunc = wf}
 wallSetPart Off wf iw = iw {ioFunc = wf}
-
 
 wallPartMap :: Part -> [VFunction Float Var -> VFunction Float Var] -> [InitWall] -> [InitWall]
 wallPartMap = zipWith . wallModPart
@@ -40,7 +39,7 @@ addOffsets os = wallPartMap Off (map (addLinearTerm X) os)
 defaultLvlConfig :: InitLevelConfig
 defaultLvlConfig =
   InitLevelConfig
-    { iasteroidSpawnFunction = expRandom,
+    { iasteroidSpawnFunction = insertAt Z expDecay expRandom,
       ispaceMineOddsFunction = pow,
       iasteroidSpawnStart = Constants.asteroidSpawnAverageInterval
     }

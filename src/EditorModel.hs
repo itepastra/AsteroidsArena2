@@ -10,7 +10,7 @@ import Rotation (Rotate (getAngle))
 import Select (getAllSelected)
 import Sprites (baseWall, selectedWall)
 import Types1 (ElapsedTime, Selected (..))
-import Wall (InitWall (InitWall), createWall, point, selfMove)
+import Wall (InitWall (InitWall), Wall (angle), createWall, point, selfMove)
 
 data EditorState = CreatorState
   { elapsedTime :: ElapsedTime,
@@ -38,9 +38,9 @@ viewWallsSelect et = Pictures . map (viewSelectedWall et)
 
 viewSelectedWall :: ElapsedTime -> Selected InitWall -> Picture
 viewSelectedWall et iw = case iw of
-  NotSelected iw' -> translateP (p iw') $ rotWithRot iw' baseWall
-  Selected _ iw' -> translateP (p iw') $ rotWithRot iw' selectedWall
+  NotSelected iw' -> translateP (p iw') $ rotWithRot (rw (w iw')) baseWall
+  Selected _ iw' -> translateP (p iw') $ rotWithRot (rw (w iw')) selectedWall
   where
     p i = point (w i)
-    a i = getAngle (w i)
-    w iw'' = selfMove et $ createWall iw''
+    rw w = w {angle = - angle w}
+    w = selfMove et . createWall
