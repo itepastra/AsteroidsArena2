@@ -207,15 +207,29 @@ createThreeIn ClampF x mi ma = min ma (max mi x)
 
 simplifyOne :: Floating b => SOp -> VFunction b a -> VFunction b a
 simplifyOne SID f1 = f1
+simplifyOne AbsF (OneIn AbsF c@(Constant x)) = abs c
+simplifyOne SigF (OneIn SigF c@(Constant x)) = signum c
+simplifyOne ExpF (OneIn LogF c@(Constant x)) = c
+simplifyOne LogF (OneIn ExpF c@(Constant x)) = c
 simplifyOne AbsF (OneIn AbsF f1) = abs f1
 simplifyOne SigF (OneIn SigF f1) = signum f1
 simplifyOne ExpF (OneIn LogF f1) = f1
 simplifyOne LogF (OneIn ExpF f1) = f1
+simplifyOne op (Constant x) = Constant (createOneIn op x)
 simplifyOne op f1 = OneIn op f1
 
-simplifyTwo :: (Fractional b, Eq a, Eq b) => DOp -> VFunction b a -> VFunction b a -> VFunction b a
+simplifyTwo :: (Fractional b, Eq a, Ord b) => DOp -> VFunction b a -> VFunction b a -> VFunction b a
 simplifyTwo AddF (Constant a) (Constant b) = Constant (a + b)
 simplifyTwo MulF (Constant a) (Constant b) = Constant (a * b)
+simplifyTwo SubF (Constant a) (Constant b) = Constant (a - b)
+simplifyTwo DivF (Constant a) (Constant b) = Constant (a / b)
+simplifyTwo AddF f1 (Constant b)
+  | b < 0 = f1 - Constant (-b)
+  | otherwise = Constant b + f1
+simplifyTwo MulF f1 (Constant b) = Constant b * f1
+simplifyTwo SubF f1 (Constant b)
+  | b < 0 = Constant (-b) + f1
+  | otherwise = f1 - Constant b
 simplifyTwo AddF (Constant a) (TwoIn AddF (Constant b) f1) = Constant (a + b) + f1
 simplifyTwo AddF (Constant a) (TwoIn AddF f1 (Constant b)) = Constant (a + b) + f1
 simplifyTwo AddF f1 f2

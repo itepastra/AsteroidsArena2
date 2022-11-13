@@ -55,7 +55,7 @@ inputCreator (EventKey (Char '\DC3') Down (Modifiers _ Down _) _) g = do
   pure g
 inputCreator k s = print k >> ((pure .) . pureInput) k s
 
-tupleCollapse :: (Eq a, Eq b, Floating b) => (VFunction b a, VFunction b a, VFunction b a) -> (VFunction b a, VFunction b a, VFunction b a)
+tupleCollapse :: (Eq a, Ord b, Floating b) => (VFunction b a, VFunction b a, VFunction b a) -> (VFunction b a, VFunction b a, VFunction b a)
 tupleCollapse (a, b, c) = (collapse a, collapse b, collapse c)
 
 pureInput :: Event -> EditorState -> EditorState

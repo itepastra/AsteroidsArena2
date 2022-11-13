@@ -8,7 +8,7 @@ import GeneralHelperFunctions (biFloat, scaleboth, translateP)
 import Graphics.Gloss (Picture (..), blank, blue, color, rectangleSolid, rotate, scale, translate)
 import Level (Level (..))
 import Model (GameState (..), gameStateFromLevel)
-import Pictured (Pictured (getPicture), colorText)
+import Pictured (Pictured (getPicture), textFormat)
 import Player (Player (hp))
 import Rotation (Rotate (getAngle))
 import Select (getSelectedIndex, getSingleSelected)
@@ -31,7 +31,7 @@ view = pure . getPicture
 viewHud :: GameState -> Picture
 viewHud gs@(GameState {score = s, player = p, timeTillNextAsteroid = ttna}) = Pictures (zipWith formatl [400, 350, 300, 250] ["score: " ++ show s, "HP: " ++ show health])
   where
-    formatl h = colorText . translate (20 - fromIntegral (fst Constants.pageSize) / 2) h . scaleboth 0.3 . Text
+    formatl h = textFormat (20 - fromIntegral (fst Constants.pageSize) / 2) h 0.3
     v = velocity $ getPhysObj p
     health = hp p
 viewHud _ = blank

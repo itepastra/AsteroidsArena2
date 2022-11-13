@@ -1,7 +1,7 @@
 module GeneralHelperFunctions where
 
 import Data.Bifunctor (Bifunctor (bimap))
-import Graphics.Gloss (Picture, scale, translate)
+import Graphics.Gloss (Picture (Text), scale, translate)
 import Point (Point (Point))
 
 tZip3 :: (t1 -> a, t2 -> b, t3 -> c) -> (t1, t2, t3) -> (a, b, c)
@@ -21,3 +21,6 @@ scaleboth f = scale f f
 
 translateP :: Point Float -> Picture -> Picture
 translateP (Point x y) = translate x y
+
+translateI :: (Integral a, Integral b) => a -> b -> Picture -> Picture
+translateI x y = translate (fromIntegral x) (fromIntegral y)

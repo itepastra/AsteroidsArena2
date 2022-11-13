@@ -8,12 +8,16 @@ module Pictured
     translate,
     colorText,
     translateI,
+    translateP,
+    textFormatP,
+    textFormat
   )
 where
 
 import qualified Colors
-import GeneralHelperFunctions (scaleboth, translateP)
+import GeneralHelperFunctions (scaleboth, translateI, translateP)
 import Graphics.Gloss.Data.Picture (Picture (..), blank, color, rotate, scale, translate)
+import Point (Point (Point))
 import Rotation (Rotate, getAngle)
 import TypeClasses (HasPhysics, getPhysObj)
 import Types1 (OverlayText (..), Selected (..), position)
@@ -52,5 +56,8 @@ mvRotPic o = mvWithPhys o . rotWithRot o
 colorText :: Picture -> Picture
 colorText = color Colors.textColor
 
-translateI :: (Integral a, Integral b) => a -> b -> Picture -> Picture
-translateI x y = translate (fromIntegral x) (fromIntegral y)
+textFormatP :: Point Float -> Float -> String -> Picture
+textFormatP (Point x y) = textFormat x y
+
+textFormat :: Float -> Float -> Float -> String -> Picture
+textFormat x y s = colorText . translate x y . scaleboth s . Text

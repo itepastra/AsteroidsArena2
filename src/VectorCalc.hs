@@ -22,8 +22,9 @@ y (Point _ a) = a
 toTuple :: Point a -> (a, a)
 toTuple v = (x v, y v)
 
-normalize :: Floating a => Point a -> Point a
-normalize a = (1 / sqrt (a |.| a)) |*| a
-
 fromTuple :: (a, a) -> Point a
 fromTuple (a, b) = Point a b
+
+normalize :: Floating a => Point a -> Point a
+normalize a = recip (sqrt (a |.| a)) |*| a
+
