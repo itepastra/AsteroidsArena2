@@ -17,8 +17,10 @@ import Asteroid
   )
 import Bullet (Bullet (lifeTime), updateLifetime)
 import qualified Constants
+import Data.Bifunctor (Bifunctor (first))
 import Data.Foldable (foldr')
 import Data.List (sort, sortBy)
+import Data.Maybe (mapMaybe)
 import Data.Set (Set, empty, member)
 import Graphics.Gloss.Interface.IO.Game (Key (Char, SpecialKey), SpecialKey (KeySpace))
 import Level (Level, LevelConfig (asteroidSpawnFunction, spaceMineOddsFunction))
@@ -36,8 +38,6 @@ import System.Random (Random (random, randomRs), RandomGen (split), StdGen, getS
 import TypeClasses (HasA (..), HasPhysics)
 import Types1 (Acceleration, ElapsedTime, Hud (..), IntervalTime, Score, Selected (..), Time, TimeStep)
 import Wall (Wall, selfMove, totalAcceleration)
-import Data.Maybe (mapMaybe)
-import Data.Bifunctor (Bifunctor(first))
 
 step :: Float -> GameState -> IO GameState
 step secs gstate@(MenuState {levels = []}) = do
@@ -61,8 +61,7 @@ pureStep secs gstate@(MenuState {}) =
 pureStep secs gstate@(PauseState {}) = gstate
 pureStep secs gstate@(GameState {player = (Player {hp = 0})}) =
   DeathState
-    { 
-      previousState = playerHeal 1 # const (empty :: Set Key) # const Invisible # gstate,
+    { previousState = playerHeal 1 # const (empty :: Set Key) # const Invisible # gstate,
       timeSinceDeath = 1
     }
 pureStep secs gstate@(GameState {}) = inGameTick secs gstate
@@ -124,9 +123,9 @@ bulletPlayerUpdateStage gstate = (dp, bulletCollisions as p bs)
     as = asteroids gstate
     h = hud gstate
 
-asteroidUpdateStage2 :: IntervalTime -> GameState -> (IntervalTime, [Asteroid], StdGen, Int)
+asteroidUpdateStage2 :: TimeStep -> GameState -> (IntervalTime, [Asteroid], StdGen, Int)
 asteroidUpdateStage2 secs gstate =
-  (it, childasteroids ++ aliveAsteroids, rng3, length ds)
+  (it, spawnedAsteroids childasteroids ++ as, rng3, length ds)
   where
     lc = levelConfig gstate
     et = elapsedTime gstate
@@ -136,7 +135,7 @@ asteroidUpdateStage2 secs gstate =
     playerPhysics = getA p
     bs = bullets gstate
     (as, ds) = asteroidCollisions bs p (asteroids gstate)
-    (rng2, aliveAsteroids, it) = spawnNewAsteroid lc et secs timetillnextasteroid rng1 playerPhysics as
+    (rng2, spawnedAsteroids, it) = spawnNewAsteroid lc et secs timetillnextasteroid rng1 playerPhysics
     (childasteroids, rng3) = childAsteroids rng2 ds
 
 bulletCollisions :: (HasPhysics a, HasPhysics b) => [a] -> b -> [Bullet] -> [Bullet]
@@ -145,10 +144,10 @@ bulletCollisions as p = filter (\b -> not (any (checkCollision b) as || checkCol
 asteroidCollisions :: (HasPhysics a, HasPhysics b) => [a] -> b -> [Asteroid] -> ([Asteroid], [Asteroid])
 asteroidCollisions bs p = foldr' (\a (as, ds) -> if checkCollision p a then (as, ds) else (if any (checkCollision a) bs then (as, a : ds) else (a : as, ds))) ([], [])
 
-spawnNewAsteroid :: LevelConfig -> ElapsedTime -> IntervalTime -> Time -> StdGen -> PhysicsObject -> [Asteroid] -> (StdGen, [Asteroid], IntervalTime)
-spawnNewAsteroid lc et it t rng phy oas
-  | t <= 0 = (\(a, b, c) -> (a, b : oas, c)) $ genRandomAsteroid (asteroidSpawnFunction lc et) (spaceMineOddsFunction lc et) rng phy
-  | otherwise = (rng, oas, t - it)
+spawnNewAsteroid :: LevelConfig -> ElapsedTime -> TimeStep -> IntervalTime -> StdGen -> PhysicsObject -> (StdGen, [Asteroid] -> [Asteroid], IntervalTime)
+spawnNewAsteroid lc et it t rng phy
+  | t <= 0 = (\(a, b, c) -> (a, (b :), c)) $ genRandomAsteroid (asteroidSpawnFunction lc et) (spaceMineOddsFunction lc et) rng phy
+  | otherwise = (rng, id, t - it)
 
 instance HasA Player GameState where
   getA :: GameState -> Player
@@ -174,7 +173,7 @@ updateBullet secs walls b
   | otherwise = Just (((accelStep secs =<< totalAcceleration walls) . updateLifetime secs . moveStep secs) b)
 
 updateAsteroid :: TimeStep -> PhysicsObject -> Asteroid -> Asteroid
-updateAsteroid secs p = (rotate =<< (secs *) . rotateSpeed) . track p secs  .  moveStep secs  . flipField p
+updateAsteroid secs p = (rotate =<< (secs *) . rotateSpeed) . track p secs . moveStep secs . flipField p
 
 updatePlayer :: Angle -> [Wall] -> TimeStep -> Acceleration -> Player -> Player
 updatePlayer rotspeed ws secs accel =
