@@ -125,9 +125,10 @@ bulletPlayerUpdateStage gstate = (dp, bulletCollisions as p bs)
 
 asteroidUpdateStage2 :: TimeStep -> GameState -> (IntervalTime, [Asteroid], StdGen, Int)
 asteroidUpdateStage2 secs gstate =
-  (it, spawnedAsteroids childasteroids ++ as, rng3, length ds)
+  (it, spawnedAsteroids (childasteroids ++ as), rng3, length ds)
   where
     lc = levelConfig gstate
+    
     et = elapsedTime gstate
     timetillnextasteroid = timeTillNextAsteroid gstate
     rng1 = rand gstate
