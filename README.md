@@ -10,8 +10,8 @@ Steering right                               = A
 Steering left                                = D  
 Shooting                                     = Space  
 Pause / Unpause                              = Tab  
-Restart (Only on dead screen)                = R
-Return to level select (Only on dead screen) = Escape
+Restart                                      = R  
+Return to level select                       = Escape
 
 ## Controls in level select
 Level down                                   = S       
